@@ -61,29 +61,6 @@ services:
           LOG_LEVEL: "WARNING"
           ENCRYPT_KEY: "${ENCRYPT_KEY}"
 
-    writer:
-        build:
-          context: python
-          dockerfile: writer/Dockerfile-local
-        depends_on:
-          - rabbitmq
-        environment:
-          RABBITMQ_URL: "${RABBITMQ_URL}"
-          # The RABBITMQ_USER is used to watch for validated
-          # events and write them to the database
-          RABBITMQ_USER: "${RABBITMQ_USER}"
-          RABBITMQ_PASS: "${RABBITMQ_PASS}"
-          LOG_LEVEL: "INFO"
-          DB_HOST: "${DB_HOST}"
-          DB_NAME: "${DB_NAME}"
-          DB_USERNAME: "${DB_USERNAME}"
-          DB_PASSWORD: "${DB_PASSWORD}"
-          VIPS_API_USERNAME: "${VIPS_API_USERNAME}"
-          VIPS_API_PASSWORD: "${VIPS_API_PASSWORD}"
-          VIPS_API_ROOT_URL: "${VIPS_API_ROOT_URL}"
-          GEOCODER_API_URI: "${GEOCODER_URL}"
-          GEOCODE_BASIC_AUTH_USER: "${GEOCODE_BASIC_AUTH_USER}"
-          GEOCODE_BASIC_AUTH_PASS: "${GEOCODE_BASIC_AUTH_PASS}"
 
     paybc-api:
       build:
@@ -136,16 +113,3 @@ services:
           LOG_LEVEL: "INFO"
           ENCRYPT_KEY: "${ENCRYPT_KEY}"
 
-    geocoder:
-        build:
-          context: python
-          dockerfile: geocoder/Dockerfile-local
-        environment:
-          LOG_LEVEL: "INFO"
-          GEOCODE_SECRET_KEY: "${GEOCODE_SECRET_KEY}"
-          GEOCODE_BASIC_AUTH_USER: "${GEOCODE_BASIC_AUTH_USER}"
-          GEOCODE_BASIC_AUTH_PASS: "${GEOCODE_BASIC_AUTH_PASS}"
-          DATA_BC_API_KEY: "${DATA_BC_API_KEY}"
-
-        ports:
-          - "5003:5003"

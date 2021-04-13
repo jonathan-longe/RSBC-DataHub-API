@@ -44,7 +44,7 @@ services:
           ENVIRONMENT: "${ENVIRONMENT}"
 
         ports:
-          - "5000:5000"
+            - "5000:5000"
     
     validator:
         build: 
@@ -60,7 +60,6 @@ services:
           RABBITMQ_PASS: "${RABBITMQ_PASS}"
           LOG_LEVEL: "WARNING"
           ENCRYPT_KEY: "${ENCRYPT_KEY}"
-
 
     paybc-api:
       build:
@@ -87,8 +86,8 @@ services:
         BCC_EMAIL_ADDRESSES: "${BCC_EMAIL_ADDRESSES}"
 
 
-      ports:
-        - "5001:5001"
+        ports:
+            "5001:5001"
 
     form_handler:
         build:
@@ -113,3 +112,11 @@ services:
           LOG_LEVEL: "INFO"
           ENCRYPT_KEY: "${ENCRYPT_KEY}"
 
+
+    web_app:
+        build:
+          context: web_app
+          dockerfile: Dockerfile-local
+
+        ports:
+            - "8080:8080"

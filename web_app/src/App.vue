@@ -1,21 +1,35 @@
 <template>
-  <div id="app">
-    <div class="px-4 py-5 my-5 text-center">
-    <img class="d-block mx-auto mb-4" src="@/assets/BCID_RoadSafetyBC_logo_transparent.png" >
-    <div class="col-lg-12 mx-auto">
-      <p class="lead mb-4">Future home of digital prohibition forms for police.</p>
-    </div>
-  </div>
+  <div id="app" class="container">
+    <div class="row">
+      <div class="card w-100">
+        <div id="header" class="card-body">
+          <div class="card-title">
+            <div class="d-flex flex-row">
+              <img width="300px" src="@/assets/BCID_RoadSafetyBC_logo_transparent.png" >
+              <div class="ml-auto">
+                <button disabled>Login</button>
+              </div>
+            </div>
 
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <offline-banner></offline-banner>
+    <issue-prohibitions></issue-prohibitions>
 
   </div>
 </template>
 
 <script>
 
+import OfflineBanner from "./components/OffineBanner.vue"
+import IssueProhibitions from "@/components/IssueProhibitions";
 
 export default {
   name: 'App',
+  components: {OfflineBanner, IssueProhibitions}
 
 }
 </script>
@@ -28,6 +42,18 @@ export default {
   text-align: center;
   color: lightgray;
   margin-top: 60px;
+}
+
+#header {
+  background-color: #003366;
+
+}
+
+.row {
+  margin: 0.5em 0.5em 0.5em 0.5em;
+  padding: 0.5em 0.5em 0.5em 0.5em;
+  vertical-align: center;
+
 }
 
 </style>

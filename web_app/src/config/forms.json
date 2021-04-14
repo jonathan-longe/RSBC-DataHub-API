@@ -1,0 +1,14 @@
+{
+  "forms": {
+    "12-24": {
+      "component": "TwelveTwentyFour",
+      "short_name": "12-24",
+      "full_name": "12 hour driving prohibition"
+    },
+    "irp": {
+      "component": "ImmediateRoadsideProhibition",
+      "short_name": "irp",
+      "full_name": "immediate roadside prohibition"
+    }
+  }
+}

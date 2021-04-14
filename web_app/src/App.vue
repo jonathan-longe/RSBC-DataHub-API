@@ -7,7 +7,7 @@
             <div class="d-flex flex-row">
               <img width="300px" src="@/assets/BCID_RoadSafetyBC_logo_transparent.png" >
               <div class="ml-auto">
-                <button disabled>Login</button>
+                <button class="btn btn-primary" disabled>Login</button>
               </div>
             </div>
 
@@ -18,6 +18,7 @@
     </div>
     <offline-banner></offline-banner>
     <issue-prohibitions></issue-prohibitions>
+    <component :is="selectedForm.component"></component>
 
   </div>
 </template>
@@ -26,10 +27,26 @@
 
 import OfflineBanner from "./components/OffineBanner.vue"
 import IssueProhibitions from "@/components/IssueProhibitions";
+import TwelveTwentyFour from "@/components/forms/TwelveTwentyFour";
+import ImmediateRoadsideProhibition from "@/components/forms/ImmediateRoadsideProhibition";
 
 export default {
   name: 'App',
-  components: {OfflineBanner, IssueProhibitions}
+  components: {
+    OfflineBanner,
+    IssueProhibitions,
+    TwelveTwentyFour,
+    ImmediateRoadsideProhibition
+  },
+  computed: {
+      isFormSelected() {
+        return this.$store.getters.isFormSelected;
+      },
+      selectedForm() {
+        return this.$store.getters.getCurrentForm;
+      }
+
+  }
 
 }
 </script>

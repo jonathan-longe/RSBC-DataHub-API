@@ -1,30 +1,47 @@
 <template>
-  <div class="row">
     <div class="card w-100">
       <div class="card-body text-dark">
-        <div class="form-row align-items-center">
-          <div class="col-sm-8">
-            <label class="d-flex">Select a Prohibition to Serve</label>
-            <select class="form-control">
-              <option>- select a prohibition -</option>
-              <option>2</option>
-              <option>3</option>
-              <option>4</option>
-              <option>5</option>
-            </select>
+        <div class="form-inline align-items-center">
+          <div class="d-flex">
+            <div>
+              <label for="form-selection" class="text-left">Select a Form to Serve</label>
+              <select class="form-control" id="form-selection" v-model="selected_form">
+                <option v-for="form in allForms" :key="form.short_name" :id="form" :value="form">
+                  {{ form.full_name}}
+                </option>
+              </select>
+            </div>
           </div>
-          <div class="col-auto">
-            <button type="submit" class="btn btn-primary mt-4">Go</button>
+          <div class="col-auto mt-4">
+            <button @click="serveForm" type="submit" class="btn btn-primary">Go</button>
           </div>
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
+
 export default {
-name: "IssueProhibitions"
+  name: "IssueProhibitions",
+  data() {
+    return {
+      selected_form: {
+        short_name: null,
+        full_name: null
+      }
+    }
+  },
+  methods: {
+      serveForm() {
+        this.$store.commit("setFormToServe", this.selected_form)
+      }
+  },
+  computed: {
+     allForms() {
+       return this.$store.getters.getAllForms;
+     }
+  }
 }
 </script>
 

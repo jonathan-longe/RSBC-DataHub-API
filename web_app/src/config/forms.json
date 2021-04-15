@@ -2,13 +2,79 @@
   "forms": {
     "12-24": {
       "component": "TwelveTwentyFour",
+      "last_updated": "2021-04-14",
       "short_name": "12-24",
-      "full_name": "12 hour driving prohibition"
+      "full_name": "12 Hour Driving Prohibition",
+      "questions": {
+        "drivers_number": {
+          "component": "DriverLicenceNumber",
+          "id": "drivers_number",
+          "label": "Driver's Licence Number"
+        },
+        "last_name": {
+          "component": "TextField",
+          "id": "last_name",
+          "label": "Surname",
+          "placeholder": "Last Name",
+          "type": "text"
+        },
+        "first_name": {
+          "component": "TextField",
+          "id": "first_name",
+          "label": "First Names",
+          "placeholder": "First Names",
+          "type": "text"
+        },
+        "dob": {
+          "component": "TextField",
+          "id": "dob",
+          "label": "Date of Birth",
+          "placeholder": "YYYY-MM-DD",
+          "type": "text"
+        },
+        "address1": {
+          "component": "TextField",
+          "id": "address1",
+          "label": "Address Line 1",
+          "placeholder": "Address",
+          "type": "text"
+        },
+        "address2": {
+          "component": "TextField",
+          "id": "address2",
+          "label": "Address Line 2",
+          "placeholder": "Address",
+          "type": "text"
+        },
+        "city": {
+          "component": "TextField",
+          "id": "city",
+          "label": "City",
+          "placeholder": "City",
+          "type": "text"
+        },
+        "province": {
+          "component": "ProvinceField",
+          "label": "Province",
+          "id": "province"
+        },
+        "postal": {
+          "component": "TextField",
+          "id": "postal",
+          "label": "Postal Code",
+          "placeholder": "Postal",
+          "type": "text"
+        }
+      }
     },
     "irp": {
       "component": "ImmediateRoadsideProhibition",
+      "last_updated": "2021-04-13",
       "short_name": "irp",
-      "full_name": "immediate roadside prohibition"
+      "full_name": "Immediate Roadside Prohibition",
+      "questions": {
+
+      }
     }
   }
 }

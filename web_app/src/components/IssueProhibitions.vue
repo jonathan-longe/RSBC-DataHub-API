@@ -1,26 +1,16 @@
 <template>
-    <div class="card w-100">
-      <div class="card-body text-dark">
-        <div class="form-inline align-items-center">
-          <div class="d-flex">
-            <div>
-              <label for="form-selection" class="text-left">Select a Form to Serve</label>
-              <select class="form-control" id="form-selection" v-model="selected_form">
-                <option v-for="form in allForms" :key="form.short_name" :id="form" :value="form">
-                  {{ form.full_name}}
-                </option>
-              </select>
-            </div>
-          </div>
-          <div class="col-auto mt-4">
-            <button @click="serveForm" type="submit" class="btn btn-primary">Go</button>
-          </div>
-        </div>
-      </div>
+    <div class="card-deck">
+      <prohibition-card v-for="form in allForms"
+                        :key="form.short_name"
+                        :form="form">
+
+      </prohibition-card>
     </div>
 </template>
 
 <script>
+
+import ProhibitionCard from "@/components/ProhibitionCard";
 
 export default {
   name: "IssueProhibitions",
@@ -41,6 +31,9 @@ export default {
      allForms() {
        return this.$store.getters.getAllForms;
      }
+  },
+  components: {
+    ProhibitionCard
   }
 }
 </script>

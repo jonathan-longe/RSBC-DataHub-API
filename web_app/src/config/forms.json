@@ -5,6 +5,7 @@
       "last_updated": "2021-04-14",
       "short_name": "12-24",
       "full_name": "12 Hour Driving Prohibition",
+      "data": {},
       "questions": {
         "drivers_number": {
           "component": "DriverLicenceNumber",
@@ -47,7 +48,7 @@
           "type": "text"
         },
         "city": {
-          "component": "TextField",
+          "component": "CityField",
           "id": "city",
           "label": "City",
           "placeholder": "City",

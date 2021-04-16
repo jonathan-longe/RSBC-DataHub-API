@@ -9,6 +9,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import getters from "@/store/getters.js"
 import mutations from "@/store/mutations";
 import form_config from "@/config/forms.json";
+import bc_city_names from "@/config/cities.json";
 
 Vue.use(Vuex)
 
@@ -21,7 +22,10 @@ Vue.config.productionTip = false
 
 const store = new Vuex.Store({
   state: {
-    selected_form: null,
+    bc_city_names: bc_city_names,
+    edited_prohibition_numbers: Array(),
+    edited_forms: Array(),
+    currently_editing_prohibition_number: null,
     form_config: form_config
   },
   mutations: mutations,

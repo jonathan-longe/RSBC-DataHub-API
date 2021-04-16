@@ -1,25 +1,41 @@
 export default {
-    getAllForms: state => {
+
+    getAllAvailableForms: state => {
       return state.form_config.forms;
     },
-    isFormSelected: state => {
-        return state.selected_form !== null
-    },
-    getSelectedFormComponent: state => {
-        if (state.selected_form == null) {
-            return null;
-        }
-        if ("component" in state.selected_form) {
-            return state.selected_form.component;
-        }
-        return null;
-    },
-    getSelectedForm: state => {
-        if (state.selected_form == null) {
-            return null;
-        }
-        return state.selected_form;
 
+    getAllEditedProhibitionNumbers: state => {
+        return state.edited_prohibition_numbers;
+    },
+
+    isFormBeingEdited: state => {
+        return state.currently_editing_prohibition_number !== null
+    },
+
+    getSelectedFormComponent: state => {
+        const prohibition_number = state.currently_editing_prohibition_number;
+        if (prohibition_number == null) {
+            return null;
+        }
+        console.log("check edited_forms: " + JSON.stringify(state.edited_forms))
+        return state.edited_forms[prohibition_number].component;
+    },
+
+    getCurrentlyEditedForm: state => {
+        console.log('inside getCurrentlyEditedForm')
+        const prohibition_number = state.currently_editing_prohibition_number;
+        if (prohibition_number == null) {
+            return null;
+        }
+        return state.edited_forms[prohibition_number];
+    },
+
+    getArrayOfBCCityNames: state => {
+        return state.bc_city_names;
+    },
+
+    getSpecificForm: state => prohibition_number => {
+        return state.edited_forms[prohibition_number];
     }
 
 }

@@ -5,7 +5,7 @@
        <form>
 
           <p class="text-right mt-2 mr-2">Prohibition Number:
-            <span class="prohibition_number">{{ formatUlid }}</span></p>
+            <span class="prohibition_number">{{ prohibition_number }}</span></p>
 
           <div class="card w-100">
             <p class="card-header">Driver's Information</p>
@@ -19,7 +19,7 @@
                 <component :is="questions.dob.component" :form_group="questions.dob" form_group_class="col-sm-3"></component>
               </div>
               <div class="form-row ">
-                <component :is="questions.address1.component" :form_group="questions.address2" form_group_class="col-sm-12"></component>
+                <component :is="questions.address1.component" :form_group="questions.address1" form_group_class="col-sm-12"></component>
               </div>
               <div class="form-row ">
                 <component :is="questions.address2.component" :form_group="questions.address2" form_group_class="col-sm-12"></component>
@@ -32,10 +32,10 @@
             </div>
           </div>
 
-          <div class="form-row float-right">
-            <button type="submit" class="btn btn-danger m-3">Delete</button>
-            <button type="submit" class="btn btn-success m-3">Save, complete later</button>
-            <button type="submit" class="btn btn-success m-3">Print...</button>
+          <div class="form-row float-right mt-3 mb-3">
+            <button type="submit" class="btn btn-danger m-1">Delete</button>
+            <button @click="stopEditingForm" type="submit" class="btn btn-success m-1">Save, complete later</button>
+            <button type="submit" class="btn btn-success m-1">Save and Print</button>
           </div>
 
        </form>
@@ -48,29 +48,24 @@
 import TextField from "@/components/questions/TextField";
 import ProvinceField from "@/components/questions/ProvinceField";
 import DriverLicenceNumber from "@/components/questions/DriverLicenceNumber";
+import CityField from "@/components/questions/CityField";
 
 export default {
   name: "TwelveTwentyFour",
   props: {
     questions: {},
-    unique_prohibition_number: null
+    prohibition_number: null
   },
-  data() {
-    return {
-      form_data: {
-        unique_prohibition_number: this.unique_prohibition_number
-      }
-    }
-  },
-  computed: {
-    formatUlid() {
-      return this.unique_prohibition_number
+  methods: {
+    stopEditingForm() {
+      this.$store.commit("stopEditingForm");
     }
   },
   components: {
     TextField,
     ProvinceField,
-    DriverLicenceNumber
+    DriverLicenceNumber,
+    CityField
   }
 
 }

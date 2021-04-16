@@ -10,13 +10,14 @@
       </div>
     </div>
     <offline-banner v-if="false"></offline-banner>
-    <component v-if="getSelectedFormComponent !== null" :questions="getSelectedForm.questions"
-               :unique_prohibition_number="getUniqueProhibitionNumber"
+    <component v-if="isFormBeingEdited" :questions="getSelectedForm.questions"
+               :prohibition_number="getSelectedForm.prohibition_number"
                :is="getSelectedFormComponent">
     </component>
-    <issue-prohibitions v-if="getSelectedFormComponent == null"></issue-prohibitions>
-    <prohibition-search v-if="getSelectedFormComponent == null"></prohibition-search>
-    <feedback-welcome v-if="getSelectedFormComponent == null"></feedback-welcome>
+    <debug-component></debug-component>
+    <issue-prohibitions v-if=" ! isFormBeingEdited"></issue-prohibitions>
+    <prohibition-search v-if=" ! isFormBeingEdited"></prohibition-search>
+    <feedback-welcome v-if=" ! isFormBeingEdited"></feedback-welcome>
 
 
   </div>
@@ -30,12 +31,12 @@ import TwelveTwentyFour from "@/components/forms/TwelveTwentyFour";
 import ImmediateRoadsideProhibition from "@/components/forms/ImmediateRoadsideProhibition";
 import FeedbackWelcome from "@/components/FeedbackWelcome";
 import ProhibitionSearch from "@/components/ProhibitionSearch";
-
-import { ulid } from 'ulid'
+import DebugComponent from "@/components/DebugComponent";
 
 export default {
   name: 'App',
   components: {
+    DebugComponent,
     ProhibitionSearch,
     FeedbackWelcome,
     OfflineBanner,
@@ -44,18 +45,15 @@ export default {
     ImmediateRoadsideProhibition
   },
   computed: {
-     isFormSelected() {
-       return this.$store.getters.isFormSelected;
+     isFormBeingEdited() {
+       return this.$store.getters.isFormBeingEdited;
      },
      getSelectedFormComponent() {
        return this.$store.getters.getSelectedFormComponent;
      },
      getSelectedForm() {
-       return this.$store.getters.getSelectedForm;
+       return this.$store.getters.getCurrentlyEditedForm;
      },
-     getUniqueProhibitionNumber() {
-       return ulid()
-     }
 
   }
 

@@ -29,7 +29,7 @@ export default {
   },
   computed: {
      allForms() {
-       return this.$store.getters.getAllForms;
+       return this.$store.getters.getAllAvailableForms;
      }
   },
   components: {

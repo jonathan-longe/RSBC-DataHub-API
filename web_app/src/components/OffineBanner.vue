@@ -1,7 +1,7 @@
 <template>
-    <div class="alert alert-warning w-100" role="alert">
-      <strong>Currently Offline:</strong>
-      you can still issue and save prohibitions, but lookups won't work
+    <div class="alert alert-warning w-100 pt-1 pb-1 small" role="alert">
+      <strong>Currently Offline -</strong>
+      you can enter, print and save prohibitions, but lookups won't work
     </div>
 </template>
 
@@ -11,7 +11,3 @@ export default {
 
 }
 </script>
-
-<style scoped>
-
-</style>

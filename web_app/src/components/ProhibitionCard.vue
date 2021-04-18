@@ -1,10 +1,14 @@
 <template>
-    <div class="card">
-      <div class="card-body">
-      <h5 class="card-title text-dark">{{ form.full_name }}</h5>
-      <!--<p class="card-text text-secondary">This is a longer card with supporting text.</p>-->
+    <div class="card border-light bg-secondary">
+      <div class="card-header text-white text-left font-weight-bold small pl-3 pt-1 pb-1 bg-primary">
+        {{ form.full_name }}
+      </div>
+      <div class="card-body bg-light">
+      <p class="card-text text-dark">Suggest using text here to provide a short description and when it's
+        appropriate to use.
+      </p>
       <p class="card-text"><small class="text-muted">Last updated: {{ lastUpdatedFriendly }}</small></p>
-        <button @click="serveForm" type="submit" class="btn btn-primary">Serve</button>
+        <button @click="serveForm" type="submit" class="btn btn-primary">View {{ form.short_name }} Form</button>
     </div>
     </div>
 </template>

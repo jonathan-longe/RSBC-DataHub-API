@@ -5,11 +5,12 @@ export default {
 
     setNewFormToEdit (state, form) {
         console.log('inside setNewFormToEdit')
-        const prohibition_number = ulid()
+        const prohibition_number = ulid().substr(0,12)
+        const form_copy = JSON.parse(JSON.stringify(form))
         state.currently_editing_prohibition_number = prohibition_number
-        form.prohibition_number = prohibition_number;
+        form_copy.prohibition_number = prohibition_number;
         state.edited_prohibition_numbers.push(prohibition_number);
-        Vue.set(state.edited_forms, prohibition_number, form)
+        Vue.set(state.edited_forms, prohibition_number, form_copy)
         console.log("check edited_forms: " + JSON.stringify(state.edited_forms))
     },
 
@@ -24,5 +25,19 @@ export default {
     stopEditingForm (state) {
         console.log("inside stopEditingForm()")
         state.currently_editing_prohibition_number = null;
+    },
+
+    deleteEditedForm(state, prohibition_number) {
+        const indexToDelete = state.edited_prohibition_numbers.indexOf(prohibition_number)
+        Vue.delete(state.edited_prohibition_numbers, indexToDelete)
+        Vue.delete(state.edited_forms, prohibition_number)
+    },
+
+    networkBackOnline(state) {
+        state.isOnline = true;
+    },
+
+    networkOffline(state) {
+        state.isOnline = false;
     }
 }

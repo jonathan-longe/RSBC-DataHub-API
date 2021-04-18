@@ -1,14 +1,20 @@
 <template>
     <div class="card w-100 mt-3 mb-3">
-      <h4 class="card-header text-dark lightgray">Notice of 12 Hour Licence Suspension</h4>
-      <div class="card-body text-secondary text-left">
+      <div class="card-header text-white bg-primary pt-2 pb-1">
+        <h4>Notice of 12 Hour Licence Suspension</h4>
+      </div>
+      <div class="card-header mt-0 mb-0 pt-2 pb-0 bg-secondary">
+        <p class="text-right pb-0 mb-2">
+          <span class="prohibition_number">{{ prohibition_number }} </span>
+          <b-icon-question-circle></b-icon-question-circle>
+        </p>
+      </div>
+
+      <div class="card-body text-dark text-left">
        <form>
 
-          <p class="text-right mt-2 mr-2">Prohibition Number:
-            <span class="prohibition_number">{{ prohibition_number }}</span></p>
-
           <div class="card w-100">
-            <p class="card-header">Driver's Information</p>
+            <div class="card-header bg-primary text-white pt-2 pb-2">Driver's Information</div>
             <div class="card-body lightgray">
 
               <component :is="questions.drivers_number.component" :form_group="questions.address2"></component>
@@ -76,6 +82,6 @@ export default {
     background-color: lightgray;
   }
   .prohibition_number {
-    color: darkred;
+    color: red;
   }
 </style>

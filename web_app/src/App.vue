@@ -9,12 +9,12 @@
           </div>
       </div>
     </div>
-    <offline-banner v-if="false"></offline-banner>
+    <offline-banner v-if="isNetworkOffline"></offline-banner>
     <component v-if="isFormBeingEdited" :questions="getSelectedForm.questions"
                :prohibition_number="getSelectedForm.prohibition_number"
                :is="getSelectedFormComponent">
     </component>
-    <debug-component></debug-component>
+    <recent-prohibitions v-if="isRecentProhibitions && ! isFormBeingEdited"></recent-prohibitions>
     <issue-prohibitions v-if=" ! isFormBeingEdited"></issue-prohibitions>
     <prohibition-search v-if=" ! isFormBeingEdited"></prohibition-search>
     <feedback-welcome v-if=" ! isFormBeingEdited"></feedback-welcome>
@@ -31,12 +31,12 @@ import TwelveTwentyFour from "@/components/forms/TwelveTwentyFour";
 import ImmediateRoadsideProhibition from "@/components/forms/ImmediateRoadsideProhibition";
 import FeedbackWelcome from "@/components/FeedbackWelcome";
 import ProhibitionSearch from "@/components/ProhibitionSearch";
-import DebugComponent from "@/components/DebugComponent";
+import RecentProhibitions from "@/components/RecentProhibitions";
 
 export default {
   name: 'App',
   components: {
-    DebugComponent,
+    RecentProhibitions,
     ProhibitionSearch,
     FeedbackWelcome,
     OfflineBanner,
@@ -54,7 +54,35 @@ export default {
      getSelectedForm() {
        return this.$store.getters.getCurrentlyEditedForm;
      },
+     isRecentProhibitions() {
+       return this.$store.getters.isRecentProhibitions;
+     },
+     isNetworkOffline() {
+       return this.$store.getters.isNetworkOnline === false
+     }
 
+  },
+
+  methods: {
+      offline() {
+        console.log("we are now offline")
+        this.$store.commit("networkOffline")
+      },
+
+      online() {
+        console.log("we are now online")
+        this.$store.commit("networkBackOnline")
+      }
+  },
+
+  created: function () {
+      window.addEventListener('offline', this.offline);
+      window.addEventListener('online', this.online);
+  },
+
+  destroyed: function () {
+      window.removeEventListener('offline', this.offline);
+      window.removeEventListener('online', this.online);
   }
 
 }

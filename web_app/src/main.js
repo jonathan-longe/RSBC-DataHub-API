@@ -1,11 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import App from './App.vue'
-import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue'
 
-// Import Bootstrap an BootstrapVue CSS files (order is important)
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+import "@/config/custom_stylesheet.scss";
 import getters from "@/store/getters.js"
 import mutations from "@/store/mutations";
 import form_config from "@/config/forms.json";
@@ -15,13 +13,15 @@ Vue.use(Vuex)
 
 // Make BootstrapVue available throughout your project
 Vue.use(BootstrapVue)
-// Optionally install the BootstrapVue icon components plugin
-Vue.use(IconsPlugin)
+
+// Install the BootstrapVue icon components plugin
+Vue.use(BootstrapVueIcons)
 
 Vue.config.productionTip = false
 
 const store = new Vuex.Store({
   state: {
+    isOnline: null,
     bc_city_names: bc_city_names,
     edited_prohibition_numbers: Array(),
     edited_forms: Array(),

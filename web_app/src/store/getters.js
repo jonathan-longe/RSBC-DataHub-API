@@ -34,8 +34,18 @@ export default {
         return state.bc_city_names;
     },
 
+    isRecentProhibitions: state => {
+        return state.edited_prohibition_numbers.length > 0;
+    },
+
     getSpecificForm: state => prohibition_number => {
         return state.edited_forms[prohibition_number];
+    },
+
+    isNetworkOnline: state => {
+        return state.isOnline;
     }
+
+
 
 }

@@ -26,11 +26,12 @@
           "type": "text"
         },
         "dob": {
-          "component": "TextField",
+          "component": "DoBField",
           "id": "dob",
           "label": "Date of Birth",
           "placeholder": "YYYY-MM-DD",
-          "type": "text"
+          "type": "text",
+          "value": ""
         },
         "address1": {
           "component": "TextField",
@@ -47,7 +48,7 @@
           "type": "text"
         },
         "city": {
-          "component": "CityField",
+          "component": "TextField",
           "id": "city",
           "label": "City",
           "placeholder": "City",

@@ -14,6 +14,12 @@ export default {
         console.log("check edited_forms: " + JSON.stringify(state.edited_forms))
     },
 
+    editExistingForm (state, prohibition_number) {
+       console.log("inside editExistingForm: " + prohibition_number)
+       state.currently_editing_prohibition_number = prohibition_number;
+
+    },
+
     updateFormField (state, payload) {
         console.log("inside updateFormField: " + JSON.stringify(payload))
         const id = payload.id;

@@ -1,7 +1,7 @@
 <template>
   <tr v-if="prohibition">
     <td>
-      {{ prohibition.data.last_name.value }},q
+      {{ prohibition.data.last_name.value }},
       {{ prohibition.data.first_name.value }}
       ({{ prohibition.data.first_name.value }})<br />
       <span class="text-muted text-secondary">{{ prohibition_number }}</span>
@@ -10,7 +10,7 @@
     <td>Not Submitted</td>
     <td>
       <b-icon-trash @click="deleteProhibition"></b-icon-trash>&nbsp;
-      <b-icon-pen></b-icon-pen>
+      <b-icon-pen @click="editProhibition"></b-icon-pen>
     </td>
   </tr>
 </template>
@@ -26,6 +26,10 @@ export default {
     deleteProhibition() {
       console.log("inside deleteProhibition() " + this.prohibition_number)
       return this.$store.commit("deleteEditedForm", this.prohibition_number)
+    },
+    editProhibition() {
+      console.log("inside editProhibition() " + this.prohibition_number)
+      return this.$store.commit("editExistingForm", this.prohibition_number)
     }
   }
 }

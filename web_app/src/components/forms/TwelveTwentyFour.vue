@@ -3,7 +3,7 @@
       <div class="card-header text-white bg-primary pt-2 pb-1">
         <h4>Notice of 12 Hour Licence Suspension</h4>
       </div>
-      <div class="card-header mt-0 mb-0 pt-2 pb-0 bg-secondary">
+      <div class="card-header mt-0 mb-0 pt-2 pb-0 text-dark">
         <p class="text-right pb-0 mb-2">
           <span class="prohibition_number">{{ prohibition_number }} </span>
           <b-icon-question-circle></b-icon-question-circle>
@@ -39,9 +39,9 @@
           </div>
 
           <div class="form-row float-right mt-3 mb-3">
-            <button type="submit" class="btn btn-danger m-1">Delete</button>
+            <button @click="exitDoNotSave" type="submit" class="btn btn-danger m-1">Delete</button>
             <button @click="stopEditingForm" type="submit" class="btn btn-success m-1">Save, complete later</button>
-            <button type="submit" class="btn btn-success m-1">Save and Print</button>
+            <button @click="saveAndPrint" type="submit" class="btn btn-success disabled m-1">Save and Print</button>
           </div>
 
        </form>
@@ -51,29 +51,11 @@
 
 <script>
 
-import TextField from "@/components/questions/TextField";
-import ProvinceField from "@/components/questions/ProvinceField";
-import DriverLicenceNumber from "@/components/questions/DriverLicenceNumber";
-import CityField from "@/components/questions/CityField";
+import FormsCommon from "@/components/forms/FormsCommon";
 
 export default {
   name: "TwelveTwentyFour",
-  props: {
-    data: {},
-    prohibition_number: null
-  },
-  methods: {
-    stopEditingForm() {
-      this.$store.commit("stopEditingForm");
-    }
-  },
-  components: {
-    TextField,
-    ProvinceField,
-    DriverLicenceNumber,
-    CityField
-  }
-
+  mixins: [FormsCommon]
 }
 </script>
 

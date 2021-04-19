@@ -11,39 +11,12 @@
 </template>
 
 <script>
+
+import FieldCommon from "@/components/questions/FieldCommon";
+
 export default {
   name: "TextField",
-  methods: {
-    update() {
-      console.log('inside TextField update()')
-      this.$store.commit("updateFormField", this.payload)
-    }
-  },
-  data() {
-    return {
-      payload: {
-        id: this.form_group.id,
-        value: null
-      }
-    }
-  },
-  props: {
-    form_group_class: String,
-    form_group: {
-      id: String,
-      label: String,
-      placeholder: String,
-      input_type: {
-        type: Object,
-        default: function () {
-          return "text"
-        }
-      }
-    }
-  }
+  mixins: [FieldCommon]
+
 }
 </script>
-
-<style scoped>
-
-</style>

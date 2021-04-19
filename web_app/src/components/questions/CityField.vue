@@ -7,25 +7,12 @@
 
 <script>
 
-import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
-
+import VueBootstrapTypeahead from 'vue-bootstrap-typeahead';
+import FieldCommon from "@/components/questions/FieldCommon";
 
 export default {
   name: "CityField",
-  props: {
-    form_group_class: String,
-    form_group: {
-      id: String,
-      label: String,
-      placeholder: String,
-      input_type: {
-        type: Object,
-        default: function () {
-          return "text"
-        }
-      }
-    }
-  },
+  mixins: [FieldCommon],
   data() {
     return {
       query: ''
@@ -41,7 +28,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>

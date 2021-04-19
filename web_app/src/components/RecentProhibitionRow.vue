@@ -1,9 +1,9 @@
 <template>
   <tr v-if="prohibition">
     <td>
-      {{ prohibition.data.last_name }},
-      {{ prohibition.data.first_name }}
-      ({{ prohibition.data.first_name }})<br />
+      {{ prohibition.data.last_name.value }},q
+      {{ prohibition.data.first_name.value }}
+      ({{ prohibition.data.first_name.value }})<br />
       <span class="text-muted text-secondary">{{ prohibition_number }}</span>
     </td>
     <td>Not Served</td>

@@ -19,7 +19,7 @@ export default {
         const id = payload.id;
         const value = payload.value;
         const prohibition_number = state.currently_editing_prohibition_number;
-        Vue.set(state.edited_forms[prohibition_number].data, id, value);
+        Vue.set(state.edited_forms[prohibition_number].data[id], "value", value);
     },
 
     stopEditingForm (state) {

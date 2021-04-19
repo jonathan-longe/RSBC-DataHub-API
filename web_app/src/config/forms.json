@@ -5,8 +5,7 @@
       "last_updated": "2021-04-14",
       "short_name": "12-24",
       "full_name": "12 Hour Driving Prohibition",
-      "data": {},
-      "questions": {
+      "data": {
         "drivers_number": {
           "component": "DriverLicenceNumber",
           "id": "drivers_number",
@@ -73,7 +72,7 @@
       "last_updated": "2021-04-13",
       "short_name": "IRP",
       "full_name": "Immediate Roadside Prohibition",
-      "questions": {
+      "data": {
 
       }
     }

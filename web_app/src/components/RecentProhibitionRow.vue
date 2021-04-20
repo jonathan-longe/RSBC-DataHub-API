@@ -9,8 +9,10 @@
     <td>Not Served</td>
     <td>Not Submitted</td>
     <td>
-      <b-icon-trash @click="deleteProhibition"></b-icon-trash>&nbsp;
-      <b-icon-pen @click="editProhibition"></b-icon-pen>
+      <h6>
+        <b-icon-trash variant="danger" @click="deleteProhibition"></b-icon-trash>&nbsp;
+        <b-icon-pen variant="primary" @click="editProhibition"></b-icon-pen>
+      </h6>
     </td>
   </tr>
 </template>

@@ -11,7 +11,7 @@
              v-model="form_group.value">
       </div>
       <div class="form-group ml-1">
-        <p @click="icbcLookupDriver" class="btn-sm " :class="icbcLookupButtonClass">ICBC Lookup</p>
+        <span @click="icbcLookupDriver" class="btn-sm" :class="icbcLookupButtonClass">ICBC Lookup</span>
       </div>
     </div>
   </div>
@@ -33,7 +33,7 @@ export default {
       if (this.isNumberTheCorrectLength) {
         return " btn-primary text-white "
       } else {
-        return " btn-outline-secondary text-muted "
+        return " btn-secondary text-muted "
       }
     }
   },
@@ -41,7 +41,10 @@ export default {
     icbcLookupDriver() {
       // TODO - call out to ICBC instead of returning static data from demo purposes
       console.log("inside icbcLookupDriver(): ")
-      this.$store.commit("populateDriversFromICBC", this.prohibition_number)
+      if(this.isNumberTheCorrectLength) {
+        this.$store.commit("populateDriversFromICBC", this.prohibition_number)
+      }
+
     }
   }
 }

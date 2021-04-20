@@ -9,21 +9,24 @@
         "drivers_number": {
           "component": "DriverLicenceNumber",
           "id": "drivers_number",
-          "label": "Driver's Licence Number"
+          "label": "Driver's Licence Number",
+          "value": ""
         },
         "last_name": {
           "component": "TextField",
           "id": "last_name",
           "label": "Surname",
           "placeholder": "Last Name",
-          "type": "text"
+          "type": "text",
+          "value": ""
         },
         "first_name": {
           "component": "TextField",
           "id": "first_name",
           "label": "First Names",
           "placeholder": "First Names",
-          "type": "text"
+          "type": "text",
+          "value": ""
         },
         "dob": {
           "component": "DoBField",
@@ -38,33 +41,38 @@
           "id": "address1",
           "label": "Address Line 1",
           "placeholder": "Address",
-          "type": "text"
+          "type": "text",
+          "value": ""
         },
         "address2": {
           "component": "TextField",
           "id": "address2",
           "label": "Address Line 2",
           "placeholder": "Address",
-          "type": "text"
+          "type": "text",
+          "value": ""
         },
         "city": {
-          "component": "TextField",
+          "component": "CityField",
           "id": "city",
           "label": "City",
           "placeholder": "City",
-          "type": "text"
+          "type": "text",
+          "value": ""
         },
         "province": {
           "component": "ProvinceField",
           "label": "Province",
-          "id": "province"
+          "id": "province",
+          "value": ""
         },
         "postal": {
           "component": "TextField",
           "id": "postal",
           "label": "Postal Code",
           "placeholder": "Postal",
-          "type": "text"
+          "type": "text",
+          "value": ""
         }
       }
     },

@@ -3,7 +3,7 @@
     <td>
       {{ prohibition.data.last_name.value }},
       {{ prohibition.data.first_name.value }}
-      ({{ prohibition.data.first_name.value }})<br />
+      ({{ prohibition.data.drivers_number.value }})<br />
       <span class="text-muted text-secondary">{{ prohibition_number }}</span>
     </td>
     <td>Not Served</td>

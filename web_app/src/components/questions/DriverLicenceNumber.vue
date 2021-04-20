@@ -7,13 +7,11 @@
         <input type=text
              class="form-control form-control-sm"
              :id="form_group.id"
-             placeholder="Driver's Licence Number">
+             placeholder="Driver's Licence Number"
+             v-model="form_group.value">
       </div>
       <div class="form-group ml-1">
-        <button disabled class="btn-sm btn-outline-light text-muted text-dark">ICBC Lookup</button>
-      </div>
-      <div class="form-group ml-2">
-        <button class="btn-sm btn-primary">Scan</button>
+        <p @click="icbcLookupDriver" class="btn-sm " :class="icbcLookupButtonClass">ICBC Lookup</p>
       </div>
     </div>
   </div>
@@ -21,13 +19,29 @@
 </template>
 
 <script>
+
+import FieldCommon from "@/components/questions/FieldCommon";
+
 export default {
   name: "DriversLicenceNumber",
-  props: {
-    form_group_class: String,
-    form_group: {
-      id: String,
-      label: String
+  mixins: [FieldCommon],
+  computed: {
+    isNumberTheCorrectLength() {
+      return this.form_group.value.length === 7
+    },
+    icbcLookupButtonClass() {
+      if (this.isNumberTheCorrectLength) {
+        return " btn-primary text-white "
+      } else {
+        return " btn-outline-secondary text-muted "
+      }
+    }
+  },
+  methods: {
+    icbcLookupDriver() {
+      // TODO - call out to ICBC instead of returning static data from demo purposes
+      console.log("inside icbcLookupDriver(): ")
+      this.$store.commit("populateDriversFromICBC", this.prohibition_number)
     }
   }
 }

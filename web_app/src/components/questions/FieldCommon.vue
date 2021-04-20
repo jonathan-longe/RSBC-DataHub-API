@@ -1,22 +1,15 @@
 <script>
 export default {
   name: "FieldCommon",
-    methods: {
-    update() {
-      console.log('inside TextField update()')
-      this.$store.commit("updateFormField", this.payload)
-    }
-  },
-  data() {
-    return {
-      payload: {
-         id: this.form_group.id,
-         value: this.form_group.value
-      },
-      errors: {}
+  methods: {
+    update(e) {
+      const payload = {value: e.target.value, id: this.form_group.id }
+      console.log('inside TextField update(): ' + JSON.stringify(payload))
+      this.$store.commit("updateFormField", payload)
     }
   },
   props: {
+    prohibition_number: String,
     form_group_class: String,
     form_group: {
       id: String,

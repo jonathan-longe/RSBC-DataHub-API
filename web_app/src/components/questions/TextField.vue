@@ -5,8 +5,8 @@
          class="form-control form-control-sm"
          :id="form_group.id"
          :placeholder="form_group.placeholder"
-          v-model.trim="payload.value"
-          @change="update">
+          :value="form_group.value"
+          @input="update">
 </div>
 </template>
 

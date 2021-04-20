@@ -1,6 +1,6 @@
 <template>
-    <div class="card w-100 mt-3 mb-3">
-      <div class="card-header text-white bg-primary pt-2 pb-1">
+    <div class="card w-100 mt-3 mb-3 border-primary">
+      <div class="card-header text-white bg-secondary pt-2 pb-0">
         <h4>Notice of 12 Hour Licence Suspension</h4>
       </div>
       <div class="card-header mt-0 mb-0 pt-2 pb-0 text-dark">
@@ -14,10 +14,17 @@
        <form>
 
           <div class="card w-100">
-            <div class="card-header bg-primary text-white pt-2 pb-2">Driver's Information</div>
+            <div class="card-header lightgray text-dark font-weight-bold pt-2 pb-2">
+              <div class="container p-0 m-0">
+                <div class="row p-0 mt-0 mb-0">
+                  <div class="col-6 pt-1">Driver's Information</div>
+                  <div class="col-6 text-right"><button class="btn-primary btn-sm">Scan BCDL</button></div>
+                </div>
+              </div>
+            </div>
             <div class="card-body lightgray">
 
-              <component :is="data.drivers_number.component" :form_group="data.address2"></component>
+              <component :is="data.drivers_number.component" :form_group="data.drivers_number" :prohibition_number="prohibition_number"></component>
 
               <div class="form-row">
                   <component :is="data.last_name.component" :form_group="data.last_name" form_group_class="col-sm-5"></component>

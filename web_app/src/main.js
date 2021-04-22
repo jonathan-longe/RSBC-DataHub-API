@@ -6,7 +6,7 @@ import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue'
 import "@/config/custom_stylesheet.scss";
 import getters from "@/store/getters.js"
 import mutations from "@/store/mutations";
-import form_config from "@/config/forms.json";
+import form_schemas from "@/config/form_schemas.json";
 import bc_city_names from "@/config/cities.json";
 
 Vue.use(Vuex)
@@ -26,7 +26,7 @@ const store = new Vuex.Store({
     edited_prohibition_numbers: Array(),
     edited_forms: Array(),
     currently_editing_prohibition_number: null,
-    form_config: form_config
+    form_schemas: form_schemas
   },
   mutations: mutations,
   getters: getters

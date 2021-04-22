@@ -1,7 +1,9 @@
+import * as Validators from "vuelidate/lib/validators";
+
 export default {
 
     getAllAvailableForms: state => {
-      return state.form_config.forms;
+      return state.form_schemas.forms;
     },
 
     getAllEditedProhibitionNumbers: state => {
@@ -44,6 +46,30 @@ export default {
 
     isNetworkOnline: state => {
         return state.isOnline;
+    },
+
+    getValidationRules: state => form_schema => {
+        console.log("inside getValidationRules(): ", state )
+        return Object.keys(form_schema).reduce((rules, elementName) => {
+            const item = form_schema[elementName]
+            if (Object.prototype.hasOwnProperty.call(item, "validations")) {
+                const validations = {}
+                for (let rule in item.validations) {
+                    const params = item.validations[rule].params
+
+                    if (params) {
+                        validations[rule] = Validators[rule](params)
+                    } else {
+                        validations[rule] = Validators[rule]
+                    }
+                }
+                rules[elementName] = validations
+                return {data: {[elementName]: {value: validations}}}
+            } else {
+                return rules
+            }
+
+        }, {})
     }
 
 

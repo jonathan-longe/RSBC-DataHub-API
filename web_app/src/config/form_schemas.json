@@ -18,7 +18,17 @@
           "label": "Surname",
           "placeholder": "Last Name",
           "type": "text",
-          "value": ""
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            },
+            "minLength": {
+              "params": 3,
+              "message": "Please type at least 3 characters"
+            }
+          }
         },
         "first_name": {
           "component": "TextField",

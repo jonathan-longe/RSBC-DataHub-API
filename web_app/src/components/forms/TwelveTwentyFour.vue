@@ -24,23 +24,27 @@
             </div>
             <div class="card-body lightgray">
 
-              <component :is="data.drivers_number.component" :form_group="data.drivers_number" :prohibition_number="prohibition_number"></component>
+              <component :is="formData.data.drivers_number.component"
+                         :form_group="formData.data.drivers_number"
+                         :prohibition_number="prohibition_number"></component>
 
               <div class="form-row">
-                  <component :is="data.last_name.component" :form_group="data.last_name" form_group_class="col-sm-5"></component>
-                  <component :is="data.first_name.component" :form_group="data.first_name" form_group_class="col-sm-4"></component>
-                <component :is="data.dob.component" :form_group="data.dob" form_group_class="col-sm-3"></component>
+                  <component :is="formData.data.last_name.component"
+                             :form_group="formData.data.last_name"
+                             form_group_class="col-sm-5"></component>
+                  <component :is="formData.data.first_name.component" :form_group="formData.data.first_name" form_group_class="col-sm-4"></component>
+                <component :is="formData.data.dob.component" :form_group="formData.data.dob" form_group_class="col-sm-3"></component>
               </div>
               <div class="form-row ">
-                <component :is="data.address1.component" :form_group="data.address1" form_group_class="col-sm-12"></component>
+                <component :is="formData.data.address1.component" :form_group="formData.data.address1" form_group_class="col-sm-12"></component>
               </div>
               <div class="form-row ">
-                <component :is="data.address2.component" :form_group="data.address2" form_group_class="col-sm-12"></component>
+                <component :is="formData.data.address2.component" :form_group="formData.data.address2" form_group_class="col-sm-12"></component>
               </div>
               <div class="form-row">
-                <component :is="data.city.component" :form_group="data.city" form_group_class="col-sm-6"></component>
-                <component :is="data.province.component" :form_group="data.province" form_group_class="col-sm-4"></component>
-                <component :is="data.postal.component" :form_group="data.postal" form_group_class="col-sm-2"></component>
+                <component :is="formData.data.city.component" :form_group="formData.data.city" form_group_class="col-sm-6"></component>
+                <component :is="formData.data.province.component" :form_group="formData.data.province" form_group_class="col-sm-4"></component>
+                <component :is="formData.data.postal.component" :form_group="formData.data.postal" form_group_class="col-sm-2"></component>
               </div>
             </div>
           </div>
@@ -52,6 +56,8 @@
           </div>
 
        </form>
+        <div class="alert-secondary">Invalid? {{ $v.$invalid }}</div>
+
       </div>
   </div>
 </template>
@@ -62,7 +68,7 @@ import FormsCommon from "@/components/forms/FormsCommon";
 
 export default {
   name: "TwelveTwentyFour",
-  mixins: [FormsCommon]
+  mixins: [FormsCommon],
 }
 </script>
 

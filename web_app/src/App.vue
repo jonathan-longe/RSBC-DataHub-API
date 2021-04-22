@@ -12,7 +12,7 @@
     <offline-banner v-if="isNetworkOffline"></offline-banner>
     <component v-if="isFormBeingEdited" :data="getSelectedForm.data"
                :prohibition_number="getSelectedForm.prohibition_number"
-               :is="getSelectedFormComponent">
+               :is="getSelectedFormComponent" :name="getSelectedForm.short_name">
     </component>
     <recent-prohibitions v-if="isRecentProhibitions && ! isFormBeingEdited"></recent-prohibitions>
     <issue-prohibitions v-if=" ! isFormBeingEdited"></issue-prohibitions>

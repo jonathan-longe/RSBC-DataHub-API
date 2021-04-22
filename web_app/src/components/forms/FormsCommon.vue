@@ -12,6 +12,7 @@ export default {
     props: {
       data: {},
       prohibition_number: null,
+      name: null
   },
   mixins: [validationMixin],
   validations() {
@@ -30,16 +31,29 @@ export default {
         }
       })
       return formData
+    },
+    displayValidationErrors() {
+      return this.$v.$error;
     }
   },
   methods: {
-    stopEditingForm() {
-      this.$store.commit("stopEditingForm");
+    updateValidation(payload) {
+      console.log("inside updateValidation()", payload)
+      this.$v.data[payload.id].value.$touch();
+    },
+    saveDoNotPrint() {
+      this.$v.$touch()
+      if( ! this.$v.$invalid) {
+        this.$store.commit("saveDoNotPrint");
+      } else {
+        console.log("inside saveDoNotPrint() - not valid")
+      }
     },
     exitDoNotSave() {
       this.$store.commit("deleteEditedForm", this.prohibition_number)
     },
     saveAndPrint() {
+      this.$v.$touch()
       console.log("TODO")
     }
   },

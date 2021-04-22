@@ -28,7 +28,7 @@ export default {
         Vue.set(state.edited_forms[prohibition_number].data[id], "value", value);
     },
 
-    stopEditingForm (state) {
+    saveDoNotPrint (state) {
         console.log("inside stopEditingForm()")
         state.currently_editing_prohibition_number = null;
     },

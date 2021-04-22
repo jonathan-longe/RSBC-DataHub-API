@@ -50,26 +50,29 @@ export default {
 
     getValidationRules: state => form_schema => {
         console.log("inside getValidationRules(): ", state )
-        return Object.keys(form_schema).reduce((rules, elementName) => {
+        let deliverables = Object.keys(form_schema).reduce((rules, elementName) => {
             const item = form_schema[elementName]
-            if (Object.prototype.hasOwnProperty.call(item, "validations")) {
-                const validations = {}
-                for (let rule in item.validations) {
-                    const params = item.validations[rule].params
+            if (! Object.prototype.hasOwnProperty.call(item,'validations')) return rules
 
-                    if (params) {
-                        validations[rule] = Validators[rule](params)
-                    } else {
-                        validations[rule] = Validators[rule]
-                    }
+            console.log(" - item has validations:", item)
+            const validations = {}
+            for (let rule in item.validations) {
+                const params = item.validations[rule].params
+
+                if (params) {
+                    validations[rule] = Validators[rule](params)
+                } else {
+                    validations[rule] = Validators[rule]
                 }
-                rules[elementName] = validations
-                return {data: {[elementName]: {value: validations}}}
-            } else {
-                return rules
             }
-
+            if (typeof rules[elementName] === "undefined") {
+                rules[elementName] = Object();
+            }
+            rules[elementName]["value"] = validations
+            return rules
         }, {})
+        console.log("validation rules: ", {data: deliverables})
+        return {data: deliverables}
     }
 
 

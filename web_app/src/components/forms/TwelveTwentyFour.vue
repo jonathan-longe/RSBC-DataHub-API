@@ -11,7 +11,6 @@
       </div>
 
       <div class="card-body text-dark text-left">
-       <form @submit.prevent="saveDoNotPrint">
 
           <div class="card w-100">
             <div class="card-header lightgray text-dark font-weight-bold pt-2 pb-2">
@@ -82,12 +81,11 @@
           </div>
 
           <div class="form-row float-right mt-3 mb-3">
-            <button @click="exitDoNotSave" type="submit" class="btn btn-danger m-1">Delete</button>
-            <button type="submit" class="btn btn-success m-1">Save, complete later</button>
-            <button @click="saveAndPrint" type="submit" class="btn btn-success disabled m-1">Save and Print</button>
+            <button @click="exitDoNotSave" class="btn btn-danger m-1">Delete</button>
+            <button @click="saveDoNotPrint" type="submit" class="btn btn-success m-1">Save, complete later</button>
+            <button @click="saveAndPrint" class="btn btn-success m-1">Save and Print</button>
           </div>
 
-       </form>
       </div>
   </div>
 </template>

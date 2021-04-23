@@ -39,7 +39,9 @@ export default {
   methods: {
     updateValidation(payload) {
       console.log("inside updateValidation()", payload)
-      this.$v.data[payload.id].value.$touch();
+      if(payload.id in this.$v.data) {
+        this.$v.data[payload.id].value.$touch();
+      }
     },
     saveDoNotPrint() {
       this.$v.$touch()
@@ -50,6 +52,7 @@ export default {
       }
     },
     exitDoNotSave() {
+      console.log("inside deleteEditedForm()", this.prohibition_number)
       this.$store.commit("deleteEditedForm", this.prohibition_number)
     },
     saveAndPrint() {

@@ -29,14 +29,16 @@ export default {
     },
 
     saveDoNotPrint (state) {
-        console.log("inside stopEditingForm()")
+        console.log("inside mutations.js stopEditingForm()")
         state.currently_editing_prohibition_number = null;
     },
 
     deleteEditedForm(state, prohibition_number) {
+        console.log("inside mutations.js deleteEditedForm()")
         const indexToDelete = state.edited_prohibition_numbers.indexOf(prohibition_number)
         Vue.delete(state.edited_prohibition_numbers, indexToDelete)
         Vue.delete(state.edited_forms, prohibition_number)
+        state.currently_editing_prohibition_number = null;
     },
 
     networkBackOnline(state) {

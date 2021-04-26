@@ -3,7 +3,7 @@ export default {
   name: "FieldCommon",
   methods: {
     update(e) {
-      const payload = {value: e.target.value, id: this.form_group.id }
+      const payload = {id: this.form_group.id, value: e.target.value }
       console.log('inside FieldCommon update()')
       this.$store.commit("updateFormField", payload)
       this.$emit("field_updated", payload)

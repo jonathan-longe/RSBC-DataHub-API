@@ -17,7 +17,7 @@
           "id": "last_name",
           "label": "Surname",
           "placeholder": "Last Name",
-          "type": "text",
+          "input_type": "text",
           "value": "",
           "validations": {
             "required": {
@@ -35,7 +35,7 @@
           "id": "first_name",
           "label": "First Names",
           "placeholder": "First Names",
-          "type": "text",
+          "input_type": "text",
           "value": "",
           "validations": {
             "required": {
@@ -48,20 +48,43 @@
             }
           }
         },
+        "gender": {
+          "component": "GenderField",
+          "id": "gender",
+          "label": "Gender",
+          "placeholder": "",
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            }
+          }
+        },
         "dob": {
           "component": "DoBField",
           "id": "dob",
           "label": "Date of Birth",
           "placeholder": "YYYY-MM-DD",
-          "type": "text",
-          "value": ""
+          "input_type": "text",
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            },
+            "validDate": {
+              "params": null,
+              "message": "The date must be in the format 'YYYY-MM-DD'"
+            }
+          }
         },
         "address1": {
           "component": "TextField",
           "id": "address1",
           "label": "Address Line 1",
           "placeholder": "Address",
-          "type": "text",
+          "input_type": "text",
           "value": "",
           "validations": {
             "required": {
@@ -79,7 +102,7 @@
           "id": "address2",
           "label": "Address Line 2",
           "placeholder": "Address",
-          "type": "text",
+          "input_type": "text",
           "value": ""
         },
         "city": {
@@ -87,7 +110,7 @@
           "id": "city",
           "label": "City",
           "placeholder": "City",
-          "type": "text",
+          "input_type": "text",
           "value": ""
         },
         "province": {
@@ -101,7 +124,231 @@
           "id": "postal",
           "label": "Postal Code",
           "placeholder": "Postal",
-          "type": "text",
+          "input_type": "text",
+          "value": ""
+        },
+        "business_phone": {
+          "component": "PhoneField",
+          "id": "business_phone",
+          "label": "Business Phone",
+          "placeholder": "",
+          "input_type": "text",
+          "value": "",
+          "validations": {
+            "validPhoneNumber": {
+              "params": null,
+              "message": "Use this format: ###-###-####"
+            }
+          }
+        },
+        "residential_phone": {
+          "component": "PhoneField",
+          "id": "residential_phone",
+          "label": "Residential / Cell Phone",
+          "placeholder": "",
+          "input_type": "text",
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            },
+            "validPhoneNumber": {
+              "params": null,
+              "message": "Use this format: ###-###-####"
+            }
+          }
+        },
+        "location": {
+          "component": "TextField",
+          "id": "location",
+          "label": "Location of Peace Officer's request for surrender of driver's licence",
+          "placeholder": "address or intersection",
+          "input_type": "text",
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            }
+          }
+        },
+        "current_time": {
+          "component": "DateTime",
+          "id": "current_time",
+          "label": "Time of Offence",
+          "placeholder": "YYYY-MM-DD",
+          "input_type": "text",
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            },
+            "validDateTime": {
+              "params": null,
+              "message": "The date must be in the format 'YYYY-MM-DD HH:MM'"
+            },
+            "currentTime": {
+              "params": null,
+              "message": "Cannot be greater than 2 hours from the current time"
+            }
+          }
+        },
+        "officer_name": {
+          "component": "TextField",
+          "id": "officer_name",
+          "label": "Peace Officer Name",
+          "placeholder": "",
+          "input_type": "text",
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            }
+          }
+        },
+        "badge_number": {
+          "component": "TextField",
+          "id": "badge_number",
+          "label": "Badge Number",
+          "placeholder": "",
+          "input_type": "text",
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            }
+          }
+        },
+        "agency": {
+          "component": "TextField",
+          "id": "agency",
+          "label": "Agency Name",
+          "placeholder": "",
+          "input_type": "text",
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            }
+          }
+        },
+        "ga_number": {
+          "component": "TextField",
+          "id": "ga_number",
+          "label": "GA File Number",
+          "placeholder": "",
+          "input_type": "text",
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            }
+          }
+        },
+        "vehicle_year": {
+          "component": "TextField",
+          "id": "vehicle_year",
+          "label": "Vehicle Year",
+          "placeholder": "2015",
+          "input_type": "number",
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            }
+          }
+        },
+        "vehicle_make": {
+          "component": "TextField",
+          "id": "vehicle_make",
+          "label": "Vehicle Make",
+          "placeholder": "Toyota",
+          "input_type": "text",
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            }
+          }
+        },
+        "vehicle_model": {
+          "component": "TextField",
+          "id": "vehicle_model",
+          "label": "Vehicle Model",
+          "placeholder": "Rav4",
+          "input_type": "text",
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            }
+          }
+        },
+        "vehicle_color": {
+          "component": "TextField",
+          "id": "vehicle_color",
+          "label": "Vehicle Colour",
+          "placeholder": "White",
+          "input_type": "text",
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            }
+          }
+        },
+        "location_of_keys": {
+          "component": "TextField",
+          "id": "location_of_keys",
+          "label": "Location of keys",
+          "placeholder": "Who has the vehicle keys?",
+          "input_type": "text",
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            }
+          }
+        },
+        "location_of_vehicle": {
+          "component": "TextField",
+          "id": "location_of_vehicle",
+          "label": "Location of vehicle",
+          "placeholder": "Where is the vehicle located?",
+          "input_type": "text",
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            }
+          }
+        },
+        "vehicle_released_to": {
+          "component": "TextField",
+          "id": "vehicle_released_to",
+          "label": "Vehicle released to",
+          "placeholder": "Who was the vehicle released to?",
+          "input_type": "text",
+          "value": ""
+        },
+        "vehicle_released_datetime": {
+          "component": "DateTime",
+          "id": "vehicle_released_datetime",
+          "label": "Datetime released",
+          "placeholder": "Who was the vehicle released to?",
+          "input_type": "text",
           "value": ""
         }
       }

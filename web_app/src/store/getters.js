@@ -1,5 +1,3 @@
-import * as Validators from "vuelidate/lib/validators";
-
 export default {
 
     getAllAvailableForms: state => {
@@ -46,35 +44,6 @@ export default {
 
     isNetworkOnline: state => {
         return state.isOnline;
-    },
-
-    getValidationRules: state => form_schema => {
-        console.log("inside getValidationRules(): ", state )
-        let deliverables = Object.keys(form_schema).reduce((rules, elementName) => {
-            const item = form_schema[elementName]
-            if (! Object.prototype.hasOwnProperty.call(item,'validations')) return rules
-
-            console.log(" - item has validations:", item)
-            const validations = {}
-            for (let rule in item.validations) {
-                const params = item.validations[rule].params
-
-                if (params) {
-                    validations[rule] = Validators[rule](params)
-                } else {
-                    validations[rule] = Validators[rule]
-                }
-            }
-            if (typeof rules[elementName] === "undefined") {
-                rules[elementName] = Object();
-            }
-            rules[elementName]["value"] = validations
-            return rules
-        }, {})
-        console.log("validation rules: ", {data: deliverables})
-        return {data: deliverables}
     }
-
-
 
 }

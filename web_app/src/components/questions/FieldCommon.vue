@@ -61,6 +61,9 @@ export default {
     bcCityNames() {
       return this.$store.getters.getArrayOfBCCityNames.city_names;
     },
+    commonCarColors() {
+      return this.$store.getters.getArrayOfCommonCarColors.car_colors;
+    }
   }
 }
 </script>

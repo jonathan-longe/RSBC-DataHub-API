@@ -8,6 +8,7 @@ import getters from "@/store/getters.js"
 import mutations from "@/store/mutations";
 import form_schemas from "@/config/form_schemas.json";
 import bc_city_names from "@/config/cities.json";
+import car_colors from "@/config/car_colors.json"
 
 Vue.use(Vuex)
 
@@ -23,6 +24,7 @@ const store = new Vuex.Store({
   state: {
     isOnline: null,
     bc_city_names: bc_city_names,
+    car_colors: car_colors,
     edited_prohibition_numbers: Array(),
     edited_forms: Array(),
     currently_editing_prohibition_number: null,

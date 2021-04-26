@@ -34,6 +34,10 @@ export default {
         return state.bc_city_names;
     },
 
+    getArrayOfCommonCarColors: state => {
+        return state.car_colors;
+    },
+
     isRecentProhibitions: state => {
         return state.edited_prohibition_numbers.length > 0;
     },

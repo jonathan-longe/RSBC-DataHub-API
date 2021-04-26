@@ -295,12 +295,11 @@
           }
         },
         "vehicle_color": {
-          "component": "TextField",
+          "component": "TypeAheadField",
           "id": "vehicle_color",
           "label": "Vehicle Colour",
-          "placeholder": "White",
-          "input_type": "text",
           "value": "",
+          "suggestions": "commonCarColors",
           "validations": {
             "required": {
               "params": null,

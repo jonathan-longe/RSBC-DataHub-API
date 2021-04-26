@@ -177,7 +177,7 @@
         "current_time": {
           "component": "DateTime",
           "id": "current_time",
-          "label": "Time of Offence",
+          "label": "Date & time of offence",
           "placeholder": "YYYY-MM-DD",
           "input_type": "text",
           "value": "",

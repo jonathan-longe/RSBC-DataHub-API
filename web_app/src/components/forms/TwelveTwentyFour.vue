@@ -110,22 +110,18 @@
                            @field_updated="updateValidation"
                            form_group_class="col-sm-12"></component>
               </div>
-              <div class="container">
-                <div class="row">
-                  <div class="col-8">
-                    YOUR LICENCE TO DRIVE IS HEREBY SUSPENDED UNDER SECTION 90.3 OF THE MOTOR
-                    VEHICLE ACT FOR A PERIOD OF 12 HOURS COMMENCING AT:
-                  </div>
-                  <div class="col-4">
-                    <component :is="formData.data.current_time.component"
-                           :form_group="formData.data.current_time"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                           form_group_class="col-sm-12"></component>
-                  </div>
-                </div>
+              <div class="div">
+                  YOUR LICENCE TO DRIVE IS HEREBY SUSPENDED UNDER SECTION 90.3 OF THE MOTOR
+                  VEHICLE ACT FOR A PERIOD OF 12 HOURS COMMENCING AT:
               </div>
-              <div class="form-row ">
+              <div class="form-row">
+                <component :is="formData.data.current_time.component"
+                       :form_group="formData.data.current_time"
+                       :display_validation_errors="displayValidationErrors"
+                       @field_updated="updateValidation"
+                       form_group_class="col-sm-12"></component>
+              </div>
+              <div class="form-row">
                 <component :is="formData.data.officer_name.component"
                            :form_group="formData.data.officer_name"
                            :display_validation_errors="displayValidationErrors"
@@ -137,7 +133,7 @@
                            @field_updated="updateValidation"
                            form_group_class="col-sm-4"></component>
               </div>
-              <div class="form-row ">
+              <div class="form-row">
                 <component :is="formData.data.agency.component"
                            :form_group="formData.data.agency"
                            :display_validation_errors="displayValidationErrors"
@@ -205,12 +201,12 @@
                            :form_group="formData.data.vehicle_released_to"
                            :display_validation_errors="displayValidationErrors"
                            @field_updated="updateValidation"
-                           form_group_class="col-sm-8"></component>
+                           form_group_class="col-sm-7"></component>
                 <component :is="formData.data.vehicle_released_datetime.component"
                            :form_group="formData.data.vehicle_released_datetime"
                            :display_validation_errors="displayValidationErrors"
                            @field_updated="updateValidation"
-                           form_group_class="col-sm-4"></component>
+                           form_group_class="col-sm-5"></component>
               </div>
             </div>
           </div>

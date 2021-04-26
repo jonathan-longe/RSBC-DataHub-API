@@ -11,7 +11,7 @@
              v-model="form_group.value">
       </div>
       <div class="form-group ml-1">
-        <span @click="icbcLookupDriver" class="btn-sm" :class="icbcLookupButtonClass">ICBC Lookup</span>
+        <button @click="icbcLookupDriver" class="btn-sm" :class="icbcLookupButtonClass">ICBC Lookup</button>
       </div>
     </div>
   </div>

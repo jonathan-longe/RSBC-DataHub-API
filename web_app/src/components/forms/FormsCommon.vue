@@ -2,7 +2,7 @@
 import TextField from "@/components/questions/TextField";
 import ProvinceField from "@/components/questions/ProvinceField";
 import DriverLicenceNumber from "@/components/questions/DriverLicenceNumber";
-import CityField from "@/components/questions/CityField";
+import TypeAheadField from "@/components/questions/TypeAheadField";
 import GenderField from "@/components/questions/GenderField";
 import PhoneField from "@/components/questions/PhoneField";
 import DateTime from "@/components/questions/DateTime";
@@ -92,7 +92,7 @@ export default {
     TextField,
     ProvinceField,
     DriverLicenceNumber,
-    CityField,
+    TypeAheadField,
     GenderField,
     PhoneField,
     DateTime

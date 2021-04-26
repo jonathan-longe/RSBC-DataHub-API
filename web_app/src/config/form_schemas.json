@@ -106,12 +106,13 @@
           "value": ""
         },
         "city": {
-          "component": "CityField",
+          "component": "TypeAheadField",
           "id": "city",
           "label": "City",
           "placeholder": "City",
           "input_type": "text",
-          "value": ""
+          "value": "",
+          "suggestions": "bcCityNames"
         },
         "province": {
           "component": "ProvinceField",

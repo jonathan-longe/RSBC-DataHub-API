@@ -57,7 +57,10 @@ export default {
 
       })
       return messageString;
-    }
+    },
+    bcCityNames() {
+      return this.$store.getters.getArrayOfBCCityNames.city_names;
+    },
   }
 }
 </script>

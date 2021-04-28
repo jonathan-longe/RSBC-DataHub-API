@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import App from './App.vue'
-import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue'
+import { BootstrapVue, BootstrapVueIcons, ModalPlugin } from 'bootstrap-vue'
 
 import "@/config/custom_stylesheet.scss";
 import getters from "@/store/getters.js"
@@ -12,10 +12,9 @@ import car_colors from "@/config/car_colors.json"
 
 Vue.use(Vuex)
 
-// Make BootstrapVue available throughout your project
+// Make BootstrapVue components throughout your project
 Vue.use(BootstrapVue)
-
-// Install the BootstrapVue icon components plugin
+Vue.use(ModalPlugin)
 Vue.use(BootstrapVueIcons)
 
 Vue.config.productionTip = false

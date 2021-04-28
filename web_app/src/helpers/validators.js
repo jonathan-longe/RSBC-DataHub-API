@@ -10,6 +10,7 @@ const validDate = (value) => moment(value, "YYYY-MM-DD", true).isValid()
 const validDateTime = (value) => moment(value, "YYYY-MM-DD HH:MM", true).isValid()
 
 const validPhoneNumber = (value) => {
+    if(value.length === 0) return true;
     const regexMatch = value.match("^[0-9]{3}-[0-9]{3}-[0-9]{4}$");
     if (Array.isArray(regexMatch)) {
         return regexMatch[0] === value;

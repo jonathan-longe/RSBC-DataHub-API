@@ -7,8 +7,9 @@ import GenderField from "@/components/questions/GenderField";
 import PhoneField from "@/components/questions/PhoneField";
 import DateTime from "@/components/questions/DateTime";
 import DoBField from "@/components/questions/DoBField";
+import PrintConfirmationModal from "@/components/PrintConfirmationModal";
 import { validationMixin } from 'vuelidate'
-import * as Validators from "@/validators/validators";
+import * as Validators from "@/helpers/validators";
 
 
 export default {
@@ -17,6 +18,11 @@ export default {
       data: {},
       prohibition_number: null,
       name: null
+  },
+  data() {
+    return {
+      xml_file: null
+    }
   },
   mixins: [validationMixin],
   validations() {
@@ -83,8 +89,17 @@ export default {
       this.$store.commit("deleteEditedForm", this.prohibition_number)
     },
     saveAndPrint() {
-      this.$v.$touch()
-      console.log("TODO")
+      // this.$v.$touch()
+      this.xml_file = this.$store.getters.generateXFDF(this.prohibition_number);
+      const downloadElement = document.createElement("a");
+      const href = window.URL.createObjectURL(this.xml_file); //create the download url
+      downloadElement.href = href;
+      downloadElement.download =  this.$store.getters.getXdfFileName(this.prohibition_number);
+      document.body.appendChild(downloadElement);
+      downloadElement.click(); //click to file
+      document.body.removeChild(downloadElement); //remove the element
+      window.URL.revokeObjectURL(href); //release the object  of the blob
+      this.$bvModal.show('printConfirmationModal')
     }
   },
   components: {
@@ -95,7 +110,8 @@ export default {
     TypeAheadField,
     GenderField,
     PhoneField,
-    DateTime
+    DateTime,
+    PrintConfirmationModal
   }
 }
 </script>

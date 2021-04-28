@@ -215,9 +215,10 @@
         <div class="form-row float-right mt-3 mb-3">
           <button @click="exitDoNotSave" class="btn btn-danger m-1">Delete</button>
           <button @click="saveDoNotPrint" type="submit" class="btn btn-success m-1">Save, complete later</button>
-          <button @click="saveAndPrint" class="btn btn-success m-1">Save and Print</button>
+          <button @click="saveAndPrint" class="btn btn-success m-1">Save and Download PDF</button>
         </div>
       </div>
+      <print-confirmation-modal id="printConfirmationModal" title="printConfirmation"></print-confirmation-modal>
   </div>
 </template>
 

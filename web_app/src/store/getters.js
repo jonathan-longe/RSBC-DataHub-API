@@ -1,3 +1,5 @@
+import xfdf from "@/helpers/xfdf_generator"
+
 export default {
 
     getAllAvailableForms: state => {
@@ -48,6 +50,35 @@ export default {
 
     isNetworkOnline: state => {
         return state.isOnline;
+    },
+
+    generateXFDF: state => prohibition_number => {
+        const key_value_pairs = getKeyValuePairs(state, prohibition_number);
+        const pdf_template_name = state.edited_forms[prohibition_number].pdf_template;
+        const xml_file = xfdf.generate(pdf_template_name, key_value_pairs)
+        console.log('xfdf_xml', xml_file)
+        return xml_file
+    },
+
+    getXdfFileName: state => prohibition_number => {
+        const file_extension = ".xdp"
+        const last_name = state.edited_forms[prohibition_number].data.last_name.value;
+        const file_name = last_name + "_" + prohibition_number + file_extension;
+        console.log('filename', file_name)
+        return file_name
     }
 
+}
+
+function getKeyValuePairs (state, prohibition_number) {
+    const form_data = state.edited_forms[prohibition_number].data;
+    console.log("getFormKeyValuePairs()", form_data)
+    let key_value_pairs = Array();
+    for( const object in form_data) {
+        if("value" in form_data[object]) {
+            key_value_pairs[object] = form_data[object].value
+        }
+    }
+    console.log('getKeyValuePairs()', key_value_pairs)
+    return key_value_pairs;
 }

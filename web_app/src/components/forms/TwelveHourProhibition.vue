@@ -22,12 +22,14 @@
               </div>
             </div>
             <div class="card-body lightgray">
-
-              <component :is="formData.data.drivers_number.component"
-                         :form_group="formData.data.drivers_number"
-                         :display_validation_errors="displayValidationErrors"
-                         @field_updated="updateValidation"
-                         :prohibition_number="prohibition_number"></component>
+              <p class="small pb-0 mb-2">BC Driver's Licence Number</p>
+              <div class="form-row">
+                <component :is="formData.data.drivers_number.component"
+                           :form_group="formData.data.drivers_number"
+                           :display_validation_errors="displayValidationErrors"
+                           @field_updated="updateValidation"
+                           :prohibition_number="prohibition_number"></component>
+              </div>
 
               <div class="form-row">
                   <component :is="formData.data.last_name.component"
@@ -39,17 +41,12 @@
                              :form_group="formData.data.first_name"
                              :display_validation_errors="displayValidationErrors"
                              @field_updated="updateValidation"
-                             form_group_class="col-sm-3"></component>
-                  <component :is="formData.data.gender.component"
-                             :form_group="formData.data.gender"
-                             :display_validation_errors="displayValidationErrors"
-                             @field_updated="updateValidation"
-                             form_group_class="col-sm-2"></component>
+                             form_group_class="col-sm-4"></component>
                   <component :is="formData.data.dob.component"
                              :form_group="formData.data.dob"
                              :display_validation_errors="displayValidationErrors"
                              @field_updated="updateValidation"
-                             form_group_class="col-sm-3"></component>
+                             form_group_class="col-sm-4"></component>
               </div>
               <div class="form-row ">
                 <component :is="formData.data.address1.component"
@@ -83,71 +80,30 @@
                            form_group_class="col-sm-2"></component>
               </div>
               <div class="form-row">
-                <component :is="formData.data.business_phone.component"
-                           :form_group="formData.data.business_phone"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                           form_group_class="col-sm-6"></component>
+
                 <component :is="formData.data.residential_phone.component"
                            :form_group="formData.data.residential_phone"
                            :display_validation_errors="displayValidationErrors"
                            @field_updated="updateValidation"
                            form_group_class="col-sm-6"></component>
               </div>
+              <div class="form-row">
+                <component :is="formData.data.puj_code.component"
+                           :form_group="formData.data.puj_code"
+                           :display_validation_errors="displayValidationErrors"
+                           @field_updated="updateValidation"
+                           form_group_class="col-sm-5"></component>
+                <component :is="formData.data.nsc_number.component"
+                           :form_group="formData.data.nsc_number"
+                           :display_validation_errors="displayValidationErrors"
+                           @field_updated="updateValidation"
+                           form_group_class="col-sm-7"></component>
+              </div>
             </div>
           </div>
 
       </div>
-      <div class="card-body text-dark text-left">
 
-          <div class="card w-100">
-            <div class="card-body lightgray">
-
-              <div class="form-row ">
-                <component :is="formData.data.location.component"
-                           :form_group="formData.data.location"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                           form_group_class="col-sm-12"></component>
-              </div>
-              <div class="div">
-                  YOUR LICENCE TO DRIVE IS HEREBY SUSPENDED UNDER SECTION 90.3 OF THE MOTOR
-                  VEHICLE ACT FOR A PERIOD OF 12 HOURS COMMENCING AT:
-              </div>
-              <div class="form-row">
-                <component :is="formData.data.current_time.component"
-                       :form_group="formData.data.current_time"
-                       :display_validation_errors="displayValidationErrors"
-                       @field_updated="updateValidation"
-                       form_group_class="col-sm-12"></component>
-              </div>
-              <div class="form-row">
-                <component :is="formData.data.officer_name.component"
-                           :form_group="formData.data.officer_name"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                           form_group_class="col-sm-8"></component>
-                <component :is="formData.data.badge_number.component"
-                           :form_group="formData.data.badge_number"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                           form_group_class="col-sm-4"></component>
-              </div>
-              <div class="form-row">
-                <component :is="formData.data.agency.component"
-                           :form_group="formData.data.agency"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                           form_group_class="col-sm-8"></component>
-                <component :is="formData.data.ga_number.component"
-                           :form_group="formData.data.ga_number"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                           form_group_class="col-sm-4"></component>
-              </div>
-            </div>
-          </div>
-        </div>
         <div class="card-body text-dark text-left">
 
           <div class="card w-100">
@@ -159,7 +115,24 @@
               </div>
             </div>
             <div class="card-body lightgray">
+              <div>
+              <p class="small pb-0 mb-2">Licence Plate Jurisdiction and Plate Number</p>
+                <div class="form-row">
+                  <component :is="formData.data.plate_province.component"
+                           :form_group="formData.data.plate_province"
+                           :display_validation_errors="displayValidationErrors"
+                           @field_updated="updateValidation"
+                             form_group_class="col-sm-2"
+                           :prohibition_number="prohibition_number"></component>
 
+                  <component :is="formData.data.plate_number.component"
+                           :form_group="formData.data.plate_number"
+                           :display_validation_errors="displayValidationErrors"
+                           @field_updated="updateValidation"
+                             form_group_class="col-sm-3"
+                           :prohibition_number="prohibition_number"></component>
+                </div>
+              </div>
               <div class="form-row">
                   <component :is="formData.data.vehicle_year.component"
                              :form_group="formData.data.vehicle_year"
@@ -210,12 +183,53 @@
               </div>
             </div>
           </div>
+        </div>
+        <div class="card-body text-dark text-left">
 
+          <div class="card w-100">
+            <div class="card-header lightgray text-dark font-weight-bold pt-2 pb-2">
+              <div class="container p-0 m-0">
+                <div class="row p-0 mt-0 mb-0">
+                  <div class="col-6 pt-1">Prohibition</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-body lightgray">
+
+              <div class="form-row ">
+                <component :is="formData.data.location.component"
+                           :form_group="formData.data.location"
+                           :display_validation_errors="displayValidationErrors"
+                           @field_updated="updateValidation"
+                           form_group_class="col-sm-7"></component>
+                <component :is="formData.data.location_city.component"
+                           :form_group="formData.data.location_city"
+                           :display_validation_errors="displayValidationErrors"
+                           @field_updated="updateValidation"
+                           form_group_class="col-sm-5"></component>
+              </div>
+              <div class="form-row">
+
+                <component :is="formData.data.ga_number.component"
+                           :form_group="formData.data.ga_number"
+                           :display_validation_errors="displayValidationErrors"
+                           @field_updated="updateValidation"
+                           form_group_class="col-sm-12"></component>
+              </div>
+              <div class="form-row">
+                <component :is="formData.data.current_time.component"
+                       :form_group="formData.data.current_time"
+                       :display_validation_errors="displayValidationErrors"
+                       @field_updated="updateValidation"
+                       form_group_class="col-sm-12"></component>
+              </div>
+            </div>
+          </div>
 
         <div class="form-row float-right mt-3 mb-3">
           <button @click="exitDoNotSave" class="btn btn-danger m-1">Delete</button>
           <button @click="saveDoNotPrint" type="submit" class="btn btn-success m-1">Save, complete later</button>
-          <button @click="saveAndPrint" class="btn btn-success m-1">Save and Download PDF</button>
+          <button @click="saveAndPrint" class="btn btn-success m-1">Save and Serve</button>
         </div>
       </div>
       <print-confirmation-modal id="printConfirmationModal" title="printConfirmation"></print-confirmation-modal>

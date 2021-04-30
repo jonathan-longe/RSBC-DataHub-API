@@ -4,9 +4,7 @@
         {{ form.full_name }}
       </div>
       <div class="card-body bg-light">
-      <p class="card-text text-dark">Suggest using text here to provide a short description and when it's
-        appropriate to use.
-      </p>
+      <p class="card-text text-dark">{{ form.description }}</p>
       <p class="card-text"><small class="text-muted">Last updated: {{ lastUpdatedFriendly }}</small></p>
         <button @click="serveForm" type="submit" class="btn btn-primary">View {{ form.short_name }} Form</button>
     </div>

@@ -66,6 +66,11 @@ export default {
         const file_name = last_name + "_" + prohibition_number + file_extension;
         console.log('filename', file_name)
         return file_name
+    },
+
+    getDataValue: state => prohibition_number => {
+        // TODO - replace this temporary hack
+        return state.edited_forms[prohibition_number].data;
     }
 
 }

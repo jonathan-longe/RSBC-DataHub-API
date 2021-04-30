@@ -1,9 +1,10 @@
 {
   "forms": {
-    "12-24": {
-      "component": "TwelveTwentyFour",
+    "12Hour": {
+      "component": "TwelveHourProhibition",
       "last_updated": "2021-04-14",
-      "short_name": "12-24",
+      "description": "Notice of 12-hour Licence Suspension Motor Vehicle Act (Section 90.3) MV2906 (12/2009)",
+      "short_name": "12Hour",
       "full_name": "12 Hour Driving Prohibition",
       "pdf_template": "MV2906_12h_Suspension_2021-04-27.pdf",
       "data": {
@@ -113,13 +114,26 @@
           "placeholder": "City",
           "input_type": "text",
           "value": "",
-          "suggestions": "bcCityNames"
+          "suggestions": "bcCityNames",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            }
+          }
         },
         "province": {
-          "component": "ProvinceField",
+          "component": "TextField",
           "label": "Province",
           "id": "province",
-          "value": ""
+          "disabled": true,
+          "value": "BC",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            }
+          }
         },
         "postal": {
           "component": "TextField",
@@ -161,11 +175,41 @@
             }
           }
         },
+        "puj_code": {
+          "component": "TextField",
+          "id": "puj_code",
+          "label": "PUJ Code",
+          "placeholder": "",
+          "input_type": "text",
+          "value": ""
+        },
+        "nsc_number": {
+          "component": "TextField",
+          "id": "nsc_number",
+          "label": "NSC Number",
+          "placeholder": "",
+          "input_type": "text",
+          "value": ""
+        },
         "location": {
           "component": "TextField",
           "id": "location",
           "label": "Location of Peace Officer's request for surrender of driver's licence",
           "placeholder": "address or intersection",
+          "input_type": "text",
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            }
+          }
+        },
+        "location_city": {
+          "component": "TextField",
+          "id": "location_city",
+          "label": "Location city ",
+          "placeholder": "city",
           "input_type": "text",
           "value": "",
           "validations": {
@@ -201,7 +245,7 @@
           "component": "TextField",
           "id": "officer_name",
           "label": "Peace Officer Name",
-          "placeholder": "",
+          "placeholder": "[from login]",
           "input_type": "text",
           "value": "",
           "validations": {
@@ -215,7 +259,7 @@
           "component": "TextField",
           "id": "badge_number",
           "label": "Badge Number",
-          "placeholder": "",
+          "placeholder": "[from login]",
           "input_type": "text",
           "value": "",
           "validations": {
@@ -229,7 +273,7 @@
           "component": "TextField",
           "id": "agency",
           "label": "Agency Name",
-          "placeholder": "",
+          "placeholder": "[from login]",
           "input_type": "text",
           "value": "",
           "validations": {
@@ -252,6 +296,19 @@
               "message": "This field is required"
             }
           }
+        },
+        "plate_province": {
+          "component": "ProvinceField",
+          "id": "plate_province",
+          "label": "Licence Plate Number",
+          "value": "",
+          "show_label": false
+        },
+        "plate_number": {
+          "component": "PlateNumber",
+          "id": "plate_number",
+          "label": "Licence Plate Number",
+          "value": ""
         },
         "vehicle_year": {
           "component": "TextField",
@@ -354,13 +411,469 @@
         }
       }
     },
-    "irp": {
-      "component": "ImmediateRoadsideProhibition",
-      "last_updated": "2021-04-13",
-      "short_name": "IRP",
-      "full_name": "Immediate Roadside Prohibition",
+    "24Hour": {
+      "component": "TwentyFourHourProhibition",
+      "last_updated": "2021-04-28",
+      "short_name": "24Hour",
+      "full_name": "24-Hour Prohibition",
+      "description": "Notice of 24-hour Prohibition and Report to ICBC MV2634 (10/2018)",
+      "pdf_template": "MV2906_12h_Suspension_2021-04-27.pdf",
       "data": {
-
+        "licence_province": {
+          "component": "ProvinceField",
+          "id": "licence_province",
+          "label": "Driver's Licence Number",
+          "show_label": false,
+          "value": ""
+        },
+        "licence_number": {
+          "component": "DriverLicenceNumber",
+          "id": "licence_number",
+          "label": "Driver's Licence Number",
+          "show_label": false,
+          "value": ""
+        },
+        "last_name": {
+          "component": "TextField",
+          "id": "last_name",
+          "label": "Surname",
+          "placeholder": "Last Name",
+          "input_type": "text",
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            },
+            "minLength": {
+              "params": 3,
+              "message": "Please type at least 3 characters"
+            }
+          }
+        },
+        "first_name": {
+          "component": "TextField",
+          "id": "first_name",
+          "label": "First Names",
+          "placeholder": "First Names",
+          "input_type": "text",
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            },
+            "minLength": {
+              "params": 3,
+              "message": "Please type at least 3 characters"
+            }
+          }
+        },
+        "gender": {
+          "component": "GenderField",
+          "id": "gender",
+          "label": "Gender",
+          "placeholder": "",
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            }
+          }
+        },
+        "dob": {
+          "component": "DoBField",
+          "id": "dob",
+          "label": "Date of Birth",
+          "placeholder": "YYYY-MM-DD",
+          "input_type": "text",
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            },
+            "validDate": {
+              "params": null,
+              "message": "The date must be in the format 'YYYY-MM-DD'"
+            }
+          }
+        },
+        "address1": {
+          "component": "TextField",
+          "id": "address1",
+          "label": "Address Line 1",
+          "placeholder": "Address",
+          "input_type": "text",
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            },
+            "minLength": {
+              "params": 3,
+              "message": "Please type at least 3 characters"
+            }
+          }
+        },
+        "address2": {
+          "component": "TextField",
+          "id": "address2",
+          "label": "Address Line 2",
+          "placeholder": "Address",
+          "input_type": "text",
+          "value": ""
+        },
+        "city": {
+          "component": "TypeAheadField",
+          "id": "city",
+          "label": "City",
+          "placeholder": "City",
+          "input_type": "text",
+          "value": "",
+          "suggestions": "bcCityNames",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            }
+          }
+        },
+        "province": {
+          "component": "ProvinceField",
+          "label": "Province",
+          "id": "province",
+          "show_label": true,
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            }
+          }
+        },
+        "postal": {
+          "component": "TextField",
+          "id": "postal",
+          "label": "Postal Code",
+          "placeholder": "Postal",
+          "input_type": "text",
+          "value": ""
+        },
+        "licence_surrendered": {
+          "component": "RadioField",
+          "id": "licence_surrendered",
+          "type": "radio",
+          "label": "Licenced Surrendered?",
+          "options": ["Yes", "No", "Unlicenced"],
+          "value": ""
+        },
+        "plate_province": {
+          "component": "ProvinceField",
+          "id": "plate_province",
+          "label": "Licence Plate Number",
+          "value": "",
+          "show_label": false
+        },
+        "plate_number": {
+          "component": "PlateNumber",
+          "id": "plate_number",
+          "label": "Licence Plate Number",
+          "value": ""
+        },
+        "plate_year": {
+          "component": "TextField",
+          "id": "plate_year",
+          "label": "Licence Plate Year",
+          "placeholder": "",
+          "input_type": "number",
+          "value": ""
+        },
+        "plate_val_tag": {
+          "component": "TextField",
+          "id": "plate_val_tag",
+          "label": "Val Tag number",
+          "placeholder": "",
+          "input_type": "number",
+          "value": ""
+        },
+        "registration_number": {
+          "component": "TextField",
+          "id": "registration_number",
+          "label": "Registration number",
+          "placeholder": "",
+          "input_type": "number",
+          "value": ""
+        },
+        "vehicle_year": {
+          "component": "TextField",
+          "id": "vehicle_year",
+          "label": "Vehicle Year",
+          "placeholder": "2015",
+          "input_type": "number",
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            }
+          }
+        },
+        "vehicle_make": {
+          "component": "TextField",
+          "id": "vehicle_make",
+          "label": "Vehicle Make",
+          "placeholder": "Toyota",
+          "input_type": "text",
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            }
+          }
+        },
+        "vehicle_model": {
+          "component": "TextField",
+          "id": "vehicle_model",
+          "label": "Vehicle Model",
+          "placeholder": "Rav4",
+          "input_type": "text",
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            }
+          }
+        },
+        "vehicle_color": {
+          "component": "TypeAheadField",
+          "id": "vehicle_color",
+          "label": "Vehicle Colour",
+          "value": "",
+          "suggestions": "commonCarColors",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            }
+          }
+        },
+        "puj_code": {
+          "component": "TextField",
+          "id": "puj_code",
+          "label": "PUJ Code",
+          "placeholder": "",
+          "input_type": "text",
+          "value": ""
+        },
+        "nsc_number": {
+          "component": "TextField",
+          "id": "nsc_number",
+          "label": "NSC Number",
+          "placeholder": "",
+          "input_type": "text",
+          "value": ""
+        },
+        "owners_last_name": {
+          "component": "TextField",
+          "id": "owners_last_name",
+          "label": "Owner's Last Name",
+          "placeholder": "",
+          "input_type": "text",
+          "value": ""
+        },
+        "owners_first_name": {
+          "component": "TextField",
+          "id": "owners_first_name",
+          "label": "Owner's First Name",
+          "placeholder": "",
+          "input_type": "text",
+          "value": ""
+        },
+        "owners_address": {
+          "component": "TextField",
+          "id": "owners_address",
+          "label": "Owner's Address",
+          "placeholder": "",
+          "input_type": "text",
+          "value": ""
+        },
+        "owners_city": {
+          "component": "TypeAheadField",
+          "id": "owners_city",
+          "label": "Owner's City",
+          "placeholder": "City",
+          "input_type": "text",
+          "value": "",
+          "suggestions": "bcCityNames",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            }
+          }
+        },
+        "owners_province": {
+          "component": "ProvinceField",
+          "id": "owners_province",
+          "label": "Owner's Province",
+          "placeholder": "",
+          "show_label": true,
+          "value": "",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            }
+          }
+        },
+        "owners_postal": {
+          "component": "TextField",
+          "id": "owners_postal",
+          "label": "Owner's Postal",
+          "placeholder": "",
+          "input_type": "text",
+          "value": ""
+        },
+        "owners_phone": {
+          "component": "TextField",
+          "id": "owners_phone",
+          "label": "Owner's Phone",
+          "placeholder": "",
+          "input_type": "text",
+          "value": ""
+        },
+        "vehicle_impounded": {
+          "component": "RadioField",
+          "id": "vehicle_impounded",
+          "type": "radio",
+          "label": "Vehicle Impounded?",
+          "options": ["Yes", "No"],
+          "value": ""
+        },
+        "reason_for_not_impounding": {
+          "component": "RadioField",
+          "id": "reason_for_not_impounding",
+          "type": "radio",
+          "label": "Reason for not impounding?",
+          "options": ["Released to passenger", "Left at roadside"],
+          "value": ""
+        },
+        "vehicle_released_to": {
+          "component": "TextField",
+          "id": "vehicle_released_to",
+          "label": "Vehicle Released To",
+          "placeholder": "",
+          "input_type": "text",
+          "value": ""
+        },
+        "datetime_released": {
+          "component": "DateTime",
+          "id": "datetime_released",
+          "label": "Date and Time Released",
+          "placeholder": "",
+          "input_type": "text",
+          "value": ""
+        },
+        "location_of_keys": {
+          "component": "RadioField",
+          "id": "location_of_keys",
+          "type": "radio",
+          "label": "Location of Keys?",
+          "options": ["With vehicle", "Driver"],
+          "value": ""
+        },
+        "impound_lot_operator": {
+          "component": "TypeAheadField",
+          "id": "impound_lot_operator",
+          "label": "Impound Lot Operator",
+          "value": "",
+          "suggestions": "impoundLotOperators"
+        },
+        "ilo_address": {
+          "component": "TextField",
+          "id": "ilo_address",
+          "label": "Address",
+          "value": "",
+          "suggestions": "impoundLotOperators"
+        },
+        "ilo_city": {
+          "component": "TextField",
+          "id": "ilo_city",
+          "label": "City",
+          "value": "",
+          "suggestions": "impoundLotOperators"
+        },
+        "ilo_phone": {
+          "component": "TextField",
+          "id": "ilo_phone",
+          "label": "Phone",
+          "value": "",
+          "suggestions": "impoundLotOperators"
+        },
+        "operating_grounds": {
+          "component": "RadioField",
+          "id": "operating_grounds",
+          "type": "radio",
+          "label": "The driver was operating a motor vehicle or had care and control of a motor vehicle for the purposes of MVA section 215(1) based on:",
+          "options": ["Witnessed by officer", "Admission by driver", "Independent witness", "Other"],
+          "value": ""
+        },
+        "offence_address": {
+          "component": "TextField",
+          "id": "offence_address",
+          "label": "Address of Offence",
+          "placeholder": "address",
+          "value": ""
+        },
+        "offence_city": {
+          "component": "TypeAheadField",
+          "id": "offence_city",
+          "label": "City",
+          "placeholder": "City",
+          "input_type": "text",
+          "value": "",
+          "suggestions": "bcCityNames",
+          "validations": {
+            "required": {
+              "params": null,
+              "message": "This field is required"
+            }
+          }
+        },
+        "prescribed_device": {
+          "component": "RadioField",
+          "id": "prescribed_device",
+          "type": "radio",
+          "label": "Was a prescribed Approved Screening Device (ASD), Approved Instrument, or prescribed physical coordination test used to form reasonable grounds to believe the driver's ability to drive a motor vehicle was affected by alcohol or a drug?",
+          "options": ["Yes", "No", "Requested by driver", "Refused"],
+          "value": ""
+        },
+        "prohibition_type": {
+          "component": "RadioField",
+          "id": "prohibition_type",
+          "type": "radio",
+          "label": "Type of Prohibition",
+          "options": ["Alcohol 215(2)", "Drugs 215(3)"],
+          "value": ""
+        },
+        "file_number": {
+          "component": "TextField",
+          "id": "file_number",
+          "label": "File Number",
+          "placeholder": "",
+          "value": ""
+        },
+        "prohibition_start_time": {
+          "component": "DateTime",
+          "id": "prohibition_start_time",
+          "label": "Prohibition Start Time",
+          "value": ""
+        }
       }
     }
   }

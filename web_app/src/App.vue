@@ -27,7 +27,8 @@
 
 import OfflineBanner from "./components/OffineBanner.vue"
 import IssueProhibitions from "@/components/IssueProhibitions";
-import TwelveTwentyFour from "@/components/forms/TwelveTwentyFour";
+import TwelveHourProhibition from "@/components/forms/TwelveHourProhibition";
+import TwentyFourHourProhibition from "@/components/forms/TwentyFourHourProhibition";
 import ImmediateRoadsideProhibition from "@/components/forms/ImmediateRoadsideProhibition";
 import FeedbackWelcome from "@/components/FeedbackWelcome";
 import ProhibitionSearch from "@/components/ProhibitionSearch";
@@ -41,7 +42,8 @@ export default {
     FeedbackWelcome,
     OfflineBanner,
     IssueProhibitions,
-    TwelveTwentyFour,
+    TwelveHourProhibition,
+    TwentyFourHourProhibition,
     ImmediateRoadsideProhibition
   },
   computed: {

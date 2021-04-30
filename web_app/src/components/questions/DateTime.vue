@@ -8,12 +8,12 @@
   <div class="col-xs-10">
     <div class="input-group mb-3">
       <input :type="form_group.input_type"
-         class="form-control form-control-sm" :class="errorClass"
+         class="form-control form-control-sm" :class="errorClass" :disabled="grey_out"
          :id="form_group.id"
          :value="form_group.value"
          @input="update">
       <div class="input-group-append">
-        <button @click="setCurrentDateTime" class="btn btn-sm btn-secondary" type="button">Now</button>
+        <button @click="setCurrentDateTime" class="btn btn-sm btn-secondary" :disabled="grey_out" type="button">Now</button>
       </div>
     </div>
 

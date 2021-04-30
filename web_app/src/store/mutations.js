@@ -21,7 +21,7 @@ export default {
     },
 
     updateFormField (state, payload) {
-        console.log("inside updateFormField: " + JSON.stringify(payload))
+        console.log("inside mutations.js updateFormField(): " + JSON.stringify(payload))
         const id = payload.id;
         const value = payload.value;
         const prohibition_number = state.currently_editing_prohibition_number;

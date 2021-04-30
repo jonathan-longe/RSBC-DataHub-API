@@ -4,13 +4,14 @@ export default {
   methods: {
     update(e) {
       const payload = {id: this.form_group.id, value: e.target.value }
-      console.log('inside FieldCommon update()')
+      console.log('inside FieldCommon update()', this.form_group.id, e.target.value)
       this.$store.commit("updateFormField", payload)
       this.$emit("field_updated", payload)
     }
   },
   props: {
     prohibition_number: String,
+    disabled: Boolean,
     form_group_class: String,
     display_validation_errors: Boolean,
     form_group: {
@@ -27,6 +28,9 @@ export default {
     }
   },
   computed: {
+    grey_out() {
+      return this.disabled || "disabled" in this.form_group;
+    },
     fieldHasErrors() {
       if("errors" in this.form_group && this.display_validation_errors === true) {
         return this.form_group.errors.$error;
@@ -63,6 +67,9 @@ export default {
     },
     commonCarColors() {
       return this.$store.getters.getArrayOfCommonCarColors.car_colors;
+    },
+    impoundLotOperators() {
+      return ["Busters Towing - Vancouver", "Roadway Towing - Delta"]
     }
   }
 }

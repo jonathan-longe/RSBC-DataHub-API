@@ -1,6 +1,6 @@
 <template>
 <div class="form-group" :class="form_group_class">
-  <label class="small" :for="form_group.id">{{ form_group.label }}</label>
+  <label v-if="form_group.show_label" class="small" :for="form_group.id">{{ form_group.label }}</label>
   <select class="form-control form-control-sm" :id="form_group.id">
     <option>BC</option>
     <option>AB</option>
@@ -16,7 +16,8 @@ export default {
     form_group_class: String,
     form_group: {
       id: String,
-      label: String
+      label: String,
+      show_label: Boolean
     }
   }
 }

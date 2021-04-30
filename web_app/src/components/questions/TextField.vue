@@ -7,6 +7,7 @@
          :class="errorClass"
          class="form-control form-control-sm"
          :id="form_group.id"
+         :disabled="grey_out"
          :placeholder="form_group.placeholder"
           :value="form_group.value"
           @input="update">
@@ -20,7 +21,8 @@ import FieldCommon from "@/components/questions/FieldCommon";
 
 export default {
   name: "TextField",
-  mixins: [FieldCommon]
+  mixins: [FieldCommon],
+
 
 }
 </script>

@@ -2,12 +2,11 @@
   <div>
     <b-modal id="printConfirmationModal" hide-footer hide-header>
       <div class="d-block text-center">
-        <h3>Was the prohibition printed and served to the driver?</h3>
+        <h3>The Prohibition has been sent to RoadSafety</h3>
         <p class="text-muted small">
           The completed prohibition has been downloaded to your computer.
           Open the prohibition with Adobe Acrobat, print it and serve it
-          to the citizen.  If you need to make corrections, return to the
-          editing form.
+          to the citizen.
         </p>
       </div>
       <b-button class="mt-3" variant="success" block @click="saveAndSubmit">

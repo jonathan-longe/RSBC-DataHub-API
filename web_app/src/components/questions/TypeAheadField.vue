@@ -1,7 +1,7 @@
 <template>
 <div class="form-group" :class="form_group_class">
   <label class="small" :for="form_group.id">{{ form_group.label }}</label>
-  <vue-typeahead-bootstrap @input="typeAheadUpdate" v-model="form_group.value" size="sm" :data=dynamic_suggestions />
+  <vue-typeahead-bootstrap @input="typeAheadUpdate" v-model="form_group.value" size="sm" :data=dynamic_suggestions :disabled="grey_out" />
 </div>
 </template>
 

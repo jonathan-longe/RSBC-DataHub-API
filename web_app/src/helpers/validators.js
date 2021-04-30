@@ -7,7 +7,7 @@ import moment from 'moment';
 
 const validDate = (value) => moment(value, "YYYY-MM-DD", true).isValid()
 
-const validDateTime = (value) => moment(value, "YYYY-MM-DD HH:MM", true).isValid()
+const validDateTime = (value) => moment(value, "YYYY-MM-DD HH:mm", true).isValid()
 
 const validPhoneNumber = (value) => {
     if(value.length === 0) return true;

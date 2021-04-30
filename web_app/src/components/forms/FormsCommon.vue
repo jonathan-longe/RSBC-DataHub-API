@@ -7,7 +7,9 @@ import GenderField from "@/components/questions/GenderField";
 import PhoneField from "@/components/questions/PhoneField";
 import DateTime from "@/components/questions/DateTime";
 import DoBField from "@/components/questions/DoBField";
+import PlateNumber from "@/components/questions/PlateNumber";
 import PrintConfirmationModal from "@/components/PrintConfirmationModal";
+import RadioField from "@/components/questions/RadioField";
 import { validationMixin } from 'vuelidate'
 import * as Validators from "@/helpers/validators";
 
@@ -111,7 +113,9 @@ export default {
     GenderField,
     PhoneField,
     DateTime,
-    PrintConfirmationModal
+    PrintConfirmationModal,
+    PlateNumber,
+    RadioField
   }
 }
 </script>

@@ -422,15 +422,13 @@
         "licence_province": {
           "component": "ProvinceField",
           "id": "licence_province",
-          "label": "Driver's Licence Number",
-          "show_label": false,
+          "label": "Driver's Province",
           "value": ""
         },
         "licence_number": {
           "component": "DriverLicenceNumber",
           "id": "licence_number",
-          "label": "Driver's Licence Number",
-          "show_label": false,
+          "label": "Licence Number",
           "value": ""
         },
         "last_name": {
@@ -466,19 +464,6 @@
             "minLength": {
               "params": 3,
               "message": "Please type at least 3 characters"
-            }
-          }
-        },
-        "gender": {
-          "component": "GenderField",
-          "id": "gender",
-          "label": "Gender",
-          "placeholder": "",
-          "value": "",
-          "validations": {
-            "required": {
-              "params": null,
-              "message": "This field is required"
             }
           }
         },
@@ -760,7 +745,7 @@
           "id": "reason_for_not_impounding",
           "type": "radio",
           "label": "Reason for not impounding?",
-          "options": ["Released to passenger", "Left at roadside"],
+          "options": ["Released to other driver", "Left at roadside", "Collision"],
           "value": ""
         },
         "vehicle_released_to": {
@@ -798,15 +783,13 @@
           "component": "TextField",
           "id": "ilo_address",
           "label": "Address",
-          "value": "",
-          "suggestions": "impoundLotOperators"
+          "value": ""
         },
         "ilo_city": {
           "component": "TextField",
           "id": "ilo_city",
           "label": "City",
-          "value": "",
-          "suggestions": "impoundLotOperators"
+          "value": ""
         },
         "ilo_phone": {
           "component": "TextField",
@@ -861,6 +844,30 @@
           "options": ["Alcohol 215(2)", "Drugs 215(3)"],
           "value": ""
         },
+        "test_administered": {
+          "component": "RadioField",
+          "id": "test_administered",
+          "type": "radio",
+          "label": "Test Administered",
+          "options": ["Alco-Sensor FST", "Approved Instrument (specify)", "Prescribed Physical Coordination Test"],
+          "value": ""
+        },
+        "result_alcohol": {
+          "component": "RadioField",
+          "id": "result_alcohol",
+          "type": "radio",
+          "label": "Result",
+          "options": ["51-99 mg%", "Over 99 mg%", "BAC"],
+          "value": ""
+        },
+        "result_drug": {
+          "component": "RadioField",
+          "id": "result_drug",
+          "type": "radio",
+          "label": "Result",
+          "options": ["Ability to drive affected by a drug"],
+          "value": ""
+        },
         "file_number": {
           "component": "TextField",
           "id": "file_number",
@@ -871,7 +878,7 @@
         "prohibition_start_time": {
           "component": "DateTime",
           "id": "prohibition_start_time",
-          "label": "Prohibition Start Time",
+          "label": "Date and Time When Formed Grounds",
           "value": ""
         }
       }

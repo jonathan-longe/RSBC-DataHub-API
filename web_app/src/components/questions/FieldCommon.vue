@@ -12,6 +12,10 @@ export default {
   props: {
     prohibition_number: String,
     disabled: Boolean,
+    visible: {
+      type: Boolean,
+      default: true
+    },
     form_group_class: String,
     display_validation_errors: Boolean,
     form_group: {

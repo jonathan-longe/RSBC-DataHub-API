@@ -1,5 +1,5 @@
 <template>
-<div class="form-group" :class="form_group_class">
+<div v-if="visible" class="form-group" :class="form_group_class">
   <label class="small" :for="form_group.id">
     {{ form_group.label }}
     <span v-if="isFieldRequired" class="text-danger">*</span>

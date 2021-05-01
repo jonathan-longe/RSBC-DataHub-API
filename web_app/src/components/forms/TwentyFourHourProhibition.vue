@@ -23,7 +23,7 @@
             </div>
             <div class="card-body lightgray">
 
-              <p class="small pb-0 mb-2">Licence Plate Jurisdiction and Plate Number</p>
+              <p class="small pb-0 mb-2">Driver's Jurisdiction and Licence Number</p>
                 <div class="form-row">
                   <component :is="formData.data.licence_province.component"
                            :form_group="formData.data.licence_province"
@@ -48,12 +48,7 @@
                              :form_group="formData.data.first_name"
                              :display_validation_errors="displayValidationErrors"
                              @field_updated="updateValidation"
-                             form_group_class="col-sm-3"></component>
-                  <component :is="formData.data.gender.component"
-                             :form_group="formData.data.gender"
-                             :display_validation_errors="displayValidationErrors"
-                             @field_updated="updateValidation"
-                             form_group_class="col-sm-2"></component>
+                             form_group_class="col-sm-5"></component>
                   <component :is="formData.data.dob.component"
                              :form_group="formData.data.dob"
                              :display_validation_errors="displayValidationErrors"
@@ -272,7 +267,7 @@
                   <component :is="formData.data.reason_for_not_impounding.component"
                            :form_group="formData.data.reason_for_not_impounding"
                            :display_validation_errors="displayValidationErrors"
-                           :disabled="showVehicleImpounded"
+                           :visible=" ! showVehicleImpounded"
                            @field_updated="updateValidation"
                            form_group_class="col-sm-6"></component>
               </div>
@@ -280,12 +275,12 @@
                   <component :is="formData.data.vehicle_released_to.component"
                            :form_group="formData.data.vehicle_released_to"
                            :display_validation_errors="displayValidationErrors"
-                           :disabled="showVehicleImpounded"
+                           :visible="showVehicleImpounded"
                            @field_updated="updateValidation"
                            form_group_class="col-sm-6"></component>
                   <component :is="formData.data.datetime_released.component"
                            :form_group="formData.data.datetime_released"
-                           :disabled="showVehicleImpounded"
+                           :visible="showVehicleImpounded"
                            :display_validation_errors="displayValidationErrors"
                            @field_updated="updateValidation"
                            form_group_class="col-sm-6"></component>
@@ -293,7 +288,7 @@
               <div class="form-row">
                   <component :is="formData.data.impound_lot_operator.component"
                            :form_group="formData.data.impound_lot_operator"
-                           :disabled="showVehicleImpounded"
+                           :visible="showVehicleImpounded"
                            :display_validation_errors="displayValidationErrors"
                            @field_updated="updateValidation"
                            form_group_class="col-sm-12"></component>
@@ -301,19 +296,19 @@
               <div class="form-row">
                   <component :is="formData.data.ilo_address.component"
                            :form_group="formData.data.ilo_address"
-                           :disabled="showVehicleImpounded"
+                           :visible="showVehicleImpounded"
                            :display_validation_errors="displayValidationErrors"
                            @field_updated="updateValidation"
                            form_group_class="col-sm-4"></component>
                   <component :is="formData.data.ilo_city.component"
                            :form_group="formData.data.ilo_city"
-                           :disabled="showVehicleImpounded"
+                           :visible="showVehicleImpounded"
                            :display_validation_errors="displayValidationErrors"
                            @field_updated="updateValidation"
                            form_group_class="col-sm-4"></component>
                   <component :is="formData.data.ilo_phone.component"
                            :form_group="formData.data.ilo_phone"
-                           :disabled="showVehicleImpounded"
+                           :visible="showVehicleImpounded"
                            :display_validation_errors="displayValidationErrors"
                            @field_updated="updateValidation"
                            form_group_class="col-sm-4"></component>
@@ -332,44 +327,66 @@
               </div>
             </div>
             <div class="card-body lightgray">
-            <div class="form-row">
+              <div class="form-row">
                   <component :is="formData.data.offence_address.component"
                            :form_group="formData.data.offence_address"
                            :display_validation_errors="displayValidationErrors"
                            @field_updated="updateValidation"
-                           form_group_class="col-sm-6"></component>
+                           form_group_class="col-sm-7"></component>
                   <component :is="formData.data.offence_city.component"
                            :form_group="formData.data.offence_city"
                            :display_validation_errors="displayValidationErrors"
                            @field_updated="updateValidation"
-                           form_group_class="col-sm-6"></component>
+                           form_group_class="col-sm-5"></component>
               </div>
-              <div class="form-row ">
-                  <component :is="formData.data.operating_grounds.component"
+              <div class="form-row">
+                <component :is="formData.data.operating_grounds.component"
                            :form_group="formData.data.operating_grounds"
                            :display_validation_errors="displayValidationErrors"
                            @field_updated="updateValidation"
-                           form_group_class="col-sm-5"></component>
-                <component :is="formData.data.prescribed_device.component"
-                           :form_group="formData.data.prescribed_device"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                           form_group_class="col-sm-7"></component>
+                           form_group_class="col-sm-12"></component>
               </div>
-
               <div class="form-row">
-                  <component :is="formData.data.prohibition_type.component"
+                <component :is="formData.data.prohibition_type.component"
                            :form_group="formData.data.prohibition_type"
                            :display_validation_errors="displayValidationErrors"
                            @field_updated="updateValidation"
-                           form_group_class="col-sm-5"></component>
+                           form_group_class="col-sm-12"></component>
+              </div>
+
+              <div class="form-row ">
+                  <component :is="formData.data.prescribed_device.component"
+                           :form_group="formData.data.prescribed_device"
+                           :display_validation_errors="displayValidationErrors"
+                           @field_updated="updateValidation"
+                           form_group_class="col-sm-12"></component>
+
+              </div>
+              <div class="form-row">
+                <component :is="formData.data.test_administered.component"
+                           :form_group="formData.data.test_administered"
+                           :display_validation_errors="displayValidationErrors"
+                           @field_updated="updateValidation"
+                           form_group_class="col-sm-12"></component>
+              </div>
+              <div class="form-row">
+                <component :is="formData.data.result_alcohol.component"
+                           :form_group="formData.data.result_alcohol"
+                           :display_validation_errors="displayValidationErrors"
+                           @field_updated="updateValidation"
+                           form_group_class="col-sm-6"></component>
+                <component :is="formData.data.result_drug.component"
+                           :form_group="formData.data.result_drug"
+                           :display_validation_errors="displayValidationErrors"
+                           @field_updated="updateValidation"
+                           form_group_class="col-sm-6"></component>
+              </div>
+              <div class="form-row">
                   <component :is="formData.data.file_number.component"
                            :form_group="formData.data.file_number"
                            :display_validation_errors="displayValidationErrors"
                            @field_updated="updateValidation"
                            form_group_class="col-sm-7"></component>
-              </div>
-              <div class="form-row">
                   <component :is="formData.data.prohibition_start_time.component"
                            :form_group="formData.data.prohibition_start_time"
                            :display_validation_errors="displayValidationErrors"
@@ -399,7 +416,7 @@ export default {
   mixins: [FormsCommon],
   computed: {
     showVehicleImpounded() {
-      return this.$store.getters.getDataValue(this.prohibition_number).vehicle_impounded.value === "No";
+      return this.$store.getters.getDataValue(this.prohibition_number).vehicle_impounded.value !== "No";
     }
   }
 }

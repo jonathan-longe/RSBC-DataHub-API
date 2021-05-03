@@ -21,6 +21,7 @@ Vue.config.productionTip = false
 
 const store = new Vuex.Store({
   state: {
+    provinces: ["BC", "AB"],
     isOnline: null,
     bc_city_names: bc_city_names,
     car_colors: car_colors,

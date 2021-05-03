@@ -1,19 +1,18 @@
 <template>
-<div class="form-group" :class="form_group_class">
-  <label class="small" :for="form_group.id">
+<div class="form-group" :class="fg_class">
+  <label v-if="show_label" class="small" :for="id">
     Date of Birth
-    <span v-if="isFieldRequired" class="text-danger">*</span>
-    <span class="text-muted" v-if="isValidDate"> ({{ yearsOld}} yrs)</span>
+    <span v-if="true" class="text-danger">*</span>
+    <span class="text-muted" v-if="isValidDate"> ({{ yearsOld }} yrs)</span>
   </label>
   <div class="col-xs-10">
-    <input :type="form_group.input_type"
+    <input type="text"
+         :id="id"
          class="form-control form-control-sm"
-           :class="errorClass"
-         :id="form_group.id"
-         :placeholder="form_group.placeholder"
-          :value="form_group.value"
+         placeholder="YYYY-MM-DD"
+         :value="getAttributeValue(id)"
           @input="update">
-    <div v-if="fieldHasErrors" class="small text-danger">{{ errorMessage }}</div>
+    <div v-if="false" class="small text-danger">[some error message]</div>
   </div>
 
 </div>
@@ -22,6 +21,7 @@
 <script>
 
 import FieldCommon from "@/components/questions/FieldCommon";
+import { mapGetters } from 'vuex';
 import moment from 'moment';
 
 export default {
@@ -29,14 +29,18 @@ export default {
   mixins: [FieldCommon],
 
   computed: {
+    ...mapGetters(["getAttributeValue"]),
     yearsOld() {
-      return moment().diff(moment(this.form_group.value), 'years')
+      return moment().diff(moment(this.getAttributeValue(this.id)), 'years')
     },
     yearsAgo() {
-      return moment(this.form_group.value).fromNow()
+      return moment(this.getAttributeValue(this.id)).fromNow()
     },
     isValidDate() {
-      return moment(this.form_group.value).isValid()
+      return moment(this.getAttributeValue(this.id)).isValid()
+    },
+    debug2() {
+      return this.getAttributeValue(this.id);
     }
   }
 

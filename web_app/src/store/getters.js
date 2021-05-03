@@ -14,6 +14,10 @@ export default {
         return state.currently_editing_prohibition_number !== null
     },
 
+    getCurrentlyEditedProhibitionNumber: state => {
+        return state.currently_editing_prohibition_number;
+    },
+
     getSelectedFormComponent: state => {
         const prohibition_number = state.currently_editing_prohibition_number;
         if (prohibition_number == null) {
@@ -32,12 +36,21 @@ export default {
         return state.edited_forms[prohibition_number];
     },
 
+    getAttributeValue: state => id => {
+        const root = state.edited_forms[state.currently_editing_prohibition_number].data;
+        if (!(id in root)) {
+            console.log("id not in root")
+            return '';
+        }
+        return root[id].value;
+    },
+
     getArrayOfBCCityNames: state => {
-        return state.bc_city_names;
+        return state.bc_city_names.city_names;
     },
 
     getArrayOfCommonCarColors: state => {
-        return state.car_colors;
+        return state.car_colors.car_colors;
     },
 
     isRecentProhibitions: state => {
@@ -68,9 +81,12 @@ export default {
         return file_name
     },
 
-    getDataValue: state => prohibition_number => {
-        // TODO - replace this temporary hack
-        return state.edited_forms[prohibition_number].data;
+    getDataValue: state => (prohibition_number, attribute) => {
+        return state.edited_forms[prohibition_number].data[attribute];
+    },
+
+    getArrayOfProvinces: state => {
+        return state.provinces;
     }
 
 }

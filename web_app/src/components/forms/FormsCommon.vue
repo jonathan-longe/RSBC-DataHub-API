@@ -1,4 +1,8 @@
 <script>
+import FormContainer from "@/components/forms/FormContainer";
+import FormCard from "@/components/forms/FormCard";
+import FormRow from "@/components/forms/FormRow";
+import FormSubmissionButtons from "@/components/forms/FormSubmissionButtons";
 import TextField from "@/components/questions/TextField";
 import ProvinceField from "@/components/questions/ProvinceField";
 import DriverLicenceNumber from "@/components/questions/DriverLicenceNumber";
@@ -6,12 +10,13 @@ import TypeAheadField from "@/components/questions/TypeAheadField";
 import GenderField from "@/components/questions/GenderField";
 import PhoneField from "@/components/questions/PhoneField";
 import DateTime from "@/components/questions/DateTime";
-import DoBField from "@/components/questions/DoBField";
+import DobField from "@/components/questions/DoBField";
 import PlateNumber from "@/components/questions/PlateNumber";
 import PrintConfirmationModal from "@/components/PrintConfirmationModal";
 import RadioField from "@/components/questions/RadioField";
 import { validationMixin } from 'vuelidate'
 import * as Validators from "@/helpers/validators";
+import { mapGetters } from "vuex";
 
 
 export default {
@@ -55,6 +60,7 @@ export default {
   },
 
   computed: {
+    ...mapGetters(["getArrayOfBCCityNames"]),
     formData() {
       // Merge validation errors and form data into a single
       // object that can be passed to field components.
@@ -90,22 +96,14 @@ export default {
       console.log("inside deleteEditedForm()", this.prohibition_number)
       this.$store.commit("deleteEditedForm", this.prohibition_number)
     },
-    saveAndPrint() {
-      // this.$v.$touch()
-      this.xml_file = this.$store.getters.generateXFDF(this.prohibition_number);
-      const downloadElement = document.createElement("a");
-      const href = window.URL.createObjectURL(this.xml_file); //create the download url
-      downloadElement.href = href;
-      downloadElement.download =  this.$store.getters.getXdfFileName(this.prohibition_number);
-      document.body.appendChild(downloadElement);
-      downloadElement.click(); //click to file
-      document.body.removeChild(downloadElement); //remove the element
-      window.URL.revokeObjectURL(href); //release the object  of the blob
-      this.$bvModal.show('printConfirmationModal')
-    }
+
   },
   components: {
-    DoBField,
+    FormContainer,
+    FormCard,
+    FormRow,
+    FormSubmissionButtons,
+    DobField,
     TextField,
     ProvinceField,
     DriverLicenceNumber,

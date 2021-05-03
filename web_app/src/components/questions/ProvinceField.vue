@@ -1,24 +1,27 @@
 <template>
-<div class="form-group" :class="form_group_class">
-  <label v-if="form_group.show_label" class="small" :for="form_group.id">{{ form_group.label }}</label>
-  <select class="form-control form-control-sm" :id="form_group.id">
-    <option>BC</option>
-    <option>AB</option>
+<div class="form-group" :class="fg_class">
+  <label v-if="show_label" class="small" :for="id"><slot></slot></label>
+  <select class="form-control form-control-sm" :id="id" @input="update">
+    <option v-for="(province, key) in getArrayOfProvinces"
+            :key="key"
+            :selected="province === getAttributeValue(id)">
+      {{ province }}
+    </option>
   </select>
 
 </div>
 </template>
 
 <script>
+
+import FieldCommon from "@/components/questions/FieldCommon";
+import { mapGetters } from 'vuex';
+
 export default {
   name: "ProvinceField",
-  props: {
-    form_group_class: String,
-    form_group: {
-      id: String,
-      label: String,
-      show_label: Boolean
-    }
+  mixins: [FieldCommon],
+  computed: {
+    ...mapGetters(["getArrayOfProvinces"])
   }
 }
 </script>

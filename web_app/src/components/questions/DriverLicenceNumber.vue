@@ -1,29 +1,34 @@
 <template>
-      <div class="form-group">
-        <label class="sr-only small" :for="form_group.id">Driver's Licence Number</label>
-        <div class="input-group mb-3">
-          <input type=text
-               class="form-control form-control-sm"
-               :id="form_group.id"
-               placeholder="Driver's Licence Number"
-               v-model="form_group.value">
-          <div class="input-group-append">
-            <button @click="icbcLookupDriver" class="btn-sm" :class="icbcLookupButtonClass">ICBC Lookup</button>
-          </div>
-          </div>
+  <div class="form-group">
+    <label v-if="show_label" class="small" :for="id"><slot></slot></label>
+    <div class="input-group mb-3">
+      <input type=text
+           class="form-control form-control-sm"
+           :id="id"
+           placeholder="Driver's Licence Number"
+           :value="getAttributeValue(id)"
+           @input="update">
+      <div class="input-group-append">
+        <button @click="populateDriversFromICBC(getCurrentlyEditedProhibitionNumber)"
+                class="btn-sm" :class="icbcLookupButtonClass" >ICBC Lookup
+        </button>
       </div>
+    </div>
+  </div>
 </template>
 
 <script>
 
 import FieldCommon from "@/components/questions/FieldCommon";
+import {mapGetters, mapMutations} from 'vuex';
 
 export default {
   name: "DriversLicenceNumber",
   mixins: [FieldCommon],
   computed: {
+    ...mapGetters(['getCurrentlyEditedProhibitionNumber', "getAttributeValue"]),
     isNumberTheCorrectLength() {
-      return this.form_group.value.length === 7
+      return this.getAttributeValue(this.id) === 7
     },
     icbcLookupButtonClass() {
       if (this.isNumberTheCorrectLength) {
@@ -34,14 +39,7 @@ export default {
     }
   },
   methods: {
-    icbcLookupDriver() {
-      // TODO - call out to ICBC instead of returning static data from demo purposes
-      console.log("inside icbcLookupDriver(): ")
-      if(this.isNumberTheCorrectLength) {
-        this.$store.commit("populateDriversFromICBC", this.prohibition_number)
-      }
-
-    }
+    ...mapMutations(['populateDriversFromICBC']),
   }
 }
 </script>

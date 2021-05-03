@@ -1,17 +1,16 @@
 <template>
-<div v-if="visible" class="form-group" :class="form_group_class">
-  <label class="small" :for="form_group.id">{{ form_group.label }}
-    <span v-if="isFieldRequired" class="text-danger">*</span>
+<div v-if="visible" class="form-group" :class="fg_class">
+  <label v-if="show_label" class="small" :for="id"><slot></slot>
+    <span class="text-danger">*</span>
   </label>
-  <input :type="form_group.input_type"
-         :class="errorClass"
+  <input :type="input_type"
          class="form-control form-control-sm"
-         :id="form_group.id"
-         :disabled="grey_out"
-         :placeholder="form_group.placeholder"
-          :value="form_group.value"
+         :id="id"
+         :disabled="disabled"
+         :placeholder="placeholder"
+         :value="getAttributeValue(id)"
           @input="update">
-  <div v-if="fieldHasErrors" class="small text-danger">{{ errorMessage }}</div>
+  <div v-if="false" class="small text-danger">[add error here]</div>
 </div>
 </template>
 
@@ -22,7 +21,12 @@ import FieldCommon from "@/components/questions/FieldCommon";
 export default {
   name: "TextField",
   mixins: [FieldCommon],
-
-
+  props: {
+    placeholder: String,
+    input_type: {
+        type: String,
+        default: "text"
+      }
+  }
 }
 </script>

@@ -1,20 +1,21 @@
 <template>
 <div class="form-group" :class="fg_class">
-  <label v-if="show_label" class="small" :for="id">
-    Date of Birth
-    <span v-if="true" class="text-danger">*</span>
-    <span class="text-muted" v-if="isValidDate"> ({{ yearsOld }} yrs)</span>
-  </label>
-  <div class="col-xs-10">
-    <input type="text"
-         :id="id"
-         class="form-control form-control-sm"
-         placeholder="YYYY-MM-DD"
-         :value="getAttributeValue(id)"
-          @input="update">
-    <div v-if="false" class="small text-danger">[some error message]</div>
-  </div>
-
+  <validation-provider :rules="rules" :name="id" v-slot="{ errors, required }">
+    <label v-if="show_label" class="small" :for="id">
+      Date of Birth
+      <span v-if="required" class="text-danger">*</span>
+      <span class="text-muted" v-if="isValidDate"> ({{ yearsOld }} yrs)</span>
+    </label>
+    <div class="col-xs-10">
+      <input type="text"
+           :id="id"
+           class="form-control form-control-sm"
+           placeholder="YYYY-MM-DD"
+           :value="getAttributeValue(id)"
+            @input="update">
+      <div class="small text-danger">{{ errors[0] }}</div>
+    </div>
+  </validation-provider>
 </div>
 </template>
 
@@ -39,9 +40,6 @@ export default {
     isValidDate() {
       return moment(this.getAttributeValue(this.id)).isValid()
     },
-    debug2() {
-      return this.getAttributeValue(this.id);
-    }
   }
 
 }

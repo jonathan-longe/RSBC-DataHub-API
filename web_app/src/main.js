@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import App from './App.vue'
 import { BootstrapVue, BootstrapVueIcons, ModalPlugin } from 'bootstrap-vue'
+import { ValidationProvider } from 'vee-validate';
 
 import "@/config/custom_stylesheet.scss";
 import getters from "@/store/getters.js"
@@ -16,6 +17,10 @@ Vue.use(Vuex)
 Vue.use(BootstrapVue)
 Vue.use(ModalPlugin)
 Vue.use(BootstrapVueIcons)
+
+// import custom validation rules
+require("@/helpers/validators");
+Vue.component('ValidationProvider', ValidationProvider);
 
 Vue.config.productionTip = false
 

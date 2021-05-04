@@ -1,22 +1,25 @@
 <template>
 <div v-if="visible" class="form-group" :class="fg_class">
-  <label v-if="show_label" class="small" :for="id"><slot></slot>
-    <span class="text-danger">*</span>
-  </label>
-  <input :type="input_type"
+  <validation-provider :rules="rules" :name="id" v-slot="{ errors, required }">
+    <label v-if="show_label" class="small" :for="id"><slot></slot>
+      <span v-if="required" class="text-danger"> *</span>
+    </label>
+    <input :type="input_type"
          class="form-control form-control-sm"
          :id="id"
          :disabled="disabled"
          :placeholder="placeholder"
          :value="getAttributeValue(id)"
           @input="update">
-  <div v-if="false" class="small text-danger">[add error here]</div>
+    <div class="small text-danger">{{ errors[0] }}</div>
+  </validation-provider>
 </div>
 </template>
 
 <script>
 
 import FieldCommon from "@/components/questions/FieldCommon";
+
 
 export default {
   name: "TextField",

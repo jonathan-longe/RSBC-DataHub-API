@@ -1,19 +1,24 @@
 <template>
-  <div class="form-group">
-    <label v-if="show_label" class="small" :for="id"><slot></slot></label>
-    <div class="input-group mb-3">
-      <input type=text
-           class="form-control form-control-sm"
-           :id="id"
-           placeholder="Driver's Licence Number"
-           :value="getAttributeValue(id)"
-           @input="update">
-      <div class="input-group-append">
-        <button @click="populateDriversFromICBC(getCurrentlyEditedProhibitionNumber)"
-                class="btn-sm" :class="icbcLookupButtonClass" >ICBC Lookup
-        </button>
+  <div v-if="visible" class="form-group">
+    <validation-provider :rules="rules" :name="id" v-slot="{ errors, required }">
+      <label v-if="show_label" class="small" :for="id"><slot></slot>
+        <span v-if="required" class="text-danger"> *</span>
+      </label>
+      <div class="input-group mb-3">
+        <input type=text
+             class="form-control form-control-sm"
+             :id="id"
+             placeholder="Driver's Licence Number"
+             :value="getAttributeValue(id)"
+             @input="update">
+        <div class="input-group-append">
+          <button @click="populateDriversFromICBC(getCurrentlyEditedProhibitionNumber)"
+                  class="btn-sm" :class="icbcLookupButtonClass" >ICBC Lookup
+          </button>
+        </div>
       </div>
-    </div>
+      <div class="small text-danger">{{ errors[0] }}</div>
+    </validation-provider>
   </div>
 </template>
 

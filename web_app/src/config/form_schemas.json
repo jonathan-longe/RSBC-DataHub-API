@@ -849,7 +849,7 @@
           "id": "test_administered",
           "type": "radio",
           "label": "Test Administered",
-          "options": ["Alco-Sensor FST", "Approved Instrument (specify)", "Prescribed Physical Coordination Test"],
+          "options": ["Alco-Sensor FST", "Prescribed Physical Coordination Test"],
           "value": ""
         },
         "result_alcohol": {

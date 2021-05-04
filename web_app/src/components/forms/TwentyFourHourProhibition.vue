@@ -275,12 +275,12 @@
                   <component :is="formData.data.vehicle_released_to.component"
                            :form_group="formData.data.vehicle_released_to"
                            :display_validation_errors="displayValidationErrors"
-                           :visible="showVehicleImpounded"
+                           :visible="!showVehicleImpounded"
                            @field_updated="updateValidation"
                            form_group_class="col-sm-6"></component>
                   <component :is="formData.data.datetime_released.component"
                            :form_group="formData.data.datetime_released"
-                           :visible="showVehicleImpounded"
+                           :visible="!showVehicleImpounded"
                            :display_validation_errors="displayValidationErrors"
                            @field_updated="updateValidation"
                            form_group_class="col-sm-6"></component>
@@ -328,6 +328,14 @@
             </div>
             <div class="card-body lightgray">
               <div class="form-row">
+                <component :is="formData.data.prohibition_type.component"
+                           :form_group="formData.data.prohibition_type"
+                           :display_validation_errors="displayValidationErrors"
+                           @field_updated="updateValidation"
+                           form_group_class="col-sm-12"></component>
+              </div>
+
+              <div class="form-row">
                   <component :is="formData.data.offence_address.component"
                            :form_group="formData.data.offence_address"
                            :display_validation_errors="displayValidationErrors"
@@ -342,13 +350,6 @@
               <div class="form-row">
                 <component :is="formData.data.operating_grounds.component"
                            :form_group="formData.data.operating_grounds"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                           form_group_class="col-sm-12"></component>
-              </div>
-              <div class="form-row">
-                <component :is="formData.data.prohibition_type.component"
-                           :form_group="formData.data.prohibition_type"
                            :display_validation_errors="displayValidationErrors"
                            @field_updated="updateValidation"
                            form_group_class="col-sm-12"></component>

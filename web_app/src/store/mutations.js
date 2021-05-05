@@ -25,6 +25,10 @@ export default {
         const id = payload.id;
         const value = payload.value;
         const prohibition_number = state.currently_editing_prohibition_number;
+        const root = state.edited_forms[prohibition_number].data;
+        if (!(id in root)) {
+            root[id] = Object();
+        }
         Vue.set(state.edited_forms[prohibition_number].data[id], "value", value);
     },
 
@@ -34,8 +38,8 @@ export default {
     },
 
     deleteEditedForm(state, prohibition_number) {
-        console.log("inside mutations.js deleteEditedForm()")
-        const indexToDelete = state.edited_prohibition_numbers.indexOf(prohibition_number)
+        console.log("inside mutations.js deleteEditedForm()", prohibition_number)
+        const indexToDelete = state.edited_prohibition_numbers.indexOf(prohibition_number);
         Vue.delete(state.edited_prohibition_numbers, indexToDelete)
         Vue.delete(state.edited_forms, prohibition_number)
         state.currently_editing_prohibition_number = null;
@@ -52,14 +56,13 @@ export default {
     populateDriversFromICBC(state, prohibition_number) {
         // TODO - remove before flight
         // TODO - populates Driver's information using fictitious data
-        console.log("inside populateDriversFromICBC: " + prohibition_number)
-        Vue.set(state.edited_forms[prohibition_number].data["last_name"], "value", "Smith");
-        Vue.set(state.edited_forms[prohibition_number].data["first_name"], "value", "Fictitious");
-        Vue.set(state.edited_forms[prohibition_number].data["address1"], "value", "123 Imaginary Street");
-        Vue.set(state.edited_forms[prohibition_number].data["address2"], "value", "");
-        Vue.set(state.edited_forms[prohibition_number].data["city"], "value", "Vanderhoof");
-        Vue.set(state.edited_forms[prohibition_number].data["province"], "value", "BC");
-        Vue.set(state.edited_forms[prohibition_number].data["postal"], "value", "V8R 5A5");
-        Vue.set(state.edited_forms[prohibition_number].data["dob"], "value", "2002-01-15");
+        console.log("inside mutations.js populateDriversFromICBC(): " + prohibition_number)
+        Vue.set(state.edited_forms[prohibition_number].data, "last_name", {"value": "Smith"});
+        Vue.set(state.edited_forms[prohibition_number].data, "first_name", {"value": "Fictitious"});
+        Vue.set(state.edited_forms[prohibition_number].data, "address1", {"value": "123 Imaginary Street"});
+        Vue.set(state.edited_forms[prohibition_number].data, "city", {"value": "Vanderhoof"});
+        Vue.set(state.edited_forms[prohibition_number].data, "province", {"province": "BC"});
+        Vue.set(state.edited_forms[prohibition_number].data, "postal", {"value": "V8R 5A5"});
+        Vue.set(state.edited_forms[prohibition_number].data, "dob", {"value": "2002-01-15"});
     }
 }

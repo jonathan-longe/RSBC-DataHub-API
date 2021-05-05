@@ -9,10 +9,10 @@
           </div>
       </div>
     </div>
-    <offline-banner v-if="isNetworkOffline"></offline-banner>
-    <component v-if="isFormBeingEdited" :data="getSelectedForm.data"
-               :prohibition_number="getSelectedForm.prohibition_number"
-               :is="getSelectedFormComponent" :name="getSelectedForm.short_name">
+    <offline-banner v-if="isNetworkOnline"></offline-banner>
+    <component v-if="isFormBeingEdited" :data="getCurrentlyEditedForm.data"
+               :prohibition_number="getSelectedFormComponent.prohibition_number"
+               :is="getSelectedFormComponent" :name="getCurrentlyEditedForm.short_name">
     </component>
     <recent-prohibitions v-if="isRecentProhibitions && ! isFormBeingEdited"></recent-prohibitions>
     <issue-prohibitions v-if=" ! isFormBeingEdited"></issue-prohibitions>
@@ -33,6 +33,7 @@ import ImmediateRoadsideProhibition from "@/components/forms/ImmediateRoadsidePr
 import FeedbackWelcome from "@/components/FeedbackWelcome";
 import ProhibitionSearch from "@/components/ProhibitionSearch";
 import RecentProhibitions from "@/components/RecentProhibitions";
+import { mapGetters, mapMutations } from 'vuex';
 
 export default {
   name: 'App',
@@ -47,45 +48,22 @@ export default {
     ImmediateRoadsideProhibition
   },
   computed: {
-     isFormBeingEdited() {
-       return this.$store.getters.isFormBeingEdited;
-     },
-     getSelectedFormComponent() {
-       return this.$store.getters.getSelectedFormComponent;
-     },
-     getSelectedForm() {
-       return this.$store.getters.getCurrentlyEditedForm;
-     },
-     isRecentProhibitions() {
-       return this.$store.getters.isRecentProhibitions;
-     },
-     isNetworkOffline() {
-       return this.$store.getters.isNetworkOnline === false
-     }
-
+    ...mapGetters(['isFormBeingEdited',"getSelectedFormComponent","getCurrentlyEditedForm","isRecentProhibitions","isNetworkOnline"]),
   },
 
   methods: {
-      offline() {
-        console.log("we are now offline")
-        this.$store.commit("networkOffline")
-      },
-
-      online() {
-        console.log("we are now online")
-        this.$store.commit("networkBackOnline")
-      }
+    ...mapMutations(["networkOffline","networkBackOnline"])
   },
 
-  created: function () {
-      window.addEventListener('offline', this.offline);
-      window.addEventListener('online', this.online);
-  },
-
-  destroyed: function () {
-      window.removeEventListener('offline', this.offline);
-      window.removeEventListener('online', this.online);
-  }
+  // created: function () {
+  //     window.addEventListener('offline', this.offline);
+  //     window.addEventListener('online', this.online);
+  // },
+  //
+  // destroyed: function () {
+  //     window.removeEventListener('offline', this.offline);
+  //     window.removeEventListener('online', this.online);
+  // }
 
 }
 </script>
@@ -110,6 +88,13 @@ export default {
   padding: 0.5em 0.5em 0.5em 0.5em;
   vertical-align: center;
 
+}
+
+.lightgray {
+    background-color: lightgray;
+  }
+.prohibition_number {
+  color: red;
 }
 
 </style>

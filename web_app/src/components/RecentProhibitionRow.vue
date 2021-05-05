@@ -6,18 +6,22 @@
       ({{ prohibition.data.drivers_number.value }})<br />
       <span class="text-muted text-secondary">{{ prohibition_number }}</span>
     </td>
+    <td>{{ prohibition.short_name }}</td>
     <td>Not Served</td>
     <td>Not Submitted</td>
     <td>
       <h6>
-        <b-icon-trash variant="danger" @click="deleteProhibition"></b-icon-trash>&nbsp;
-        <b-icon-pen variant="primary" @click="editProhibition"></b-icon-pen>
+        <b-icon-trash variant="danger" @click="deleteEditedForm(prohibition_number)"></b-icon-trash>&nbsp;
+        <b-icon-pen variant="primary" @click="editExistingForm(prohibition_number)"></b-icon-pen>
       </h6>
     </td>
   </tr>
 </template>
 
 <script>
+
+import { mapGetters, mapMutations } from 'vuex';
+
 export default {
   name: "RecentProhibitionRow",
   props: {
@@ -25,14 +29,10 @@ export default {
     prohibition: {}
   },
   methods: {
-    deleteProhibition() {
-      console.log("inside deleteProhibition() " + this.prohibition_number)
-      return this.$store.commit("deleteEditedForm", this.prohibition_number)
-    },
-    editProhibition() {
-      console.log("inside editProhibition() " + this.prohibition_number)
-      return this.$store.commit("editExistingForm", this.prohibition_number)
-    }
+    ...mapMutations(["deleteEditedForm", "editExistingForm"]),
+  },
+  computed: {
+    ...mapGetters(["getCurrentlyEditedProhibitionNumber", "getCurrentlyEditedForm"])
   }
 }
 </script>

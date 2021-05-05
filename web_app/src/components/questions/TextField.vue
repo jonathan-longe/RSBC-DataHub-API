@@ -1,28 +1,35 @@
 <template>
-<div v-if="visible" class="form-group" :class="form_group_class">
-  <label class="small" :for="form_group.id">{{ form_group.label }}
-    <span v-if="isFieldRequired" class="text-danger">*</span>
-  </label>
-  <input :type="form_group.input_type"
-         :class="errorClass"
+<div v-if="visible" class="form-group" :class="fg_class">
+  <validation-provider :rules="rules" :name="id" v-slot="{ errors, required }">
+    <label v-if="show_label" class="small" :for="id"><slot></slot>
+      <span v-if="required" class="text-danger"> *</span>
+    </label>
+    <input type="text"
          class="form-control form-control-sm"
-         :id="form_group.id"
-         :disabled="grey_out"
-         :placeholder="form_group.placeholder"
-          :value="form_group.value"
+         :id="id"
+         :disabled="disabled"
+         :placeholder="placeholder"
+         :value="getAttributeValue(id)"
           @input="update">
-  <div v-if="fieldHasErrors" class="small text-danger">{{ errorMessage }}</div>
+    <div class="small text-danger">{{ errors[0] }}</div>
+  </validation-provider>
 </div>
 </template>
 
 <script>
 
 import FieldCommon from "@/components/questions/FieldCommon";
+import {mapGetters} from "vuex";
+
 
 export default {
   name: "TextField",
   mixins: [FieldCommon],
-
-
+  props: {
+    placeholder: String,
+  },
+  computed: {
+    ...mapGetters(["getAttributeValue"]),
+  }
 }
 </script>

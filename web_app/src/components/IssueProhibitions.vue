@@ -5,6 +5,7 @@
                         :form="form">
 
       </prohibition-card>
+
     </div>
 </template>
 

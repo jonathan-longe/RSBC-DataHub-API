@@ -36,9 +36,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-  .card {
-    background-color: lightgray;
-  }
-</style>

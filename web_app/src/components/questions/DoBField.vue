@@ -1,27 +1,28 @@
 <template>
-<div class="form-group" :class="form_group_class">
-  <label class="small" :for="form_group.id">
-    Date of Birth
-    <span v-if="isFieldRequired" class="text-danger">*</span>
-    <span class="text-muted" v-if="isValidDate"> ({{ yearsOld}} yrs)</span>
-  </label>
-  <div class="col-xs-10">
-    <input :type="form_group.input_type"
-         class="form-control form-control-sm"
-           :class="errorClass"
-         :id="form_group.id"
-         :placeholder="form_group.placeholder"
-          :value="form_group.value"
-          @input="update">
-    <div v-if="fieldHasErrors" class="small text-danger">{{ errorMessage }}</div>
-  </div>
-
+<div class="form-group" :class="fg_class">
+  <validation-provider :rules="rules" :name="id" v-slot="{ errors, required }">
+    <label v-if="show_label" class="small" :for="id">
+      Date of Birth
+      <span v-if="required" class="text-danger">*</span>
+      <span class="text-muted" v-if="isValidDate"> ({{ yearsOld }} yrs)</span>
+    </label>
+    <div class="col-xs-10">
+      <input type="text"
+           :id="id"
+           class="form-control form-control-sm"
+           placeholder="YYYY-MM-DD"
+           :value="getAttributeValue(id)"
+            @input="update">
+      <div class="small text-danger">{{ errors[0] }}</div>
+    </div>
+  </validation-provider>
 </div>
 </template>
 
 <script>
 
 import FieldCommon from "@/components/questions/FieldCommon";
+import { mapGetters } from 'vuex';
 import moment from 'moment';
 
 export default {
@@ -29,15 +30,16 @@ export default {
   mixins: [FieldCommon],
 
   computed: {
+    ...mapGetters(["getAttributeValue"]),
     yearsOld() {
-      return moment().diff(moment(this.form_group.value), 'years')
+      return moment().diff(moment(this.getAttributeValue(this.id)), 'years')
     },
     yearsAgo() {
-      return moment(this.form_group.value).fromNow()
+      return moment(this.getAttributeValue(this.id)).fromNow()
     },
     isValidDate() {
-      return moment(this.form_group.value).isValid()
-    }
+      return moment(this.getAttributeValue(this.id)).isValid()
+    },
   }
 
 }

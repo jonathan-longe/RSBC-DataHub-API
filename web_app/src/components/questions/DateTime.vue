@@ -1,25 +1,24 @@
 <template>
-<div v-if="visible" class="form-group" :class="form_group_class">
-  <label class="small" :for="form_group.id">
-    {{ form_group.label }}
-    <span v-if="isFieldRequired" class="text-danger">*</span>
-    <span class="text-muted" v-if="!!timeAgoString"> ({{ timeAgoString }})</span>
-  </label>
-  <div class="col-xs-10">
-    <div class="input-group mb-3">
-      <input :type="form_group.input_type"
-         class="form-control form-control-sm" :class="errorClass" :disabled="grey_out"
-         :id="form_group.id"
-         :value="form_group.value"
-         @input="update">
-      <div class="input-group-append">
-        <button @click="setCurrentDateTime" class="btn btn-sm btn-secondary" :disabled="grey_out" type="button">Now</button>
+<div v-if="visible" class="form-group" :class="fg_class">
+  <validation-provider :rules="rules" :name="id" v-slot="{ errors, required }">
+    <label class="small" :for="id"><slot></slot>
+      <span v-if="required" class="text-danger"> *</span>
+      <span class="text-muted" v-if="!!timeAgoString"> ({{ timeAgoString }})</span>
+    </label>
+    <div class="col-xs-10">
+      <div class="input-group mb-3">
+        <input type="text"
+           class="form-control form-control-sm" :disabled="disabled"
+           :id="id"
+           :value="getAttributeValue(id)"
+           @input="update">
+        <div class="input-group-append">
+          <button @click="setCurrentDateTime" class="btn btn-sm btn-secondary" type="button">Now</button>
+        </div>
       </div>
+      <div class="small text-danger">{{ errors[0] }}</div>
     </div>
-
-    <div v-if="fieldHasErrors" class="small text-danger">{{ errorMessage }}</div>
-  </div>
-
+  </validation-provider>
 </div>
 </template>
 
@@ -27,6 +26,7 @@
 
 import FieldCommon from "@/components/questions/FieldCommon";
 import moment from 'moment';
+import {mapGetters} from "vuex";
 
 export default {
   name: "DateTime",
@@ -45,14 +45,14 @@ export default {
 
   methods: {
     setCurrentDateTime() {
-      const payload = {id: this.form_group.id, value: this.getCurrentTime() }
+      const payload = {id: this.id, value: this.getCurrentTime() }
       console.log('inside FieldCommon update()')
       this.$store.commit("updateFormField", payload)
       this.$emit("field_updated", payload)
     },
     timeAgo() {
       if(this.isValidDate) {
-        this.timeAgoString = moment(this.form_group.value).fromNow()
+        this.timeAgoString = moment(this.getAttributeValue(this.id)).fromNow()
       }
     },
     getCurrentTime() {
@@ -61,9 +61,7 @@ export default {
   },
 
   computed: {
-    isValidDate() {
-      return moment(this.form_group.value).isValid()
-    }
+    ...mapGetters(["getAttributeValue"]),
   }
 
 }

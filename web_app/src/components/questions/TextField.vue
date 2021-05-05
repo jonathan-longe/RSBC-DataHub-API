@@ -4,7 +4,7 @@
     <label v-if="show_label" class="small" :for="id"><slot></slot>
       <span v-if="required" class="text-danger"> *</span>
     </label>
-    <input :type="input_type"
+    <input type="text"
          class="form-control form-control-sm"
          :id="id"
          :disabled="disabled"
@@ -19,6 +19,7 @@
 <script>
 
 import FieldCommon from "@/components/questions/FieldCommon";
+import {mapGetters} from "vuex";
 
 
 export default {
@@ -26,10 +27,9 @@ export default {
   mixins: [FieldCommon],
   props: {
     placeholder: String,
-    input_type: {
-        type: String,
-        default: "text"
-      }
+  },
+  computed: {
+    ...mapGetters(["getAttributeValue"]),
   }
 }
 </script>

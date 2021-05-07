@@ -9,7 +9,7 @@
            :id="id"
            :placeholder="placeholder"
             :value="getAttributeValue(id)"
-            @input="update">
+            @input="updateFormField">
     <div class="small text-danger">{{ errors[0] }}</div>
   </validation-provider>
 </div>
@@ -18,13 +18,20 @@
 <script>
 
 import FieldCommon from "@/components/questions/FieldCommon";
+import { mapMutations, mapGetters } from 'vuex';
 
 export default {
   name: "PhoneField",
   props: {
     placeholder: String,
   },
-  mixins: [FieldCommon]
+  mixins: [FieldCommon],
+  computed: {
+    ...mapGetters(["getAttributeValue"])
+  },
+  methods: {
+    ...mapMutations(["updateFormField"])
+  }
 
 }
 </script>

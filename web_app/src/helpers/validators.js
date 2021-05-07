@@ -27,6 +27,11 @@ extend('validDtTime', {
   message: "That's not a valid date time"
 });
 
+extend('notExpired', {
+  validate: value => moment().diff(moment(value, 'YYYY-MM-DD', true), 'days') < 0,
+  message: "Expired"
+});
+
 extend('dob', {
   validate(value) {
     return {

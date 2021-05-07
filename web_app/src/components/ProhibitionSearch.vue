@@ -6,7 +6,7 @@
           <div class="form-row align-items-center">
             <div class="col-sm-8 my-1">
               <label class="sr-only small" for="prohibitionSearch">Prohibition Number</label>
-              <input type="text" class="form-control form-control-sm" id="prohibitionSearch" placeholder="Prohibition Number">
+              <input type="text" class="form-control form-control-sm" id="prohibitionSearch" placeholder="Driver's last name or BCDL">
             </div>
             <div class="col-auto my-1">
               <button type="submit" disabled class="btn btn-primary btn-sm">Search</button>

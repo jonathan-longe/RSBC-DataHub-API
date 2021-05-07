@@ -4,7 +4,7 @@
     <label v-if="show_label" class="small" :for="id"><slot></slot>
       <span v-if="required" class="text-danger"> *</span>
     </label>
-    <select class="form-control form-control-sm" :id="id" @input="update">
+    <select class="form-control form-control-sm" :id="id" @input="updateFormField">
       <option v-for="(province, key) in getArrayOfProvinces"
               :key="key"
               :selected="province === getAttributeValue(id)">
@@ -19,13 +19,20 @@
 <script>
 
 import FieldCommon from "@/components/questions/FieldCommon";
-import { mapGetters } from 'vuex';
+import { mapGetters, mapMutations } from 'vuex';
 
 export default {
   name: "ProvinceField",
   mixins: [FieldCommon],
+  mounted () {
+    // set initial value to BC
+    this.$store.commit("updateFormField", { target: { id: this.id, value: "BC"}})
+  },
   computed: {
-    ...mapGetters(["getArrayOfProvinces"])
+    ...mapGetters(["getArrayOfProvinces", "getAttributeValue"])
+  },
+  methods: {
+    ...mapMutations(["updateFormField"])
   }
 }
 </script>

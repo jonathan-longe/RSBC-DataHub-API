@@ -1,9 +1,12 @@
 <template>
-  <div class="form-row float-right mt-3 mb-3">
+  <div class="w-100">
+      <div class="form-row float-right mb-3 mr-3">
     <button @click="deleteEditedForm(getCurrentlyEditedProhibitionNumber)" class="btn btn-danger m-1">Delete</button>
     <button @click="saveDoNotPrint" type="submit" class="btn btn-success m-1">Save, complete later</button>
     <button @click="saveAndPrint" class="btn btn-success m-1">Save and Serve</button>
   </div>
+  </div>
+
 </template>
 
 <script>

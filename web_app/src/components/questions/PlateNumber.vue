@@ -8,11 +8,11 @@
         <input type=text
              class="form-control form-control-sm"
              :id="id"
-             placeholder="Plate Number"
+             placeholder="Plate"
              :value="getAttributeValue(id)"
-             @input="update">
-        <div class="input-group-append">
-          <button @click="icbcLookupPlate" class="btn-sm" :class="icbcLookupButtonClass">ICBC Lookup</button>
+             @input="updateFormField">
+        <div class="input-group-append" v-if="isJurisdictionBC">
+          <button @click="populateFromICBCPlateLookup" class="btn-sm btn-primary">ICBC Lookup</button>
         </div>
         <div class="small text-danger">{{ errors[0] }}</div>
       </div>
@@ -23,13 +23,13 @@
 <script>
 
 import FieldCommon from "@/components/questions/FieldCommon";
-import {mapGetters} from "vuex";
+import {mapGetters, mapMutations} from "vuex";
 
 export default {
   name: "PlateNumber",
   mixins: [FieldCommon],
   computed: {
-    ...mapGetters(["getAttributeValue"]),
+    ...mapGetters(["getAttributeValue", "isJurisdictionBC"]),
     isNumberTheCorrectLength() {
       return this.getAttributeValue(this.id) >= 3
     },
@@ -42,10 +42,7 @@ export default {
     }
   },
   methods: {
-    icbcLookupPlate() {
-      // TODO - call out to ICBC instead of returning static data from demo purposes
-      console.log("inside icbcLookupPlate(): ")
-    }
+    ...mapMutations(["populateFromICBCPlateLookup", "updateFormField"])
   }
 }
 </script>

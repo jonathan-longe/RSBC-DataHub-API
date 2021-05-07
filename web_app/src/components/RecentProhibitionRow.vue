@@ -1,9 +1,9 @@
 <template>
   <tr v-if="prohibition">
     <td>
-      {{ prohibition.data.last_name.value }},
-      {{ prohibition.data.first_name.value }}
-      ({{ prohibition.data.drivers_number.value }})<br />
+      {{ prohibition.data.last_name }},
+      {{ prohibition.data.first_name }}
+      ({{ prohibition.data.drivers_number }})<br />
       <span class="text-muted text-secondary">{{ prohibition_number }}</span>
     </td>
     <td>{{ prohibition.short_name }}</td>
@@ -20,7 +20,7 @@
 
 <script>
 
-import { mapGetters, mapMutations } from 'vuex';
+import { mapMutations } from 'vuex';
 
 export default {
   name: "RecentProhibitionRow",
@@ -30,13 +30,6 @@ export default {
   },
   methods: {
     ...mapMutations(["deleteEditedForm", "editExistingForm"]),
-  },
-  computed: {
-    ...mapGetters(["getCurrentlyEditedProhibitionNumber", "getCurrentlyEditedForm"])
   }
 }
 </script>
-
-<style scoped>
-
-</style>

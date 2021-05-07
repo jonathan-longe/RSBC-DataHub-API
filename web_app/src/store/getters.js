@@ -39,10 +39,9 @@ export default {
     getAttributeValue: state => id => {
         const root = state.edited_forms[state.currently_editing_prohibition_number].data;
         if (!(id in root)) {
-            console.log("id not in root")
             return '';
         }
-        return root[id].value;
+        return root[id];
     },
 
     getArrayOfBCCityNames: state => {
@@ -75,18 +74,23 @@ export default {
 
     getXdfFileName: state => prohibition_number => {
         const file_extension = ".xdp"
-        const last_name = state.edited_forms[prohibition_number].data.last_name.value;
+        const last_name = state.edited_forms[prohibition_number].data.last_name;
         const file_name = last_name + "_" + prohibition_number + file_extension;
         console.log('filename', file_name)
         return file_name
     },
 
-    getDataValue: state => (prohibition_number, attribute) => {
-        return state.edited_forms[prohibition_number].data[attribute];
-    },
+    // getDataValue: state => (prohibition_number, attribute) => {
+    //     return state.edited_forms[prohibition_number].data[attribute];
+    // },
 
     getArrayOfProvinces: state => {
         return state.provinces;
+    },
+
+    isJurisdictionBC: state => {
+        const root = state.edited_forms[state.currently_editing_prohibition_number].data;
+        return root['plate_province'] === "BC"
     }
 
 }
@@ -96,9 +100,7 @@ function getKeyValuePairs (state, prohibition_number) {
     console.log("getFormKeyValuePairs()", form_data)
     let key_value_pairs = Array();
     for( const object in form_data) {
-        if("value" in form_data[object]) {
-            key_value_pairs[object] = form_data[object].value
-        }
+        key_value_pairs[object] = form_data[object];
     }
     console.log('getKeyValuePairs()', key_value_pairs)
     return key_value_pairs;

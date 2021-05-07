@@ -9,6 +9,7 @@
 
 import VueTypeaheadBootstrap from 'vue-typeahead-bootstrap';
 import FieldCommon from "@/components/questions/FieldCommon";
+import {mapGetters} from 'vuex';
 
 export default {
   name: "TypeAheadField",
@@ -21,10 +22,13 @@ export default {
       city: '',
     }
   },
+  computed: {
+    ...mapGetters(["getAttributeValue"]),
+  },
   methods: {
     typeAheadUpdate(e) {
       console.log('inside TypeAheadField typeAheadUpdate(): ' + JSON.stringify(e))
-      const payload = {value: e, id: this.id }
+      const payload = {target: {value: e, id: this.id }}
       this.$store.commit("updateFormField", payload)
     }
   },

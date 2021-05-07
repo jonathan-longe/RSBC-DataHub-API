@@ -3,15 +3,21 @@
   <validation-provider :rules="rules" :name="id" v-slot="{ errors, required }">
     <label class="small" :for="id"><slot></slot>
       <span v-if="required" class="text-danger"> *</span>
-      <span class="text-muted" v-if="!!timeAgoString"> ({{ timeAgoString }})</span>
+      <span class="text-muted" v-if="isValidDate"> ({{ timeAgoString }})</span>
     </label>
     <div class="col-xs-10">
       <div class="input-group mb-3">
         <input type="text"
            class="form-control form-control-sm" :disabled="disabled"
+               placeholder="YYYY-MM-DD"
            :id="id"
-           :value="getAttributeValue(id)"
-           @input="update">
+           :value="dateSegment"
+           @input="updateDateSegment">
+        <input type="text"
+           class="form-control form-control-sm" :disabled="disabled"
+            placeholder="HH:MM"
+            :value="timeSegment"
+            @input="updateTimeSegment">
         <div class="input-group-append">
           <button @click="setCurrentDateTime" class="btn btn-sm btn-secondary" type="button">Now</button>
         </div>
@@ -26,7 +32,7 @@
 
 import FieldCommon from "@/components/questions/FieldCommon";
 import moment from 'moment';
-import {mapGetters} from "vuex";
+import {mapGetters, mapMutations} from "vuex";
 
 export default {
   name: "DateTime",
@@ -34,21 +40,29 @@ export default {
 
   data() {
     return {
-      timeAgoString: null
+      timeAgoString: null,
+      setIntervalID: null
     }
   },
 
-  mounted () {
+  created () {
     this.timeAgo()
-    setInterval(this.timeAgo.bind(this) , 1000)
+    this.setIntervalID = setInterval(this.timeAgo.bind(this) , 1000)
+  },
+
+  destroyed() {
+    clearInterval(this.setIntervalID)
   },
 
   methods: {
+    ...mapMutations(["updateFormField"]),
     setCurrentDateTime() {
-      const payload = {id: this.id, value: this.getCurrentTime() }
-      console.log('inside FieldCommon update()')
+      this.setDateTime(this.getCurrentTime());
+    },
+    setDateTime(isoDateTimeString) {
+      const payload = {target: {id: this.id, value: isoDateTimeString }}
+      console.log('inside DateTime.vue setCurrentDateTime()', payload)
       this.$store.commit("updateFormField", payload)
-      this.$emit("field_updated", payload)
     },
     timeAgo() {
       if(this.isValidDate) {
@@ -56,12 +70,29 @@ export default {
       }
     },
     getCurrentTime() {
-      return moment().format("YYYY-MM-DD HH:mm")
+      return moment().format("YYYY-MM-DD HH:mm");
+    },
+    updateTimeSegment(e) {
+      const timeString = e.target.value;
+      this.setDateTime(this.dateSegment + ' ' + timeString);
+    },
+    updateDateSegment(e) {
+      const dateString = e.target.value;
+      this.setDateTime(dateString + ' ' + this.timeSegment);
     }
   },
 
   computed: {
     ...mapGetters(["getAttributeValue"]),
+    isValidDate() {
+      return moment(this.getAttributeValue(this.id)).isValid()
+    },
+    dateSegment() {
+      return this.getAttributeValue(this.id).split(' ')[0];
+    },
+    timeSegment() {
+      return this.getAttributeValue(this.id).split(' ')[1];
+    }
   }
 
 }

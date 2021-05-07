@@ -10,7 +10,7 @@
          :disabled="disabled"
          :placeholder="placeholder"
          :value="getAttributeValue(id)"
-          @input="update">
+          @input="updateFormField">
     <div class="small text-danger">{{ errors[0] }}</div>
   </validation-provider>
 </div>
@@ -19,7 +19,7 @@
 <script>
 
 import FieldCommon from "@/components/questions/FieldCommon";
-import {mapGetters} from "vuex";
+import {mapGetters, mapMutations} from "vuex";
 
 
 export default {
@@ -30,6 +30,9 @@ export default {
   },
   computed: {
     ...mapGetters(["getAttributeValue"]),
+  },
+  methods: {
+    ...mapMutations(["updateFormField"])
   }
 }
 </script>

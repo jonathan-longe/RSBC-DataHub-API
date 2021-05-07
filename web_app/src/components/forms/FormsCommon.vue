@@ -10,10 +10,12 @@ import TypeAheadField from "@/components/questions/TypeAheadField";
 import GenderField from "@/components/questions/GenderField";
 import PhoneField from "@/components/questions/PhoneField";
 import DateTime from "@/components/questions/DateTime";
+import DateField from "@/components/questions/DateField";
 import DobField from "@/components/questions/DoBField";
 import PlateNumber from "@/components/questions/PlateNumber";
 import PrintConfirmationModal from "@/components/PrintConfirmationModal";
 import RadioField from "@/components/questions/RadioField";
+import CheckField from "@/components/questions/CheckField";
 import { mapGetters } from "vuex";
 
 
@@ -47,7 +49,9 @@ export default {
     DateTime,
     PrintConfirmationModal,
     PlateNumber,
-    RadioField
+    RadioField,
+    CheckField,
+    DateField
   }
 }
 </script>

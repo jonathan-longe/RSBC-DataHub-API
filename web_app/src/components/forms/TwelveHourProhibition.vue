@@ -1,248 +1,162 @@
 <template>
-    <div class="card w-100 mt-3 mb-3 border-primary">
-      <div class="card-header text-white bg-secondary pt-2 pb-0">
-        <h4>Notice of 12 Hour Licence Suspension</h4>
-      </div>
-      <div class="card-header mt-0 mb-0 pt-2 pb-0 text-dark">
-        <p class="text-right pb-0 mb-2">
-          <span class="prohibition_number">{{ prohibition_number }} </span>
-          <b-icon-question-circle></b-icon-question-circle>
-        </p>
-      </div>
+  <form-container title="Notice of 12 Hour Licence Suspension">
+  <form-card title="Vehicle Licence Plate">
+      <form-row>
+        <province-field id="plate_province" fg_class="col-sm-2">Jurisdiction</province-field>
+        <plate-number id="plate_number" fg_class="col-sm-6">Plate Number</plate-number>
+      </form-row>
+    </form-card>
+    <form-card title="Registered Owner">
+      <form-row>
+        <radio-field id="driver_is_owner" fg_class="col-sm-6" :options='["Yes", "No"]'>Driver is registered owner?</radio-field>
+        <text-field v-if="isJurisdictionBC" id="owners_drivers_number">Owner's Licence Number (BC only)</text-field>
+      </form-row>
+      <form-row>
+        <text-field id="owners_last_name" fg_class="col-sm-6">Owner's Last Name</text-field>
+        <text-field id="owners_first_name" fg_class="col-sm-6">Owner's First Name</text-field>
+      </form-row>
+      <form-row>
+        <text-field id="owners_address1" fg_class="col-sm-12" placeholder="Address" rules="required">Address Line 1</text-field>
+      </form-row>
+      <form-row>
+        <text-field id="owners_address2" fg_class="col-sm-12" placeholder="Address">Address Line 2</text-field>
+      </form-row>
+      <form-row>
+        <type-ahead-field id="owners_city" fg_class="col-sm-4" :suggestions="getArrayOfBCCityNames" rules="required">City</type-ahead-field>
+        <province-field id="owners_province" fg_class="col-sm-2">Province</province-field>
+        <text-field id="owners_postal" fg_class="col-sm-2">Postal</text-field>
+        <phone-field id="owners_phone" fg_class="col-sm-4" rules="phone">Phone</phone-field>
+      </form-row>
+    </form-card>
+    <form-card title="Vehicle information">
+      <form-row>
+        <text-field id="plate_year" fg_class="col-sm-4">Plate Year</text-field>
+        <text-field id="plate_val_tag" input_type="number" fg_class="col-sm-4">Plate Val Tag</text-field>
+        <text-field id="registration_number" fg_class="col-sm-4">Registration Number</text-field>
+      </form-row>
+      <form-row>
+        <text-field id="vehicle_year" fg_class="col-sm-3">Vehicle Year</text-field>
+        <text-field id="vehicle_make" input_type="number" fg_class="col-sm-3">Vehicle Make</text-field>
+        <text-field id="vehicle_model" fg_class="col-sm-3">Vehicle Model</text-field>
+        <text-field id="vehicle_color" fg_class="col-sm-3">Vehicle Colour</text-field>
+      </form-row>
+      <form-row>
+        <text-field id="puj_code" fg_class="col-sm-5">PUJ Code</text-field>
+        <text-field id="nsc_number" fg_class="col-sm-7">NSC Number</text-field>
+      </form-row>
+    </form-card>
 
-      <div class="card-body text-dark text-left">
+    <form-card title="Driver's Information" v-if="driverIsNotRegisteredOwner">
+      <form-row>
+        <driver-licence-number id="drivers_number">Driver's Licence Number</driver-licence-number>
+      </form-row>
+      <form-row>
+        <text-field id="last_name" fg_class="col-sm-4" placeholder="Last Name" rules="required">Last Name</text-field>
+        <text-field id="first_name" fg_class="col-sm-4" placeholder="First Name" rules="required">First Name</text-field>
+        <dob-field id="dob" fg_class="col-sm-4" rules="dob">Date of Birth</dob-field>
+      </form-row>
+      <form-row>
+        <text-field id="address1" fg_class="col-sm-12" placeholder="Address" rules="required">Address Line 1</text-field>
+      </form-row>
+      <form-row>
+        <text-field id="address2" fg_class="col-sm-12" placeholder="Address">Address Line 2</text-field>
+      </form-row>
+      <form-row>
+        <type-ahead-field id="city" fg_class="col-sm-6" :suggestions="getArrayOfBCCityNames" rules="required">City</type-ahead-field>
+        <province-field id="province" fg_class="col-sm-4">Province</province-field>
+        <text-field id="postal" fg_class="col-sm-2">Postal</text-field>
+      </form-row>
+    </form-card>
+    <form-card title="Vehicle Impoundment or Disposition">
+      <form-row>
+        <radio-field id="vehicle_impounded" fg_class="col-sm-6" :options='["Yes", "No"]'>Vehicle Impounded?</radio-field>
+      </form-row>
+      <form-row>
+        <radio-field id="reason_for_not_impounding" fg_class="col-sm-6"
+                     :options='["Released to other driver", "Left at roadside", "Private tow", "Seized for investigation"]'
+                     :visible="showVehicleNotImpounded">Reason for not impounding?</radio-field>
+      </form-row>
+      <form-row>
+        <text-field id="vehicle_released_to" :visible="showVehicleNotImpounded" fg_class="col-sm-6" >
+          Vehicle Released To</text-field>
+        <date-time id="datetime_released" :visible="showVehicleNotImpounded" fg_class="col-sm-6" >
+          Date and Time Released</date-time>
+      </form-row>
+      <form-row>
+        <radio-field id="location_of_keys" :visible="showVehicleImpounded" fg_class="col-sm-6"
+                     :options='["With vehicle", "With driver"]'>Location of Keys?</radio-field>
+      </form-row>
+      <form-row>
+        <type-ahead-field id="impound_lot_operator" fg_class="col-sm-12" :visible="showVehicleImpounded"
+                          :suggestions="['Busters Towing', 'Roadway Towing - Delta']">Impound Lot Operator</type-ahead-field>
+      </form-row>
+      <form-row>
+        <text-field id="ilo_address" :visible="showVehicleImpounded" fg_class="col-sm-4">Address</text-field>
+        <text-field id="ilo_city" :visible="showVehicleImpounded" fg_class="col-sm-4">City</text-field>
+        <text-field id="ilo_phone" :visible="showVehicleImpounded" fg_class="col-sm-4">Phone</text-field>
+      </form-row>
+    </form-card>
+    <form-card title="Prohibition">
 
-          <div class="card w-100">
-            <div class="card-header lightgray text-dark font-weight-bold pt-2 pb-2">
-              <div class="container p-0 m-0">
-                <div class="row p-0 mt-0 mb-0">
-                  <div class="col-6 pt-1">Driver's Information</div>
-                  <div class="col-6 text-right"><button class="btn-primary btn-sm">Scan BCDL</button></div>
-                </div>
-              </div>
-            </div>
-            <div class="card-body lightgray">
-              <p class="small pb-0 mb-2">BC Driver's Licence Number</p>
-              <div class="form-row">
-                <component :is="formData.data.drivers_number.component"
-                           :form_group="formData.data.drivers_number"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                           :prohibition_number="prohibition_number"></component>
-              </div>
+      <div><!-- TODO / INCOMPLETE --></div>
 
-              <div class="form-row">
-                  <component :is="formData.data.last_name.component"
-                             :form_group="formData.data.last_name"
-                             :display_validation_errors="displayValidationErrors"
-                             @field_updated="updateValidation"
-                             form_group_class="col-sm-4"></component>
-                  <component :is="formData.data.first_name.component"
-                             :form_group="formData.data.first_name"
-                             :display_validation_errors="displayValidationErrors"
-                             @field_updated="updateValidation"
-                             form_group_class="col-sm-4"></component>
-                  <component :is="formData.data.dob.component"
-                             :form_group="formData.data.dob"
-                             :display_validation_errors="displayValidationErrors"
-                             @field_updated="updateValidation"
-                             form_group_class="col-sm-4"></component>
-              </div>
-              <div class="form-row ">
-                <component :is="formData.data.address1.component"
-                           :form_group="formData.data.address1"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                           form_group_class="col-sm-12"></component>
-              </div>
-              <div class="form-row ">
-                <component :is="formData.data.address2.component"
-                           :form_group="formData.data.address2"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                           form_group_class="col-sm-12"></component>
-              </div>
-              <div class="form-row">
-                <component :is="formData.data.city.component"
-                           :form_group="formData.data.city"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                           form_group_class="col-sm-6"></component>
-                <component :is="formData.data.province.component"
-                           :form_group="formData.data.province"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                           form_group_class="col-sm-4"></component>
-                <component :is="formData.data.postal.component"
-                           :form_group="formData.data.postal"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                           form_group_class="col-sm-2"></component>
-              </div>
-              <div class="form-row">
-
-                <component :is="formData.data.residential_phone.component"
-                           :form_group="formData.data.residential_phone"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                           form_group_class="col-sm-6"></component>
-              </div>
-              <div class="form-row">
-                <component :is="formData.data.puj_code.component"
-                           :form_group="formData.data.puj_code"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                           form_group_class="col-sm-5"></component>
-                <component :is="formData.data.nsc_number.component"
-                           :form_group="formData.data.nsc_number"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                           form_group_class="col-sm-7"></component>
-              </div>
-            </div>
-          </div>
-
-      </div>
-
-        <div class="card-body text-dark text-left">
-
-          <div class="card w-100">
-            <div class="card-header lightgray text-dark font-weight-bold pt-2 pb-2">
-              <div class="container p-0 m-0">
-                <div class="row p-0 mt-0 mb-0">
-                  <div class="col-6 pt-1">Disposition of Vehicle</div>
-                </div>
-              </div>
-            </div>
-            <div class="card-body lightgray">
-              <div>
-              <p class="small pb-0 mb-2">Licence Plate Jurisdiction and Plate Number</p>
-                <div class="form-row">
-                  <component :is="formData.data.plate_province.component"
-                           :form_group="formData.data.plate_province"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                             form_group_class="col-sm-2"
-                           :prohibition_number="prohibition_number"></component>
-
-                  <component :is="formData.data.plate_number.component"
-                           :form_group="formData.data.plate_number"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                             form_group_class="col-sm-3"
-                           :prohibition_number="prohibition_number"></component>
-                </div>
-              </div>
-              <div class="form-row">
-                  <component :is="formData.data.vehicle_year.component"
-                             :form_group="formData.data.vehicle_year"
-                             :display_validation_errors="displayValidationErrors"
-                             @field_updated="updateValidation"
-                             form_group_class="col-sm-3"></component>
-                  <component :is="formData.data.vehicle_make.component"
-                             :form_group="formData.data.vehicle_make"
-                             :display_validation_errors="displayValidationErrors"
-                             @field_updated="updateValidation"
-                             form_group_class="col-sm-3"></component>
-                  <component :is="formData.data.vehicle_model.component"
-                             :form_group="formData.data.vehicle_model"
-                             :display_validation_errors="displayValidationErrors"
-                             @field_updated="updateValidation"
-                             form_group_class="col-sm-3"></component>
-                  <component :is="formData.data.vehicle_color.component"
-                             :form_group="formData.data.vehicle_color"
-                             :display_validation_errors="displayValidationErrors"
-                             @field_updated="updateValidation"
-                             form_group_class="col-sm-3"></component>
-              </div>
-              <div class="form-row ">
-                <component :is="formData.data.location_of_keys.component"
-                           :form_group="formData.data.location_of_keys"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                           form_group_class="col-sm-12"></component>
-              </div>
-              <div class="form-row ">
-                <component :is="formData.data.location_of_vehicle.component"
-                           :form_group="formData.data.location_of_vehicle"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                           form_group_class="col-sm-12"></component>
-              </div>
-              <div class="form-row">
-                <component :is="formData.data.vehicle_released_to.component"
-                           :form_group="formData.data.vehicle_released_to"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                           form_group_class="col-sm-7"></component>
-                <component :is="formData.data.vehicle_released_datetime.component"
-                           :form_group="formData.data.vehicle_released_datetime"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                           form_group_class="col-sm-5"></component>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="card-body text-dark text-left">
-
-          <div class="card w-100">
-            <div class="card-header lightgray text-dark font-weight-bold pt-2 pb-2">
-              <div class="container p-0 m-0">
-                <div class="row p-0 mt-0 mb-0">
-                  <div class="col-6 pt-1">Prohibition</div>
-                </div>
-              </div>
-            </div>
-            <div class="card-body lightgray">
-
-              <div class="form-row ">
-                <component :is="formData.data.location.component"
-                           :form_group="formData.data.location"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                           form_group_class="col-sm-7"></component>
-                <component :is="formData.data.location_city.component"
-                           :form_group="formData.data.location_city"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                           form_group_class="col-sm-5"></component>
-              </div>
-              <div class="form-row">
-
-                <component :is="formData.data.ga_number.component"
-                           :form_group="formData.data.ga_number"
-                           :display_validation_errors="displayValidationErrors"
-                           @field_updated="updateValidation"
-                           form_group_class="col-sm-12"></component>
-              </div>
-              <div class="form-row">
-                <component :is="formData.data.current_time.component"
-                       :form_group="formData.data.current_time"
-                       :display_validation_errors="displayValidationErrors"
-                       @field_updated="updateValidation"
-                       form_group_class="col-sm-12"></component>
-              </div>
-            </div>
-          </div>
-
-        <div class="form-row float-right mt-3 mb-3">
-          <button @click="exitDoNotSave" class="btn btn-danger m-1">Delete</button>
-          <button @click="saveDoNotPrint" type="submit" class="btn btn-success m-1">Save, complete later</button>
-          <button @click="saveAndPrint" class="btn btn-success m-1">Save and Serve</button>
-        </div>
-      </div>
-      <print-confirmation-modal id="printConfirmationModal" title="printConfirmation"></print-confirmation-modal>
-  </div>
+      <form-row>
+        <text-field id="agency" fg_class="col-sm-2">Agency</text-field>
+        <text-field id="file_number" fg_class="col-sm-3">File Number</text-field>
+        <date-time id="prohibition_start_time" fg_class="col-sm-7">
+          Time of driving, care or control
+        </date-time>
+      </form-row>
+    </form-card>
+    <form-submission-buttons></form-submission-buttons>
+    <print-confirmation-modal id="printConfirmationModal" title="printConfirmation"></print-confirmation-modal>
+  </form-container>
 </template>
 
 <script>
 
 import FormsCommon from "@/components/forms/FormsCommon";
+import {mapGetters} from "vuex";
 
 export default {
   name: "TwelveTwentyFour",
   mixins: [FormsCommon],
+  computed: {
+    ...mapGetters(["getAttributeValue"]),
+    showVehicleImpounded() {
+      return this.getAttributeValue('vehicle_impounded') === "Yes";
+    },
+    showVehicleNotImpounded() {
+      return this.getAttributeValue('vehicle_impounded') === "No";
+    },
+    driverIsNotRegisteredOwner() {
+      return this.getAttributeValue('driver_is_owner') === "No";
+    },
+    licencePickupInPerson() {
+      return this.getAttributeValue('return_of_licence') === "Pickup in person";
+    },
+    isLicenceSurrendered() {
+      return this.getAttributeValue('licence_surrendered') === "Yes";
+    },
+    isProhibitionTypeSelected() {
+      return this.getAttributeValue('prohibition_type').length > 0;
+    },
+    isProhibitionTypeDrugs() {
+      return this.getAttributeValue('prohibition_type') === "Drugs 215(3)";
+    },
+    isProhibitionTypeAlcohol() {
+      return this.getAttributeValue('prohibition_type') === "Alcohol 215(2)";
+    },
+    isOperatingGroundsOther() {
+      return this.getAttributeValue('operating_grounds') === "Other";
+    },
+    isPrescribedTestUsed() {
+      return this.getAttributeValue('prescribed_device').substr(0, 3) === "Yes";
+    },
+    isJurisdictionBC() {
+      return this.getAttributeValue('plate_province') === 'BC'
+    },
+  }
 }
 </script>
 

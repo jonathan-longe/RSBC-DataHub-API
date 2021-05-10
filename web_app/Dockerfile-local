@@ -3,12 +3,12 @@ FROM node:14
 RUN useradd --create-home appuser
 WORKDIR /home/appuser
 
-COPY . /home/appuser/web_app
+COPY dist /home/appuser/web_app/dist
 
 WORKDIR /home/appuser/web_app
 
-RUN npm install
+EXPOSE 5000
 
-EXPOSE 8080
+RUN ["npm", "install", "-g", "serve"]
 
-CMD ["npm", "run", "serve"]
+CMD ["serve", "-s", "dist"]

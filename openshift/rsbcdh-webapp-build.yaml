@@ -72,7 +72,7 @@ objects:
         env: []
         from:
           kind: ImageStreamTag
-          name: rhscl-nodejs-8-rhel7:1-50
+          name: rhscl-nodejs-8-rhel7:1
       type: Docker
     successfulBuildsHistoryLimit: 3
     triggers:

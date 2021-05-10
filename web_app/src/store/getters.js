@@ -64,6 +64,17 @@ export default {
         return state.isOnline;
     },
 
+    isFormEditable: state => prohibition_number => {
+        return state.edited_forms[prohibition_number].data.served === false;
+    },
+
+    getServedStatus: state => prohibition_number => {
+        if (state.edited_forms[prohibition_number].data.served) {
+            return "Printed & Served";
+        }
+        return "Not Served"
+    },
+
     generateXFDF: state => prohibition_number => {
         const key_value_pairs = getKeyValuePairs(state, prohibition_number);
         const pdf_template_name = state.edited_forms[prohibition_number].pdf_template;
@@ -80,22 +91,24 @@ export default {
         return file_name
     },
 
-    // getDataValue: state => (prohibition_number, attribute) => {
-    //     return state.edited_forms[prohibition_number].data[attribute];
-    // },
-
     getArrayOfProvinces: state => {
         return state.provinces;
     },
 
-    isJurisdictionBC: state => {
+    isPlateJurisdictionBC: state => {
         const root = state.edited_forms[state.currently_editing_prohibition_number].data;
         return root['plate_province'] === "BC"
+    },
+
+    isLicenceJurisdictionBC: state => {
+    const root = state.edited_forms[state.currently_editing_prohibition_number].data;
+    return root['drivers_licence_jurisdiction'] === "BC"
     }
 
 }
 
 function getKeyValuePairs (state, prohibition_number) {
+    console.log("getKeyValuePairs(): ", prohibition_number)
     const form_data = state.edited_forms[prohibition_number].data;
     console.log("getFormKeyValuePairs()", form_data)
     let key_value_pairs = Array();

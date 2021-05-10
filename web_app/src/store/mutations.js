@@ -10,8 +10,11 @@ export default {
         state.currently_editing_prohibition_number = prohibition_number
         form_copy.prohibition_number = prohibition_number;
         state.edited_prohibition_numbers.push(prohibition_number);
-        Vue.set(state.edited_forms, prohibition_number, form_copy)
-        console.log("check edited_forms: " + JSON.stringify(state.edited_forms))
+        Vue.set(state.edited_forms, prohibition_number, form_copy);
+        Vue.set(state.edited_forms[prohibition_number], "data", Object());
+        Vue.set(state.edited_forms[prohibition_number].data, "served", false);
+        Vue.set(state.edited_forms[prohibition_number].data, "submitted", false);
+        console.log("check edited_forms: " + JSON.stringify(state.edited_forms));
     },
 
     editExistingForm (state, prohibition_number) {
@@ -54,20 +57,50 @@ export default {
             Vue.set(root, id, [value])
         }
 
-
     },
 
-    saveDoNotPrint (state) {
+    saveFormsToLocalStorage (state) {
+         console.log("inside mutations.js saveFormsToLocalStorage()");
+         const prohibition_numbers = state.edited_prohibition_numbers
+         const local_edited_forms = Array()
+         prohibition_numbers.forEach( prohibition_number => {
+             local_edited_forms.push(state.edited_forms[prohibition_number])
+         })
+         localStorage.digitalProhibitions = JSON.stringify(local_edited_forms);
+    },
+
+    retrieveFormsFromLocalStorage (state) {
+        if (localStorage.digitalProhibitions) {
+            console.log("localStorage.digitalProhibitions does exists");
+            const local_data = JSON.parse(localStorage.digitalProhibitions);
+            local_data.forEach( form => {
+                state.edited_prohibition_numbers.push(form.prohibition_number);
+                state.edited_forms[form.prohibition_number] = form;
+            })
+        } else {
+            console.log("localStorage.digitalProhibitions does not exist")
+        }
+    },
+
+    stopEditingForm (state) {
         console.log("inside mutations.js stopEditingForm()")
         state.currently_editing_prohibition_number = null;
     },
 
-    deleteEditedForm(state, prohibition_number) {
-        console.log("inside mutations.js deleteEditedForm()", prohibition_number)
+    deleteForm(state, prohibition_number) {
+        console.log("inside mutations.js deleteForm()")
         const indexToDelete = state.edited_prohibition_numbers.indexOf(prohibition_number);
         Vue.delete(state.edited_prohibition_numbers, indexToDelete)
         Vue.delete(state.edited_forms, prohibition_number)
+    },
+
+    stopEditingCurrentForm(state) {
         state.currently_editing_prohibition_number = null;
+    },
+
+    markFormStatusAsServed(state) {
+        const prohibition_number = state.currently_editing_prohibition_number;
+        Vue.set(state.edited_forms[prohibition_number].data, "served", true)
     },
 
     networkBackOnline(state) {

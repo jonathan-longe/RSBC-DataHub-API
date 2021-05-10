@@ -7,12 +7,14 @@
       <span class="text-muted text-secondary">{{ prohibition_number }}</span>
     </td>
     <td>{{ prohibition.short_name }}</td>
-    <td>Not Served</td>
-    <td>Not Submitted</td>
+    <td>{{ getServedStatus(prohibition_number) }}</td>
+    <td>Submitted: {{ prohibition.data.submitted }}</td>
     <td>
       <h6>
-        <b-icon-trash variant="danger" @click="deleteEditedForm(prohibition_number)"></b-icon-trash>&nbsp;
-        <b-icon-pen variant="primary" @click="editExistingForm(prohibition_number)"></b-icon-pen>
+        <b-icon-trash v-if="isFormEditable(prohibition_number)" variant="danger" @click="deleteSpecificForm(prohibition_number)"></b-icon-trash>&nbsp;
+        <b-icon-pen v-if="isFormEditable(prohibition_number)" variant="primary" @click="editExistingForm(prohibition_number)"></b-icon-pen>
+        <b-icon-trash v-if=" ! isFormEditable(prohibition_number)" variant="secondary" ></b-icon-trash>&nbsp;
+        <b-icon-pen v-if=" ! isFormEditable(prohibition_number)" variant="secondary" ></b-icon-pen>
       </h6>
     </td>
   </tr>
@@ -20,7 +22,7 @@
 
 <script>
 
-import { mapMutations } from 'vuex';
+import { mapMutations, mapGetters, mapActions } from 'vuex';
 
 export default {
   name: "RecentProhibitionRow",
@@ -28,8 +30,12 @@ export default {
     prohibition_number: null,
     prohibition: {}
   },
+  computed: {
+    ...mapGetters(["isFormEditable", "getServedStatus"])
+  },
   methods: {
-    ...mapMutations(["deleteEditedForm", "editExistingForm"]),
+    ...mapMutations(["editExistingForm"]),
+    ...mapActions(["deleteSpecificForm"])
   }
 }
 </script>

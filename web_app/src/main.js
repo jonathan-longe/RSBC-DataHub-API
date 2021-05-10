@@ -7,9 +7,11 @@ import { ValidationProvider } from 'vee-validate';
 import "@/config/custom_stylesheet.scss";
 import getters from "@/store/getters.js"
 import mutations from "@/store/mutations";
+import actions from "@/store/actions";
 import form_schemas from "@/config/form_schemas.json";
 import bc_city_names from "@/config/cities.json";
 import car_colors from "@/config/car_colors.json"
+import './registerServiceWorker'
 
 Vue.use(Vuex)
 
@@ -36,10 +38,12 @@ const store = new Vuex.Store({
     form_schemas: form_schemas
   },
   mutations: mutations,
-  getters: getters
+  getters: getters,
+  actions: actions
 })
 
 new Vue({
   store: store,
+  beforeCreate() { this.$store.commit("retrieveFormsFromLocalStorage")},
   render: h => h(App),
 }).$mount('#app')

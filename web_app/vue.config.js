@@ -1,5 +1,5 @@
 module.exports = {
-  chainWebpack: config => {
+    chainWebpack: config => {
     config.module.rule('pdf')
       .test(/\.(pdf)(\?.*)?$/)
       .use('url-loader')
@@ -8,5 +8,10 @@ module.exports = {
           name: 'assets/pdf/[name].[hash:8].[ext]'
         })
 
-  }
+    },
+    pwa: {
+        workboxOptions: {
+            skipWaiting: true
+        }
+    }
 }

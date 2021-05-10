@@ -10,7 +10,7 @@
         </p>
       </div>
       <div class="w-100 text-center">
-        <b-button class="mt-3" variant="success" @click="saveAndSubmit">Ok</b-button>
+        <b-button class="mt-3" variant="success" @click="okayAcknowledged">Ok</b-button>
       </div>
 
     </b-modal>
@@ -18,19 +18,17 @@
 </template>
 
 <script>
+
+import {mapMutations} from 'vuex';
+
 export default {
   name: "PrintConfirmationModal",
   methods: {
-      saveAndSubmit() {
+      ...mapMutations(["stopEditingCurrentForm"]),
+      okayAcknowledged() {
+        this.stopEditingCurrentForm();
         this.$bvModal.hide('printConfirmationModal')
       },
-      returnToForm() {
-        this.$bvModal.hide('printConfirmationModal')
-      }
     }
 }
 </script>
-
-<style scoped>
-
-</style>

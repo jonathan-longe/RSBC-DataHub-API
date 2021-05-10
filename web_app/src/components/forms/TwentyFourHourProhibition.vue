@@ -9,7 +9,7 @@
     <form-card title="Registered Owner">
       <form-row>
         <radio-field id="driver_is_owner" fg_class="col-sm-6" :options='["Yes", "No"]'>Driver is registered owner?</radio-field>
-        <text-field v-if="isJurisdictionBC" id="owners_drivers_number">Owner's Licence Number (BC only)</text-field>
+        <text-field v-if="isPlateJurisdictionBC" id="owners_drivers_number">Owner's Licence Number (BC only)</text-field>
       </form-row>
       <form-row>
         <text-field id="owners_last_name" fg_class="col-sm-6">Owner's Last Name</text-field>
@@ -49,6 +49,7 @@
 
     <form-card title="Driver's Information" v-if="driverIsNotRegisteredOwner">
       <form-row>
+        <province-field id="drivers_licence_jurisdiction" fg_class="col-sm-2">Jurisdiction</province-field>
         <driver-licence-number id="drivers_number">Driver's Licence Number</driver-licence-number>
       </form-row>
       <form-row>
@@ -161,8 +162,8 @@
           <radio-field id="return_of_licence" fg_class="col-sm-12" :options='["By mail", "Pickup in person"]'>How will licence be returned?</radio-field>
         </form-row>
         <form-row v-if="licencePickupInPerson && isLicenceSurrendered">
-          <text-field id="pickup_address" fg_class="col-sm-6">Address</text-field>
-          <type-ahead-field id="pickup_city" fg_class="col-sm-4" :suggestions="getArrayOfBCCityNames" rules="required">City</type-ahead-field>
+          <text-field id="pickup_address" fg_class="col-sm-6">Pickup Address</text-field>
+          <type-ahead-field id="pickup_city" fg_class="col-sm-4" :suggestions="getArrayOfBCCityNames" rules="required">Pickup City</type-ahead-field>
         </form-row>
       </div>
 
@@ -190,7 +191,7 @@ export default {
   components: {CheckField},
   mixins: [FormsCommon],
   computed: {
-    ...mapGetters(["getAttributeValue"]),
+    ...mapGetters(["getAttributeValue", "isPlateJurisdictionBC"]),
     showVehicleImpounded() {
       return this.getAttributeValue('vehicle_impounded') === "Yes";
     },
@@ -220,9 +221,6 @@ export default {
     },
     isPrescribedTestUsed() {
       return this.getAttributeValue('prescribed_device').substr(0,3) === "Yes";
-    },
-    isJurisdictionBC() {
-      return this.getAttributeValue('plate_province') === 'BC'
     },
     isTestAdministeredADSE() {
       const root = this.getAttributeValue('test_administered')

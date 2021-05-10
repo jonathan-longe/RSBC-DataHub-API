@@ -11,9 +11,9 @@
              placeholder="Driver's Licence Number"
              :value="getAttributeValue(id)"
              @input="update">
-        <div class="input-group-append">
+        <div class="input-group-append" v-if="isLicenceJurisdictionBC">
           <button @click="populateDriversFromICBC(getCurrentlyEditedProhibitionNumber)"
-                  class="btn-sm" :class="icbcLookupButtonClass" >ICBC Lookup
+                  class="btn-sm btn-primary text-white">ICBC Lookup
           </button>
         </div>
       </div>
@@ -31,16 +31,9 @@ export default {
   name: "DriversLicenceNumber",
   mixins: [FieldCommon],
   computed: {
-    ...mapGetters(['getCurrentlyEditedProhibitionNumber', "getAttributeValue"]),
+    ...mapGetters(['getCurrentlyEditedProhibitionNumber', "getAttributeValue", "isLicenceJurisdictionBC"]),
     isNumberTheCorrectLength() {
       return this.getAttributeValue(this.id) === 7
-    },
-    icbcLookupButtonClass() {
-      if (this.isNumberTheCorrectLength) {
-        return " btn-primary text-white "
-      } else {
-        return " btn-secondary text-muted "
-      }
     }
   },
   methods: {

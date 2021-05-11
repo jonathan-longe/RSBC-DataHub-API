@@ -119,4 +119,4 @@ services:
           dockerfile: Dockerfile-local
 
         ports:
-            - "5007:5000"
+            - "5008:5000"

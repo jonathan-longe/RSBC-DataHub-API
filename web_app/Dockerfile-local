@@ -1,14 +1,11 @@
-FROM node:14
+FROM nginx:latest
 
 RUN useradd --create-home appuser
-WORKDIR /home/appuser
+RUN ["mkdir", "/app"]
+WORKDIR /app
 
-COPY dist /home/appuser/web_app/dist
+COPY nginx.conf /app/nginx.conf
+COPY dist /app/dist
 
-WORKDIR /home/appuser/web_app
+CMD ["nginx-debug", "-c", "/app/nginx.conf",  "-g", "daemon off;"]
 
-EXPOSE 5000
-
-RUN ["npm", "install", "-g", "serve"]
-
-CMD ["serve", "-s", "dist"]

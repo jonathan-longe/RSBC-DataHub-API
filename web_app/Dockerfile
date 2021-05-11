@@ -1,9 +1,11 @@
 # build stage
-FROM node:lts-alpine
+FROM node:lts-alpine as build-stage
 WORKDIR /app
 COPY dist/ ./dist
 
-RUN ["npm", "install", "-g", "serve"]
-
-CMD ["serve", "-s", "dist"]
+# production stage
+FROM nginx:stable-alpine as production-stage
+COPY --from=build-stage /app/dist /usr/share/nginx/html
+EXPOSE 5000
+CMD ["nginx", "-g", "daemon off;"]
 

@@ -9,16 +9,16 @@ objects:
     creationTimestamp: null
     labels:
       shared: "true"
-    name: rhscl-nodejs-8-rhel7
+    name: nginx-118
   spec:
     lookupPolicy:
       local: false
     tags:
     - annotations:
-        openshift.io/imported-from: registry.access.redhat.com/rhscl/nodejs-8-rhel7:1-50
+        openshift.io/imported-from: registry.redhat.io/ubi8/nginx-118:latest
       from:
         kind: DockerImage
-        name: registry.access.redhat.com/rhscl/nodejs-8-rhel7:1-50
+        name: registry.redhat.io/ubi8/nginx-118:latest
       generation: null
       importPolicy: {}
       name: "1"
@@ -72,7 +72,7 @@ objects:
         env: []
         from:
           kind: ImageStreamTag
-          name: rhscl-nodejs-8-rhel7:1
+          name: nginx-118:1
       type: Docker
     successfulBuildsHistoryLimit: 3
     triggers:

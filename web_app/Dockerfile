@@ -1,7 +1,7 @@
 FROM nginx:latest
-COPY nginx.conf /etc/nginx/nginx.conf
+# COPY nginx.conf /etc/nginx/nginx.conf
 WORKDIR /app
-COPY dist/ ./dist
+COPY dist /usr/share/nginx/html
 
 CMD ["nginx", "-g", "daemon off;"]
 

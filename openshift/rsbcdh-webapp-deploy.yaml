@@ -146,7 +146,7 @@ objects:
     host: ${NAME}-${COMPONENT}${SUFFIX}${URL_SUFFIX}
     path: ""
     port:
-      targetPort: 5000-tcp
+      targetPort: 8080-tcp
     tls:
       termination: edge
     to:

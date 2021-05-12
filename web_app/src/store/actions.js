@@ -6,13 +6,14 @@ export default {
 
     saveDoNotPrint (context) {
         console.log("inside actions.js saveDoNotPrint()");
-        context.commit('stopEditingForm');
+        context.commit('stopEditingCurrentForm');
         context.commit('saveFormsToLocalStorage');
     },
 
-    deleteSpecificForm({ commit }, prohibition_number) {
-        commit('deleteForm', prohibition_number)
-        commit('stopEditingForm');
+    deleteSpecificForm({ commit }, prohibition_index) {
+        commit('deleteForm', prohibition_index)
+        commit('saveFormsToLocalStorage');
+        commit('stopEditingCurrentForm');
     },
 
 

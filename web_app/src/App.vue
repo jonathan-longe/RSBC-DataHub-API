@@ -11,7 +11,6 @@
     </div>
     <offline-banner v-if="isNetworkOnline"></offline-banner>
     <component v-if="isFormBeingEdited" :data="getCurrentlyEditedForm.data"
-               :prohibition_number="getSelectedFormComponent.prohibition_number"
                :is="getSelectedFormComponent" :name="getCurrentlyEditedForm.short_name">
     </component>
     <recent-prohibitions v-if="isRecentProhibitions && ! isFormBeingEdited"></recent-prohibitions>

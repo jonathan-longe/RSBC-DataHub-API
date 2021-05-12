@@ -32,9 +32,8 @@ const store = new Vuex.Store({
     isOnline: null,
     bc_city_names: bc_city_names,
     car_colors: car_colors,
-    edited_prohibition_numbers: Array(),
     edited_forms: Array(),
-    currently_editing_prohibition_number: null,
+    currently_editing_prohibition_index: null,
     form_schemas: form_schemas
   },
   mutations: mutations,

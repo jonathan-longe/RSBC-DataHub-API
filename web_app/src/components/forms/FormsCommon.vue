@@ -23,7 +23,6 @@ export default {
   name: "FormsCommon",
     props: {
       data: {},
-      prohibition_number: null,
       name: null
   },
   data() {

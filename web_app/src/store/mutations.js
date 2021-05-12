@@ -5,21 +5,20 @@ export default {
 
     setNewFormToEdit (state, form) {
         console.log('inside setNewFormToEdit')
-        const prohibition_number = ulid().substr(0,12)
-        const form_copy = JSON.parse(JSON.stringify(form))
-        state.currently_editing_prohibition_number = prohibition_number
-        form_copy.prohibition_number = prohibition_number;
-        state.edited_prohibition_numbers.push(prohibition_number);
-        Vue.set(state.edited_forms, prohibition_number, form_copy);
-        Vue.set(state.edited_forms[prohibition_number], "data", Object());
-        Vue.set(state.edited_forms[prohibition_number].data, "served", false);
-        Vue.set(state.edited_forms[prohibition_number].data, "submitted", false);
+        let new_index = state.edited_forms.push(JSON.parse(JSON.stringify(form))) - 1;
+        let root = state.edited_forms[new_index]
+        console.log("root", root)
+        Vue.set( root, "data", Object())
+        Vue.set( root.data, "served", false);
+        Vue.set( root.data, "submitted", false);
+        Vue.set( root.data, "prohibition_number", ulid().substr(0,12))
+        state.currently_editing_prohibition_index = new_index;
         console.log("check edited_forms: " + JSON.stringify(state.edited_forms));
     },
 
-    editExistingForm (state, prohibition_number) {
-       console.log("inside editExistingForm: " + prohibition_number)
-       state.currently_editing_prohibition_number = prohibition_number;
+    editExistingForm (state, prohibition_index) {
+       console.log("inside editExistingForm: " + prohibition_index)
+       state.currently_editing_prohibition_index = prohibition_index;
 
     },
 
@@ -27,25 +26,25 @@ export default {
         console.log("inside mutations.js updateFormField(): " + JSON.stringify(payload))
         console.log("ID: " + payload.target.id)
         console.log("value: " + payload.target.value)
-        const id = payload.target.id;
-        const value = payload.target.value;
-        const prohibition_number = state.currently_editing_prohibition_number;
-        Vue.set(state.edited_forms[prohibition_number].data, id, value);
+        let id = payload.target.id;
+        let value = payload.target.value;
+        let prohibition_index = state.currently_editing_prohibition_index
+        Vue.set(state.edited_forms[prohibition_index].data, id, value);
     },
 
     updateCheckBox (state, payload) {
         console.log("inside mutations.js updateCheckBox():", payload)
         console.log("ID: " + payload.target.id)
         console.log("value: " + payload.target.value)
-        const id = payload.target.id;
-        const value = payload.target.value;
-        const prohibition_number = state.currently_editing_prohibition_number;
-        const root = state.edited_forms[prohibition_number].data
+        let id = payload.target.id;
+        let value = payload.target.value;
+        let prohibition_index = state.currently_editing_prohibition_index
+        let root = state.edited_forms[prohibition_index].data
         if (root[id]) {
             if ((root[id].includes(value)) ) {
                 // item exists; remove it
                 console.log(value, 'exists, remove it')
-                const indexOfValue = root[id].indexOf(value)
+                let indexOfValue = root[id].indexOf(value)
                 root[id].splice(indexOfValue, 1)
             } else {
                 // item doesn't exist; so add it
@@ -61,46 +60,34 @@ export default {
 
     saveFormsToLocalStorage (state) {
          console.log("inside mutations.js saveFormsToLocalStorage()");
-         const prohibition_numbers = state.edited_prohibition_numbers
-         const local_edited_forms = Array()
-         prohibition_numbers.forEach( prohibition_number => {
-             local_edited_forms.push(state.edited_forms[prohibition_number])
-         })
-         localStorage.digitalProhibitions = JSON.stringify(local_edited_forms);
+         localStorage.setItem("digitalProhibitions", JSON.stringify(state.edited_forms) );
     },
 
     retrieveFormsFromLocalStorage (state) {
-        if (localStorage.digitalProhibitions) {
+        let digitalProhibitions = localStorage.getItem("digitalProhibitions");
+        if (digitalProhibitions) {
+            let local_data = JSON.parse(digitalProhibitions);
             console.log("localStorage.digitalProhibitions does exists");
-            const local_data = JSON.parse(localStorage.digitalProhibitions);
             local_data.forEach( form => {
-                state.edited_prohibition_numbers.push(form.prohibition_number);
-                state.edited_forms[form.prohibition_number] = form;
+                state.edited_forms.push(form);
             })
         } else {
             console.log("localStorage.digitalProhibitions does not exist")
         }
     },
 
-    stopEditingForm (state) {
-        console.log("inside mutations.js stopEditingForm()")
-        state.currently_editing_prohibition_number = null;
-    },
-
-    deleteForm(state, prohibition_number) {
+    deleteForm(state, prohibition_index) {
         console.log("inside mutations.js deleteForm()")
-        const indexToDelete = state.edited_prohibition_numbers.indexOf(prohibition_number);
-        Vue.delete(state.edited_prohibition_numbers, indexToDelete)
-        Vue.delete(state.edited_forms, prohibition_number)
+        Vue.delete(state.edited_forms, prohibition_index)
     },
 
     stopEditingCurrentForm(state) {
-        state.currently_editing_prohibition_number = null;
+        state.currently_editing_prohibition_index = null;
     },
 
     markFormStatusAsServed(state) {
-        const prohibition_number = state.currently_editing_prohibition_number;
-        Vue.set(state.edited_forms[prohibition_number].data, "served", true)
+        let prohibition_index = state.currently_editing_prohibition_index
+        Vue.set(state.edited_forms[prohibition_index].data, "served", true)
     },
 
     networkBackOnline(state) {
@@ -111,53 +98,53 @@ export default {
         state.isOnline = false;
     },
 
-    populateDriversFromICBC(state, prohibition_number) {
+    populateDriversFromICBC(state, prohibition_index) {
         // TODO - remove before flight
         // TODO - populates Driver's information using fictitious data
-        console.log("inside mutations.js populateDriversFromICBC(): " + prohibition_number)
-        populateDriver(state,prohibition_number)
+        console.log("inside mutations.js populateDriversFromICBC(): " + prohibition_index)
+        populateDriver(state,prohibition_index)
     },
 
     populateFromICBCPlateLookup(state) {
         // TODO - remove before flight
         // TODO - populates Driver's information using fictitious data
-        const prohibition_number = state.currently_editing_prohibition_number;
-        console.log("inside mutations.js populateFromICBCPlateLookup(): " + prohibition_number)
-        populateDriver(state,prohibition_number);
-        populateRegisteredOwner(state,prohibition_number);
-        populateVehicleInfo(state,prohibition_number);
+        let prohibition_index = state.currently_editing_prohibition_index;
+        console.log("inside mutations.js populateFromICBCPlateLookup(): " + prohibition_index)
+        populateDriver(state,prohibition_index);
+        populateRegisteredOwner(state,prohibition_index);
+        populateVehicleInfo(state,prohibition_index);
     }
 }
 
-function populateVehicleInfo(state, prohibition_number) {
-    Vue.set(state.edited_forms[prohibition_number].data, "plate_year", "2021");
-    Vue.set(state.edited_forms[prohibition_number].data, "plate_val_tag", "1234567");
-    Vue.set(state.edited_forms[prohibition_number].data, "registration_number", "1234567");
-    Vue.set(state.edited_forms[prohibition_number].data, "vehicle_year", "2014");
-    Vue.set(state.edited_forms[prohibition_number].data, "vehicle_make", "Honda");
-    Vue.set(state.edited_forms[prohibition_number].data, "vehicle_model", "Civic");
-    Vue.set(state.edited_forms[prohibition_number].data, "vehicle_color", "Red");
+function populateVehicleInfo(state, prohibition_index) {
+    Vue.set(state.edited_forms[prohibition_index].data, "plate_year", "2021");
+    Vue.set(state.edited_forms[prohibition_index].data, "plate_val_tag", "1234567");
+    Vue.set(state.edited_forms[prohibition_index].data, "registration_number", "1234567");
+    Vue.set(state.edited_forms[prohibition_index].data, "vehicle_year", "2014");
+    Vue.set(state.edited_forms[prohibition_index].data, "vehicle_make", "Honda");
+    Vue.set(state.edited_forms[prohibition_index].data, "vehicle_model", "Civic");
+    Vue.set(state.edited_forms[prohibition_index].data, "vehicle_color", "Red");
 }
 
 
-function populateRegisteredOwner(state,prohibition_number) {
-    Vue.set(state.edited_forms[prohibition_number].data, "owners_drivers_number", "1234567");
-    Vue.set(state.edited_forms[prohibition_number].data, "owners_last_name", "Smith");
-    Vue.set(state.edited_forms[prohibition_number].data, "owners_first_name", "Fictitious");
-    Vue.set(state.edited_forms[prohibition_number].data, "owners_address1", "123 Imaginary Street");
-    Vue.set(state.edited_forms[prohibition_number].data, "owners_city", "Vanderhoof");
-    Vue.set(state.edited_forms[prohibition_number].data, "owners_province", "BC");
-    Vue.set(state.edited_forms[prohibition_number].data, "owners_postal", "V8R 5A5");
-    Vue.set(state.edited_forms[prohibition_number].data, "drivers_number", "1234567");
+function populateRegisteredOwner(state,prohibition_index) {
+    Vue.set(state.edited_forms[prohibition_index].data, "owners_drivers_number", "1234567");
+    Vue.set(state.edited_forms[prohibition_index].data, "owners_last_name", "Smith");
+    Vue.set(state.edited_forms[prohibition_index].data, "owners_first_name", "Fictitious");
+    Vue.set(state.edited_forms[prohibition_index].data, "owners_address1", "123 Imaginary Street");
+    Vue.set(state.edited_forms[prohibition_index].data, "owners_city", "Vanderhoof");
+    Vue.set(state.edited_forms[prohibition_index].data, "owners_province", "BC");
+    Vue.set(state.edited_forms[prohibition_index].data, "owners_postal", "V8R 5A5");
+    Vue.set(state.edited_forms[prohibition_index].data, "drivers_number", "1234567");
 }
 
 
-function populateDriver(state, prohibition_number) {
-    Vue.set(state.edited_forms[prohibition_number].data, "last_name", "Smith");
-    Vue.set(state.edited_forms[prohibition_number].data, "first_name", "Fictitious");
-    Vue.set(state.edited_forms[prohibition_number].data, "address1", "123 Imaginary Street");
-    Vue.set(state.edited_forms[prohibition_number].data, "city", "Vanderhoof");
-    Vue.set(state.edited_forms[prohibition_number].data, "province", "BC");
-    Vue.set(state.edited_forms[prohibition_number].data, "postal", "V8R 5A5");
-    Vue.set(state.edited_forms[prohibition_number].data, "dob", "2002-01-15");
+function populateDriver(state, prohibition_index) {
+    Vue.set(state.edited_forms[prohibition_index].data, "last_name", "Smith");
+    Vue.set(state.edited_forms[prohibition_index].data, "first_name", "Fictitious");
+    Vue.set(state.edited_forms[prohibition_index].data, "address1", "123 Imaginary Street");
+    Vue.set(state.edited_forms[prohibition_index].data, "city", "Vanderhoof");
+    Vue.set(state.edited_forms[prohibition_index].data, "province", "BC");
+    Vue.set(state.edited_forms[prohibition_index].data, "postal", "V8R 5A5");
+    Vue.set(state.edited_forms[prohibition_index].data, "dob", "2002-01-15");
 }

@@ -12,7 +12,7 @@
            class="form-control form-control-sm"
            placeholder="YYYY-MM-DD"
            :value="getAttributeValue(id)"
-            @input="update">
+            @input="updateFormField">
       <div class="small text-danger">{{ errors[0] }}</div>
     </div>
   </validation-provider>
@@ -22,13 +22,15 @@
 <script>
 
 import FieldCommon from "@/components/questions/FieldCommon";
-import { mapGetters } from 'vuex';
+import {mapGetters, mapMutations} from 'vuex';
 import moment from 'moment';
 
 export default {
   name: "DoBField",
   mixins: [FieldCommon],
-
+  methods: {
+    ...mapMutations(['updateFormField'])
+  },
   computed: {
     ...mapGetters(["getAttributeValue"]),
     yearsOld() {

@@ -125,16 +125,27 @@
                        "No, refused by driver"]'>Was a prescribed test used to form reasonable grounds?
           </radio-field>
         </form-row>
-        <form-row v-if="isProhibitionTypeAlcohol">
+        <form-row v-if="isPrescribedTestUsed && isProhibitionTypeAlcohol">
           <check-field  id="test_administered" fg_class="col-sm-6"
                        :options='["Alco-Sensor FST (ASD)"]'>Test Administered
           </check-field>
-          <date-field v-if="isProhibitionTypeAlcohol" id="asd_expiry_date" fg_class="col-sm-6" rules="notExpired">ASD expiry date</date-field>
+          <date-field v-if="isProhibitionTypeAlcohol && isTestAdministeredASD" id="asd_expiry_date" fg_class="col-sm-6" rules="notExpired">ASD expiry date</date-field>
+          <radio-field v-if="isProhibitionTypeAlcohol && isTestAdministeredASD" id="result_alcohol" fg_class="col-sm-12"
+                       :options='["51-99 mg%", "Over 99 mg%"]'>Result - ASD</radio-field>
+        </form-row>
+        <form-row v-if="isPrescribedTestUsed && isProhibitionTypeAlcohol">
+          <check-field  id="test_administered" fg_class="col-sm-6"
+                       :options='["Approved Instrument"]'>Test Administered
+          </check-field>
+          <radio-field v-if="isProhibitionTypeAlcohol && isTestAdministeredApprovedInstrument" id="result_alcohol_approved_instrument" fg_class="col-sm-12"
+                       :options='["BAC"]'>Result - approved instrument</radio-field>
         </form-row>
         <form-row v-if="isPrescribedTestUsed">
           <check-field  v-if="isProhibitionTypeDrugs" id="test_administered" fg_class="col-sm-6"
                        :options='["Approved Drug Screening Equipment"]'>Test Administered
           </check-field>
+          <check-field v-if="isProhibitionTypeDrugs && isTestAdministeredADSE" id="positive_adse" fg_class="col-sm-12"
+                       :options='["THC", "Cocaine"]'>Result - roadside</check-field>
           <date-time v-if="isProhibitionTypeDrugs && isTestAdministeredADSE" id="time_of_physical_test_adse" fg_class="col-sm-6">Time of test</date-time>
         </form-row>
         <form-row v-if="isPrescribedTestUsed">
@@ -147,11 +158,14 @@
           <check-field  v-if="isProhibitionTypeDrugs" id="test_administered" fg_class="col-sm-6"
                        :options='["Prescribed Physical Coordination Test (DRE)"]'>&nbsp;
           </check-field>
-          <date-time v-if="isProhibitionTypeDrugs && isTestAdministeredDRE" id="time_of_physical_test_dre" fg_class="col-sm-6">Time of test</date-time>
+          <radio-field v-if="isProhibitionTypeDrugs && isTestAdministeredDRE"  id="result_dre_affected" fg_class="col-sm-12"
+                       :options='["affected", "impaired"]'>Opinion of evaluator</radio-field>
+          <date-time v-if="isProhibitionTypeDrugs && isTestAdministeredDRE" id="start_time_of_physical_test_dre" fg_class="col-sm-6">Time of opinion</date-time>
+          <text-field v-if="isProhibitionTypeDrugs && isTestAdministeredDRE" id="positive_dre" fg_class="col-sm-12">Notes (expand to 3 lines)</text-field>
+
         </form-row>
         <form-row v-if="isPrescribedTestUsed">
-          <radio-field v-if="isProhibitionTypeAlcohol" id="result_alcohol" fg_class="col-sm-12"
-                       :options='["51-99 mg%", "Over 99 mg%", "BAC"]'>Result</radio-field>
+
           <check-field v-if="isProhibitionTypeDrugs" id="result_drug" fg_class="col-sm-12"
                        :options='["Ability to drive affected by a drug"]'>Result</check-field>
         </form-row>
@@ -191,15 +205,12 @@ export default {
   components: {CheckField},
   mixins: [FormsCommon],
   computed: {
-    ...mapGetters(["getAttributeValue", "isPlateJurisdictionBC"]),
+    ...mapGetters(["getAttributeValue", "isPlateJurisdictionBC", "driverIsNotRegisteredOwner"]),
     showVehicleImpounded() {
       return this.getAttributeValue('vehicle_impounded') === "Yes";
     },
     showVehicleNotImpounded() {
       return this.getAttributeValue('vehicle_impounded') === "No";
-    },
-    driverIsNotRegisteredOwner() {
-      return this.getAttributeValue('driver_is_owner') === "No";
     },
     licencePickupInPerson() {
       return this.getAttributeValue('return_of_licence') === "Pickup in person";
@@ -221,6 +232,22 @@ export default {
     },
     isPrescribedTestUsed() {
       return this.getAttributeValue('prescribed_device').substr(0,3) === "Yes";
+    },
+    isTestAdministeredASD() {
+      const root = this.getAttributeValue('test_administered')
+      console.log('test_administered', root)
+      if (Array.isArray(root)) {
+        return root.includes("Alco-Sensor FST (ASD)")
+      }
+      return false;
+    },
+    isTestAdministeredApprovedInstrument() {
+      const root = this.getAttributeValue('test_administered')
+      console.log('test_administered', root)
+      if (Array.isArray(root)) {
+        return root.includes("Approved Instrument")
+      }
+      return false;
     },
     isTestAdministeredADSE() {
       const root = this.getAttributeValue('test_administered')

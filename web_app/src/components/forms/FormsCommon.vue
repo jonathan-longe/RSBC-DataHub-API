@@ -16,6 +16,7 @@ import PlateNumber from "@/components/questions/PlateNumber";
 import PrintConfirmationModal from "@/components/PrintConfirmationModal";
 import RadioField from "@/components/questions/RadioField";
 import CheckField from "@/components/questions/CheckField";
+import ShadowBox from "@/components/forms/ShadowBox";
 import { mapGetters } from "vuex";
 
 
@@ -50,7 +51,8 @@ export default {
     PlateNumber,
     RadioField,
     CheckField,
-    DateField
+    DateField,
+    ShadowBox
   }
 }
 </script>

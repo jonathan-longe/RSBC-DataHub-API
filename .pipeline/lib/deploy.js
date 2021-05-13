@@ -103,7 +103,7 @@ module.exports = settings => {
     }
   }))
   if (phase === "dev" || phase === "pr") {
-    objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/rsbcdh-webapp-deploy.yaml`, {
+    objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/rsbcdh-prohibition-web-app-deploy.yaml`, {
       'param': {
         'NAME': phases[phase].name,
         'SUFFIX': phases[phase].suffix,

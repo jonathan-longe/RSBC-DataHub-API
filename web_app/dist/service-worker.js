@@ -14,10 +14,10 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/precache-manifest.3a10bc9d9bb5d53c6e3069e231cf5dcb.js"
+  "/precache-manifest.0a8740b95cbb27c650ad33a932fae19e.js"
 );
 
-workbox.core.setCacheNameDetails({prefix: "web_app"});
+workbox.core.setCacheNameDetails({prefix: "prohibition_web_app"});
 
 workbox.core.skipWaiting();
 

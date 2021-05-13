@@ -1,4 +1,4 @@
-# web_app
+# prohibition_web_app
 
 ## Project setup
 ```

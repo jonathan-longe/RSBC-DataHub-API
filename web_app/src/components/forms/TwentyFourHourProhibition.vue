@@ -78,7 +78,7 @@
                      :options='["Released to other driver", "Left at roadside", "Private tow", "Seized for investigation"]'
                      :visible="showVehicleNotImpounded">Reason for not impounding?</radio-field>
       </form-row>
-      <form-row>
+      <form-row v-if="isReleasedToOtherDriver">
         <text-field id="vehicle_released_to" :visible="showVehicleNotImpounded" fg_class="col-sm-6" >
           Vehicle Released To</text-field>
         <date-time id="datetime_released" :visible="showVehicleNotImpounded" fg_class="col-sm-6" >
@@ -125,61 +125,86 @@
                        "No, refused by driver"]'>Was a prescribed test used to form reasonable grounds?
           </radio-field>
         </form-row>
-        <form-row v-if="isPrescribedTestUsed && isProhibitionTypeAlcohol">
-          <check-field  id="test_administered" fg_class="col-sm-6"
-                       :options='["Alco-Sensor FST (ASD)"]'>Test Administered
-          </check-field>
+      </div>
+    </form-card>
+
+    <form-card v-if="isPrescribedTestUsed" :title="testAdministeredTitle">
+      <shadow-box v-if="isProhibitionTypeAlcohol">
+        <form-row>
+          <check-field :show_label="false"  id="test_administered" fg_class="col-sm-6"
+                       :options='["Alco-Sensor FST (ASD)"]'>Test Administered</check-field>
           <date-field v-if="isProhibitionTypeAlcohol && isTestAdministeredASD" id="asd_expiry_date" fg_class="col-sm-6" rules="notExpired">ASD expiry date</date-field>
           <radio-field v-if="isProhibitionTypeAlcohol && isTestAdministeredASD" id="result_alcohol" fg_class="col-sm-12"
-                       :options='["51-99 mg%", "Over 99 mg%"]'>Result - ASD</radio-field>
+                       :options='["51-99 mg%", "Over 99 mg%"]'>Result</radio-field>
         </form-row>
-        <form-row v-if="isPrescribedTestUsed && isProhibitionTypeAlcohol">
-          <check-field  id="test_administered" fg_class="col-sm-6"
-                       :options='["Approved Instrument"]'>Test Administered
-          </check-field>
-          <radio-field v-if="isProhibitionTypeAlcohol && isTestAdministeredApprovedInstrument" id="result_alcohol_approved_instrument" fg_class="col-sm-12"
-                       :options='["BAC"]'>Result - approved instrument</radio-field>
+      </shadow-box>
+      <shadow-box v-if="isProhibitionTypeAlcohol && isPrescribedTestUsed">
+        <form-row>
+          <check-field :show_label="false"  id="test_administered" fg_class="col-sm-6"
+                       :options='["Approved Instrument"]'></check-field>
+          <check-field v-if="isTestAdministeredApprovedInstrument" id="result_alcohol_approved_instrument" fg_class="col-sm-12"
+                       :options='["BAC"]'>Result</check-field>
         </form-row>
-        <form-row v-if="isPrescribedTestUsed">
-          <check-field  v-if="isProhibitionTypeDrugs" id="test_administered" fg_class="col-sm-6"
+      </shadow-box>
+      <shadow-box v-if="isProhibitionTypeDrugs">
+        <form-row>
+          <check-field :show_label="false" id="test_administered" fg_class="col-sm-6"
                        :options='["Approved Drug Screening Equipment"]'>Test Administered
           </check-field>
-          <check-field v-if="isProhibitionTypeDrugs && isTestAdministeredADSE" id="positive_adse" fg_class="col-sm-12"
-                       :options='["THC", "Cocaine"]'>Result - roadside</check-field>
-          <date-time v-if="isProhibitionTypeDrugs && isTestAdministeredADSE" id="time_of_physical_test_adse" fg_class="col-sm-6">Time of test</date-time>
-        </form-row>
-        <form-row v-if="isPrescribedTestUsed">
-          <check-field  v-if="isProhibitionTypeDrugs" id="test_administered" fg_class="col-sm-6"
-                       :options='["Prescribed Physical Coordination Test (SFST)"]'>&nbsp;
-          </check-field>
-          <date-time v-if="isProhibitionTypeDrugs && isTestAdministeredSFST" id="time_of_physical_test_sfst" fg_class="col-sm-6">Time of test</date-time>
-        </form-row>
-        <form-row v-if="isPrescribedTestUsed">
-          <check-field  v-if="isProhibitionTypeDrugs" id="test_administered" fg_class="col-sm-6"
-                       :options='["Prescribed Physical Coordination Test (DRE)"]'>&nbsp;
-          </check-field>
-          <radio-field v-if="isProhibitionTypeDrugs && isTestAdministeredDRE"  id="result_dre_affected" fg_class="col-sm-12"
-                       :options='["affected", "impaired"]'>Opinion of evaluator</radio-field>
-          <date-time v-if="isProhibitionTypeDrugs && isTestAdministeredDRE" id="start_time_of_physical_test_dre" fg_class="col-sm-6">Time of opinion</date-time>
-          <text-field v-if="isProhibitionTypeDrugs && isTestAdministeredDRE" id="positive_dre" fg_class="col-sm-12">Notes (expand to 3 lines)</text-field>
-
-        </form-row>
-        <form-row v-if="isPrescribedTestUsed">
-
-          <check-field v-if="isProhibitionTypeDrugs" id="result_drug" fg_class="col-sm-12"
-                       :options='["Ability to drive affected by a drug"]'>Result</check-field>
         </form-row>
         <form-row>
-          <radio-field id="licence_surrendered" fg_class="col-sm-12" :options='["Yes", "No"]'>Licence surrendered at roadside?</radio-field>
+          <check-field v-if="isTestAdministeredADSE" id="positive_adse" fg_class="col-sm-6"
+                       :options='["THC", "Cocaine"]'>Result - roadside</check-field>
+          <date-time v-if="isTestAdministeredADSE" id="time_of_physical_test_adse" fg_class="col-sm-6">Time of test</date-time>
         </form-row>
-        <form-row v-if="isLicenceSurrendered">
-          <radio-field id="return_of_licence" fg_class="col-sm-12" :options='["By mail", "Pickup in person"]'>How will licence be returned?</radio-field>
+      </shadow-box>
+      <shadow-box v-if="isProhibitionTypeDrugs && isPrescribedTestUsed">
+        <form-row>
+          <check-field :show_label="false" id="test_administered" fg_class="col-sm-6"
+                       :options='["Prescribed Physical Coordination Test (SFST)"]'>&nbsp;
+          </check-field>
+          <date-time v-if="isTestAdministeredSFST" id="time_of_physical_test_sfst" fg_class="col-sm-6">Time of test</date-time>
         </form-row>
-        <form-row v-if="licencePickupInPerson && isLicenceSurrendered">
-          <text-field id="pickup_address" fg_class="col-sm-6">Pickup Address</text-field>
-          <type-ahead-field id="pickup_city" fg_class="col-sm-4" :suggestions="getArrayOfBCCityNames" rules="required">Pickup City</type-ahead-field>
+        <form-row v-if="isTestAdministeredSFST">
+          <check-field id="result_drug_sfst" fg_class="col-sm-12"
+                       :options='["Ability to drive affected by a drug"]'>Result</check-field>
         </form-row>
-      </div>
+      </shadow-box>
+      <shadow-box v-if="isProhibitionTypeDrugs && isPrescribedTestUsed">
+        <form-row>
+          <check-field :show_label="false" id="test_administered" fg_class="col-sm-6"
+                       :options='["Prescribed Physical Coordination Test (DRE)"]'>&nbsp;
+          </check-field>
+        </form-row>
+        <form-row v-if="isTestAdministeredDRE">
+          <radio-field id="result_dre_affected" fg_class="col-sm-6"
+                       :options='["affected", "impaired"]'>Opinion of evaluator</radio-field>
+          <date-time id="start_time_of_physical_test_dre" fg_class="col-sm-6">Time of opinion</date-time>
+          <text-field id="positive_dre" fg_class="col-sm-12">Notes (expand to 3 lines)</text-field>
+
+        </form-row>
+        <form-row v-if="isTestAdministeredDRE">
+          <check-field id="result_drug_sfst" fg_class="col-sm-12"
+                       :options='["Ability to drive affected by a drug"]'>Result</check-field>
+        </form-row>
+      </shadow-box>
+    </form-card>
+
+    <form-card title="Driver's licence">
+      <form-row>
+        <radio-field id="licence_surrendered" fg_class="col-sm-12" :options='["Yes", "No"]'>Licence surrendered at roadside?</radio-field>
+      </form-row>
+      <form-row v-if="isLicenceSurrendered">
+        <radio-field id="return_of_licence" fg_class="col-sm-12" :options='["By mail", "Pickup in person"]'>How will licence be returned?</radio-field>
+      </form-row>
+      <form-row v-if="licencePickupInPerson && isLicenceSurrendered">
+        <text-field id="pickup_address" fg_class="col-sm-6">Pickup Address</text-field>
+        <type-ahead-field id="pickup_city" fg_class="col-sm-4" :suggestions="getArrayOfBCCityNames" rules="required">Pickup City</type-ahead-field>
+      </form-row>
+    </form-card>
+
+
+    <form-card title="Miscellaneous">
 
       <form-row>
         <text-field id="agency" fg_class="col-sm-2">Agency</text-field>
@@ -188,6 +213,8 @@
           Time of driving, care or control
         </date-time>
       </form-row>
+
+
     </form-card>
     <form-submission-buttons></form-submission-buttons>
     <print-confirmation-modal id="printConfirmationModal" title="printConfirmation"></print-confirmation-modal>
@@ -272,6 +299,12 @@ export default {
         return root.includes("Prescribed Physical Coordination Test (DRE)")
       }
       return false;
+    },
+    isReleasedToOtherDriver() {
+      return this.getAttributeValue('reason_for_not_impounding') === "Released to other driver";
+    },
+    testAdministeredTitle() {
+      return "Test Administered - " + this.getAttributeValue('prohibition_type')
     }
   }
 }

@@ -26,5 +26,7 @@ CMD [ "echo" , "python files copied" ]
 RUN [ "pwd" ]
 RUN [ "ls", "-R" ]
 
+RUN ["python", "-m", "pytest", "python/paybc_api/tests"]
+
 CMD [ "gunicorn", "--bind", "0.0.0.0:5000", "--pythonpath", "python/paybc_api", "wsgi:create_app()" ]
 

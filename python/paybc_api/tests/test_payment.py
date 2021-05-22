@@ -1,10 +1,13 @@
 import pytest
+import python.tests.vips_mock as vips_mock
 import pytz
 import json
 import datetime
 import logging
 import base64
+import responses
 from python.paybc_api.website.config import Config
+from python.tests.rabbit_mock import MockRabbitMQ
 import python.paybc_api.website.routes as routes
 import python.paybc_api.website.app as app
 import python.common.vips_api as vips
@@ -48,41 +51,37 @@ def test_search_endpoint_requires_an_access_token(token, client, monkeypatch):
 
 
 @pytest.mark.parametrize("prohibition_types", ['IRP', 'ADP', 'UL'])
-def test_applicant_search_returns_error_if_entered_last_name_incorrect(prohibition_types, token, client, monkeypatch):
-
-    def mock_status_get(*args, **kwargs):
-        return status_get(True, prohibition_types, "2020-09-01", "Wrong-Name", True, True)
-
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
-
-    response = client.get('/api_v2/search', query_string=get_search_payload(), headers=get_oauth_auth_header(token))
+@responses.activate
+def test_applicant_search_returns_error_if_entered_last_name_incorrect(prohibition_types, token, client):
+    responses.add(responses.GET,
+                  'http://localhost/20123456/status/abcd',
+                  json=vips_mock.status_applied_not_paid(prohibition_types),
+                  status=404, match_querystring=True)
+    response = client.get('/api_v2/search', query_string=get_search_payload(last_name='Missing'), headers=get_oauth_auth_header(token))
     logging.warning("search: {}".format(response.json))
     assert "The last name doesn't match a driving prohibition in the system." in response.json['error']
     assert response.status_code == 200
 
 
 @pytest.mark.parametrize("prohibition_types", ['IRP', 'ADP', 'UL'])
-def test_applicant_search_returns_error_if_already_paid(prohibition_types, token, client, monkeypatch):
-
-    def mock_status_get(*args, **kwargs):
-        return status_get(True, prohibition_types, "2020-09-01", "Gordon", True, True)
-
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
-
+@responses.activate
+def test_applicant_search_returns_error_if_already_paid(prohibition_types, token, client):
+    responses.add(responses.GET,
+                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  json=vips_mock.status_applied_and_paid_not_scheduled(prohibition_types),
+                  status=200)
     response = client.get('/api_v2/search', query_string=get_search_payload(), headers=get_oauth_auth_header(token))
     logging.warning("search: {}".format(response.json))
     assert "The application review fee has already been paid." in response.json['error']
     assert response.status_code == 200
 
 
-@pytest.mark.parametrize("prohibition_types", ['IRP', 'ADP', 'UL'])
-def test_applicant_search_returns_error_if_not_found_in_vips(prohibition_types, token, client, monkeypatch):
-
-    def mock_status_get(*args, **kwargs):
-        return status_get(False, prohibition_types, "2020-09-01", "Gordon", True, True)
-
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
-
+@responses.activate
+def test_applicant_search_returns_error_if_not_found_in_vips(token, client):
+    responses.add(responses.GET,
+                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  json=vips_mock.status_not_found(),
+                  status=404)
     response = client.get('/api_v2/search', query_string=get_search_payload(), headers=get_oauth_auth_header(token))
     logging.warning("search: {}".format(response.json))
     assert "The driving prohibition isn't in the system." in response.json['error']
@@ -90,32 +89,34 @@ def test_applicant_search_returns_error_if_not_found_in_vips(prohibition_types, 
 
 
 @pytest.mark.parametrize("prohibition_type", ['IRP', 'ADP'])
-def test_applicant_search_returns_error_if_irp_or_adp_older_than_8_days(prohibition_type, token, client, monkeypatch):
+@responses.activate
+def test_applicant_search_returns_error_if_irp_or_adp_older_than_8_days(prohibition_type, token, client):
     iso_format = "%Y-%m-%d"
     tz = pytz.timezone('America/Vancouver')
     date_served = (datetime.datetime.now(tz) - datetime.timedelta(days=9)).strftime(iso_format)
 
-    def mock_status_get(*args, **kwargs):
-        return status_get(True, prohibition_type, date_served, "Gordon", False, True)
-
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
+    responses.add(responses.GET,
+                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  json=vips_mock.status_applied_not_paid(prohibition_type, date_served),
+                  status=200)
 
     response = client.get('/api_v2/search', query_string=get_search_payload(), headers=get_oauth_auth_header(token))
-    logging.warning("search: {}".format(response.json))
+    logging.warning("search: {}".format(response.json['error']))
     assert "The Notice of Prohibition was issued more than 7 days ago." in response.json['error']
     assert response.status_code == 200
 
 
 @pytest.mark.parametrize("prohibition_type", ['IRP', 'ADP'])
-def test_applicant_search_successful_if_irp_or_adp_7_days_old(prohibition_type, token, client, monkeypatch):
+@responses.activate
+def test_applicant_search_successful_if_irp_or_adp_7_days_old(prohibition_type, token, client):
     iso_format = "%Y-%m-%d"
     tz = pytz.timezone('America/Vancouver')
     date_served = (datetime.datetime.now(tz) - datetime.timedelta(days=8)).strftime(iso_format)
 
-    def mock_status_get(*args, **kwargs):
-        return status_get(True, prohibition_type, date_served, "Gordon", False, True)
-
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
+    responses.add(responses.GET,
+                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  json=vips_mock.status_applied_not_paid(prohibition_type, date_served),
+                  status=200)
 
     response = client.get('/api_v2/search', query_string=get_search_payload(), headers=get_oauth_auth_header(token))
     logging.warning("search: {}".format(response.json))
@@ -124,15 +125,16 @@ def test_applicant_search_successful_if_irp_or_adp_7_days_old(prohibition_type, 
     assert response.status_code == 200
 
 
-def test_applicant_search_successful_if_a_ul_review_older_than_8_days(token, client, monkeypatch):
+@responses.activate
+def test_applicant_search_successful_if_a_ul_review_older_than_8_days(token, client):
     iso_format = "%Y-%m-%d"
     tz = pytz.timezone('America/Vancouver')
     date_served = (datetime.datetime.now(tz) - datetime.timedelta(days=9)).strftime(iso_format)
 
-    def mock_status_get(*args, **kwargs):
-        return status_get(True, "UL", date_served, "Gordon", False, True)
-
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
+    responses.add(responses.GET,
+                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  json=vips_mock.status_applied_not_paid("UL", date_served),
+                  status=200)
 
     response = client.get('/api_v2/search', query_string=get_search_payload(), headers=get_oauth_auth_header(token))
     logging.warning("search: {}".format(response.json))
@@ -142,15 +144,16 @@ def test_applicant_search_successful_if_a_ul_review_older_than_8_days(token, cli
 
 
 @pytest.mark.parametrize("prohibition_number", ['20123456', '20123457'])
-def test_successful_search_response_includes_url_to_invoice_endpoint(prohibition_number, token, client, monkeypatch):
+@responses.activate
+def test_successful_search_response_includes_url_to_invoice_endpoint(prohibition_number, token, client):
     iso_format = "%Y-%m-%d"
     tz = pytz.timezone('America/Vancouver')
     date_served = (datetime.datetime.now(tz) - datetime.timedelta(days=6)).strftime(iso_format)
 
-    def mock_status_get(*args, **kwargs):
-        return status_get(True, "IRP", date_served, "Gordon", False, True)
-
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
+    responses.add(responses.GET,
+                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, prohibition_number),
+                  json=vips_mock.status_applied_not_paid("UL", date_served),
+                  status=200)
 
     response = client.get('/api_v2/search',
                           query_string=get_search_payload(prohibition_number),
@@ -162,19 +165,34 @@ def test_successful_search_response_includes_url_to_invoice_endpoint(prohibition
     assert response.status_code == 200
 
 
-def test_invoice_endpoint_requires_an_access_token(token, client, monkeypatch):
+def test_invoice_endpoint_requires_an_access_token(client):
     response = client.get('/api_v2/invoice/20123456')
     logging.warning("invoice: {}".format(response.json))
     assert response.status_code == 401
 
 
+@responses.activate
+def test_search_endpoint_gracefully_handles_text_response_from_vips(token, client):
+
+    responses.add(responses.GET,
+                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  body=vips_mock.status_returns_html_response(),
+                  status=200)
+
+    response = client.get('/api_v2/search', query_string=get_search_payload(), headers=get_oauth_auth_header(token))
+    logging.warning("search: {}".format(response.json))
+    assert "error" in response.json
+    assert response.status_code == 200
+
+
 @pytest.mark.parametrize("prohibition_types", ['IRP', 'ADP', 'UL'])
-def test_applicant_invoice_returns_error_if_already_paid(prohibition_types, token, client, monkeypatch):
+@responses.activate
+def test_applicant_invoice_returns_error_if_already_paid(prohibition_types, token, client):
 
-    def mock_status_get(*args, **kwargs):
-        return status_get(True, prohibition_types, "2020-09-01", "Gordon", True, True)
-
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
+    responses.add(responses.GET,
+                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  json=vips_mock.status_applied_and_paid_not_scheduled(prohibition_types),
+                  status=200)
 
     response = client.get('/api_v2/invoice/20123456', headers=get_oauth_auth_header(token))
     logging.warning("invoice: {}".format(response.json))
@@ -182,13 +200,13 @@ def test_applicant_invoice_returns_error_if_already_paid(prohibition_types, toke
     assert response.status_code == 200
 
 
-@pytest.mark.parametrize("prohibition_types", ['IRP', 'ADP', 'UL'])
-def test_applicant_invoice_returns_error_if_not_found_in_vips(prohibition_types, token, client, monkeypatch):
+@responses.activate
+def test_applicant_invoice_returns_error_if_not_found_in_vips(token, client):
 
-    def mock_status_get(*args, **kwargs):
-        return status_get(False, prohibition_types, "2020-09-01", "Gordon", True, True)
-
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
+    responses.add(responses.GET,
+                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  json=vips_mock.status_not_found(),
+                  status=200)
 
     response = client.get('/api_v2/invoice/20123456', headers=get_oauth_auth_header(token))
     logging.warning("invoice: {}".format(response.json))
@@ -197,15 +215,16 @@ def test_applicant_invoice_returns_error_if_not_found_in_vips(prohibition_types,
 
 
 @pytest.mark.parametrize("prohibition_type", ['IRP', 'ADP'])
-def test_applicant_invoice_returns_error_if_irp_or_adp_older_than_8_days(prohibition_type, token, client, monkeypatch):
+@responses.activate
+def test_applicant_invoice_returns_error_if_irp_or_adp_older_than_8_days(prohibition_type, token, client):
     iso_format = "%Y-%m-%d"
     tz = pytz.timezone('America/Vancouver')
     date_served = (datetime.datetime.now(tz) - datetime.timedelta(days=9)).strftime(iso_format)
 
-    def mock_status_get(*args, **kwargs):
-        return status_get(True, prohibition_type, date_served, "Gordon", False, True)
-
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
+    responses.add(responses.GET,
+                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  json=vips_mock.status_applied_not_paid(prohibition_type, date_served),
+                  status=200)
 
     response = client.get('/api_v2/invoice/20123456', headers=get_oauth_auth_header(token))
     logging.warning("invoice: {}".format(response.json))
@@ -213,19 +232,21 @@ def test_applicant_invoice_returns_error_if_irp_or_adp_older_than_8_days(prohibi
     assert response.status_code == 200
 
 
-def test_applicant_invoice_successful_if_a_ul_review_older_than_8_days(token, client, monkeypatch):
+@responses.activate
+def test_applicant_invoice_successful_if_a_ul_review_older_than_8_days(token, client):
     iso_format = "%Y-%m-%d"
     tz = pytz.timezone('America/Vancouver')
     date_served = (datetime.datetime.now(tz) - datetime.timedelta(days=9)).strftime(iso_format)
 
-    def mock_status_get(*args, **kwargs):
-        return status_get(True, "UL", date_served, "Gordon", False, True)
+    responses.add(responses.GET,
+                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  json=vips_mock.status_applied_not_paid("UL", date_served),
+                  status=200)
 
-    def mock_application_get(*args, **kwargs):
-        return application_get()
-
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
-    monkeypatch.setattr(vips, "application_get", mock_application_get)
+    responses.add(responses.GET,
+                  '{}/{}/application/abcd'.format(Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452"),
+                  json=vips_mock.application_get(),
+                  status=200)
 
     response = client.get('/api_v2/invoice/20123456', headers=get_oauth_auth_header(token))
     logging.warning("invoice: {}".format(response.json))
@@ -239,19 +260,21 @@ def test_applicant_invoice_successful_if_a_ul_review_older_than_8_days(token, cl
 
 
 @pytest.mark.parametrize("prohibition_type", ['IRP', 'ADP'])
-def test_successful_invoice_response_includes_url_to_invoice_endpoint(prohibition_type, token, client, monkeypatch):
+@responses.activate
+def test_successful_invoice_response_includes_url_to_invoice_endpoint(prohibition_type, token, client):
     iso_format = "%Y-%m-%d"
     tz = pytz.timezone('America/Vancouver')
     date_served = (datetime.datetime.now(tz) - datetime.timedelta(days=7)).strftime(iso_format)
 
-    def mock_status_get(*args, **kwargs):
-        return status_get(True, prohibition_type, date_served, "Gordon", False, True)
+    responses.add(responses.GET,
+                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  json=vips_mock.status_applied_not_paid(prohibition_type, date_served),
+                  status=200)
 
-    def mock_application_get(*args, **kwargs):
-        return application_get("ORAL")
-
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
-    monkeypatch.setattr(vips, "application_get", mock_application_get)
+    responses.add(responses.GET,
+                  '{}/{}/application/abcd'.format(Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452"),
+                  json=vips_mock.application_get("ORAL"),
+                  status=200)
 
     response = client.get('/api_v2/invoice/20123456', headers=get_oauth_auth_header(token))
     logging.warning("invoice: {}".format(response.json))
@@ -265,19 +288,21 @@ def test_successful_invoice_response_includes_url_to_invoice_endpoint(prohibitio
 
 
 @pytest.mark.parametrize("presentation_type", [['ORAL', 200],  ['WRIT', 100]])
-def test_invoice_amount_is_determined_by_review_presentation_type(presentation_type, token, client, monkeypatch):
+@responses.activate
+def test_invoice_amount_is_determined_by_review_presentation_type(presentation_type, token, client):
     iso_format = "%Y-%m-%d"
     tz = pytz.timezone('America/Vancouver')
     date_served = (datetime.datetime.now(tz) - datetime.timedelta(days=6)).strftime(iso_format)
 
-    def mock_status_get(*args, **kwargs):
-        return status_get(True, "IRP", date_served, "Gordon", False, True)
+    responses.add(responses.GET,
+                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  json=vips_mock.status_applied_not_paid("IRP", date_served),
+                  status=200)
 
-    def mock_application_get(*args, **kwargs):
-        return application_get(presentation_type[0])
-
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
-    monkeypatch.setattr(vips, "application_get", mock_application_get)
+    responses.add(responses.GET,
+                  '{}/{}/application/abcd'.format(Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452"),
+                  json=vips_mock.application_get(presentation_type[0]),
+                  status=200)
 
     response = client.get('/api_v2/invoice/20123456', headers=get_oauth_auth_header(token))
     logging.warning("invoice: {}".format(response.json))
@@ -290,24 +315,21 @@ def test_invoice_amount_is_determined_by_review_presentation_type(presentation_t
     assert response.status_code == 200
 
 
-def test_receipt_endpoint_requires_an_access_token(token, client, monkeypatch):
+def test_receipt_endpoint_requires_an_access_token(client):
     response = client.post('/api_v2/receipt')
     logging.warning("receipt: {}".format(response.json))
     assert response.status_code == 401
 
 
 @pytest.mark.parametrize("prohibition_types", ['IRP', 'ADP', 'UL'])
+@responses.activate
 def test_receipt_endpoint_returns_error_if_prohibition_not_found(prohibition_types, token, client, monkeypatch):
 
-    def mock_status_get(*args, **kwargs):
-        return status_get(False, prohibition_types, "2020-09-01", "Gordon", True, False)
+    responses.add(responses.GET,
+                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  json=vips_mock.status_not_found(),
+                  status=404)
 
-    class MockRabbitMQ:
-
-        def __init__(self, config):
-            pass
-
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
     monkeypatch.setattr(routes, "RabbitMQ", MockRabbitMQ)
 
     response = client.post('/api_v2/receipt',
@@ -319,54 +341,43 @@ def test_receipt_endpoint_returns_error_if_prohibition_not_found(prohibition_typ
 
 
 @pytest.mark.parametrize("prohibition_types", ['IRP', 'ADP', 'UL'])
+@responses.activate
 def test_receipt_endpoint_returns_error_if_application_not_saved(prohibition_types, token, client, monkeypatch):
+    responses.add(responses.GET,
+                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  json=vips_mock.status_has_never_applied(prohibition_types),
+                  status=200)
 
-    def mock_status_get(*args, **kwargs):
-        return status_get(True, prohibition_types, "2020-09-01", "Gordon", False, False)
-
-    class MockRabbitMQ:
-
-        def __init__(self, config):
-            pass
-
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
     monkeypatch.setattr(routes, "RabbitMQ", MockRabbitMQ)
 
-    response = client.post('/api_v2/receipt',
-                           headers=get_oauth_auth_header(token),
-                           json=get_receipt_payload())
+    response = client.post('/api_v2/receipt', headers=get_oauth_auth_header(token), json=get_receipt_payload())
     logging.warning("receipt: {}".format(response.json))
     assert "INCMP" in response.json['status']  # INCMP == INCOMPLETE
     assert response.status_code == 400
 
 
 @pytest.mark.parametrize("prohibition_types", ['IRP', 'ADP', 'UL'])
+@responses.activate
 def test_receipt_endpoint_returns_error_if_application_data_not_returned(prohibition_types, token, client, monkeypatch):
 
-    def mock_status_get(*args, **kwargs):
-        return status_get(True, prohibition_types, "2020-09-01", "Gordon", False, False)
+    responses.add(responses.GET,
+                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  json=vips_mock.status_applied_not_paid(prohibition_types),
+                  status=200)
 
-    def mock_application_get(*args, **kwargs):
-        return False, dict()
+    responses.add(responses.GET,
+                  '{}/{}/application/abcd'.format(Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452"),
+                  json=vips_mock.application_get_not_found(), status=404)
 
-    class MockRabbitMQ:
-
-        def __init__(self, config):
-            pass
-
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
     monkeypatch.setattr(routes, "RabbitMQ", MockRabbitMQ)
-    monkeypatch.setattr(vips, "application_get", mock_application_get)
-
-    response = client.post('/api_v2/receipt',
-                           headers=get_oauth_auth_header(token),
-                           json=get_receipt_payload())
+    response = client.post('/api_v2/receipt', headers=get_oauth_auth_header(token), json=get_receipt_payload())
     logging.warning("receipt: {}".format(response.json))
     assert "INCMP" in response.json['status']  # INCMP == INCOMPLETE
     assert response.status_code == 400
 
 
 @pytest.mark.parametrize("prohibition_types", ['IRP', 'ADP', 'UL'])
+@responses.activate
 def test_receipt_endpoint_returns_success_if_prohibition_already_paid(prohibition_types, token, client, monkeypatch):
     """
     In the event that VIPS status says the application for review has already been paid, return a successful
@@ -374,28 +385,25 @@ def test_receipt_endpoint_returns_success_if_prohibition_already_paid(prohibitio
     PayBC likely didn't receive the initial successful response, so is trying again.
     """
 
-    def mock_status_get(*args, **kwargs):
-        return status_get(True, prohibition_types, "2020-09-01", "Gordon", True, True)
+    responses.add(responses.GET,
+                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  json=vips_mock.status_applied_and_paid_not_scheduled(prohibition_types), status=200)
 
-    def mock_application_get(*args, **kwargs):
-        return application_get()
+    responses.add(responses.GET,
+                  '{}/{}/application/abcd'.format(Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452"),
+                  json=vips_mock.application_get(), status=200)
 
     def mock_send_email(*args, **kwargs):
         return True
 
-    class MockRabbitMQ:
-
-        def __init__(self, config):
-            pass
+    class TestRabbit(MockRabbitMQ):
 
         @staticmethod
         def publish(*args):
             assert "DF.hold" in args[0]
             return True
 
-    monkeypatch.setattr(routes, "RabbitMQ", MockRabbitMQ)
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
-    monkeypatch.setattr(vips, "application_get", mock_application_get)
+    monkeypatch.setattr(routes, "RabbitMQ", TestRabbit)
     monkeypatch.setattr(common_email, "send_email", mock_send_email)
 
     response = client.post('/api_v2/receipt',
@@ -407,24 +415,25 @@ def test_receipt_endpoint_returns_success_if_prohibition_already_paid(prohibitio
 
 
 @pytest.mark.parametrize("prohibition_types", ['IRP', 'ADP', 'UL'])
+@responses.activate
 def test_receipt_endpoint_returns_success_creates_verify_schedule_event(prohibition_types, token, client, monkeypatch):
 
-    def mock_status_get(*args, **kwargs):
-        return status_get(True, prohibition_types, "2020-09-01", "Gordon", False, True)
+    responses.add(responses.GET,
+                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  json=vips_mock.status_applied_and_paid_not_scheduled(prohibition_types), status=200)
 
-    def mock_application_get(*args, **kwargs):
-        return application_get()
+    responses.add(responses.GET,
+                  '{}/{}/application/abcd'.format(Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452"),
+                  json=vips_mock.application_get(), status=200)
 
-    def mock_patch_payment(*args, **kwargs):
-        return True, dict({})
+    responses.add(responses.PATCH,
+                  '{}/{}/payment/abcd'.format(Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452"),
+                  json=vips_mock.payment_patch_payload(), status=200)
 
     def mock_send_email(*args, **kwargs):
         return True
 
-    class MockRabbitMQ:
-
-        def __init__(self, config):
-            pass
+    class TestRabbit(MockRabbitMQ):
 
         @staticmethod
         def publish(*args):
@@ -432,14 +441,11 @@ def test_receipt_endpoint_returns_success_creates_verify_schedule_event(prohibit
             message = json.loads(message_string)
             assert "verify_schedule" in message
             assert message['verify_schedule']['order_number'] == "1002581"
-            assert message['verify_schedule']['applicant_name'] == "Charlie Brown"
+            assert message['verify_schedule']['applicant_name'] == "Developer Norris"
             assert "DF.hold" in args[0]
             return True
 
-    monkeypatch.setattr(routes, "RabbitMQ", MockRabbitMQ)
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
-    monkeypatch.setattr(vips, "application_get", mock_application_get)
-    monkeypatch.setattr(vips, "payment_patch", mock_patch_payment)
+    monkeypatch.setattr(routes, "RabbitMQ", TestRabbit)
     monkeypatch.setattr(common_email, "send_email", mock_send_email)
 
     response = client.post('/api_v2/receipt',
@@ -451,36 +457,34 @@ def test_receipt_endpoint_returns_success_creates_verify_schedule_event(prohibit
 
 
 @pytest.mark.parametrize("prohibition_types", ['IRP', 'ADP', 'UL'])
+@responses.activate
 def test_receipt_endpoint_returns_success_and_sends_schedule_email(prohibition_types, token, client, monkeypatch):
 
-    def mock_status_get(*args, **kwargs):
-        return status_get(True, prohibition_types, "2020-09-01", "Gordon", False, True)
+    responses.add(responses.GET,
+                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  json=vips_mock.status_applied_and_paid_not_scheduled(prohibition_types), status=200)
 
-    def mock_application_get(*args, **kwargs):
-        return application_get()
+    responses.add(responses.GET,
+                  '{}/{}/application/abcd'.format(Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452"),
+                  json=vips_mock.application_get(), status=200)
 
-    def mock_patch_payment(*args, **kwargs):
-        return True, dict({})
+    responses.add(responses.PATCH,
+                  '{}/{}/payment/abcd'.format(Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452"),
+                  json=vips_mock.payment_patch_payload(), status=200)
 
     def mock_send_email(*args, **kwargs):
-        assert "applicant@gov.bc.ca" == args[0][0]
-        assert "Dear Charlie Brown," in args[3]
-        assert "Select Review Date - Driving Prohibition 21-123456 Review" == args[1]
+        assert "applicant_fake@gov.bc.ca" == args[0][0]
+        assert "Dear Developer Norris," in args[3]
+        assert "Select Review Date - Driving Prohibition 20-123456 Review" == args[1]
         return True
 
-    class MockRabbitMQ:
-
-        def __init__(self, config):
-            pass
+    class TestRabbit(MockRabbitMQ):
 
         @staticmethod
         def publish(*args):
             return True
 
-    monkeypatch.setattr(routes, "RabbitMQ", MockRabbitMQ)
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
-    monkeypatch.setattr(vips, "application_get", mock_application_get)
-    monkeypatch.setattr(vips, "payment_patch", mock_patch_payment)
+    monkeypatch.setattr(routes, "RabbitMQ", TestRabbit)
     monkeypatch.setattr(common_email, "send_email", mock_send_email)
 
     response = client.post('/api_v2/receipt',
@@ -491,21 +495,25 @@ def test_receipt_endpoint_returns_success_and_sends_schedule_email(prohibition_t
     assert response.status_code == 200
 
 
+@responses.activate
 def test_receipt_endpoint_sends_adp_select_review_date_with_order_number(token, client, monkeypatch):
 
-    def mock_status_get(*args, **kwargs):
-        return status_get(True, "ADP", "2020-09-01", "Gordon", False, True)
+    responses.add(responses.GET,
+                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  json=vips_mock.status_applied_and_paid_not_scheduled("ADP"), status=200)
 
-    def mock_application_get(*args, **kwargs):
-        return application_get()
+    responses.add(responses.GET,
+                  '{}/{}/application/abcd'.format(Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452"),
+                  json=vips_mock.application_get(), status=200)
 
-    def mock_patch_payment(*args, **kwargs):
-        return True, dict({})
+    responses.add(responses.PATCH,
+                  '{}/{}/payment/abcd'.format(Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452"),
+                  json=vips_mock.payment_patch_payload(), status=200)
 
     def mock_send_email(*args, **kwargs):
-        assert "applicant@gov.bc.ca" == args[0][0]
-        assert "Dear Charlie Brown," in args[3]
-        assert "Select Review Date - Driving Prohibition 21-123456 Review" == args[1]
+        assert "applicant_fake@gov.bc.ca" == args[0][0]
+        assert "Dear Developer Norris," in args[3]
+        assert "Select Review Date - Driving Prohibition 20-123456 Review" == args[1]
         assert "Order number: 1002581" in args[3]
         return True
 
@@ -519,9 +527,6 @@ def test_receipt_endpoint_sends_adp_select_review_date_with_order_number(token, 
             return True
 
     monkeypatch.setattr(routes, "RabbitMQ", MockRabbitMQ)
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
-    monkeypatch.setattr(vips, "application_get", mock_application_get)
-    monkeypatch.setattr(vips, "payment_patch", mock_patch_payment)
     monkeypatch.setattr(common_email, "send_email", mock_send_email)
 
     response = client.post('/api_v2/receipt',
@@ -561,7 +566,7 @@ def get_receipt_payload(receipt_amount=200) -> dict:
         "transaction_id": "1002581",
         "invoices": [
             {
-                "trx_number": "21123456",
+                "trx_number": "20123456",
                 "amount_to_apply": receipt_amount
             }
         ]
@@ -571,56 +576,3 @@ def get_receipt_payload(receipt_amount=200) -> dict:
 def get_oauth_auth_header(token) -> dict:
     return dict({"Authorization": "Bearer {}".format(token)})
 
-
-def status_get(is_success, prohibition_type, date_served, last_name, is_paid, application_saved):
-    if is_success:
-        status = {
-            "noticeTypeCd": prohibition_type,
-            "noticeServedDt": date_served + " 00:00:00 -07:00",
-            "reviewFormSubmittedYn": "N",
-            "reviewCreatedYn": "N",
-            "originalCause": "N/A",
-            "surnameNm": last_name,
-            "driverLicenceSeizedYn": "Y",
-            "disclosure": []
-        }
-        if is_paid:
-            status['receiptNumberTxt'] = "ABC"
-        if application_saved:
-            status['applicationId'] = "ABC-ABC-ABC"
-        return True, {
-                "resp": "success",
-                "data": {
-                    "status": status
-                }
-            }
-    else:
-        return True, {
-                  "resp": "fail",
-                  "error": {
-                    "message": "Record not found",
-                    "httpStatus": 404
-                  }
-               }
-
-
-def application_get(presentation_type="ORAL"):
-    return True, {
-          "data": {
-                "applicationInfo": {
-                      "email": "applicant@gov.bc.ca",
-                      "firstGivenNm": "Charlie",
-                      "manualEntryYN": "N",
-                      "noticeSubjectCd": "string",
-                      "noticeTypeCd": "string",
-                      "phoneNo": "string",
-                      "presentationTypeCd": presentation_type,
-                      "prohibitionNoticeNo": "string",
-                      "reviewApplnTypeCd": "string",
-                      "reviewRoleTypeCd": "string",
-                      "secondGivenNm": "string",
-                      "surnameNm": "Brown"
-                }
-          },
-          "resp": "success"
-          }

@@ -1,7 +1,6 @@
 import requests
 import logging
 import json
-import uuid
 import holidays
 from datetime import datetime, timedelta
 from iso8601 import parse_date
@@ -53,7 +52,7 @@ def is_work_day(date_time: datetime) -> bool:
     return False
 
 
-def status_get(prohibition_id: str, config, correlation_id: str) -> tuple:
+def status_get(prohibition_id: str, config, correlation_id='abcd') -> tuple:
     """
     Call out to the VIPS API and return the prohibition status. Returns (True, data)
     if the callout to the API was successful.  Returns (False, data) if the call out
@@ -66,7 +65,7 @@ def status_get(prohibition_id: str, config, correlation_id: str) -> tuple:
     return False, dict({})
 
 
-def disclosure_get(document_id: str, config, correlation_id: str):
+def disclosure_get(document_id: str, config, correlation_id='abcd'):
     endpoint = build_endpoint(config.VIPS_API_ROOT_URL, document_id, 'disclosure', correlation_id)
     is_response_successful, data = get(endpoint, config.VIPS_API_USERNAME, config.VIPS_API_PASSWORD, correlation_id)
     if 'resp' in data:
@@ -74,7 +73,7 @@ def disclosure_get(document_id: str, config, correlation_id: str):
     return False, dict({})
 
 
-def payment_get(prohibition_id: str, config, correlation_id: str):
+def payment_get(prohibition_id: str, config, correlation_id='abcd'):
     endpoint = build_endpoint(config.VIPS_API_ROOT_URL, prohibition_id, 'payment', 'status', correlation_id)
     is_response_successful, data = get(endpoint, config.VIPS_API_USERNAME, config.VIPS_API_PASSWORD, correlation_id)
     if 'resp' in data:
@@ -82,7 +81,7 @@ def payment_get(prohibition_id: str, config, correlation_id: str):
     return False, dict({})
 
 
-def payment_patch(prohibition_id: str, config, correlation_id: str, **args):
+def payment_patch(prohibition_id: str, config, correlation_id='abcd', **args):
     logging.info('inside payment_patch()')
     endpoint = build_endpoint(config.VIPS_API_ROOT_URL, prohibition_id, 'payment', correlation_id)
     vips_date_string = vips_datetime(args.get('receipt_date'))
@@ -112,7 +111,7 @@ def disclosure_patch(document_id: str, **args):
     return patch(endpoint, config.VIPS_API_USERNAME, config.VIPS_API_PASSWORD, payload, correlation_id)
 
 
-def application_get(application_id: str, config, correlation_id: str) -> tuple:
+def application_get(application_id: str, config, correlation_id='abcd') -> tuple:
     endpoint = build_endpoint(config.VIPS_API_ROOT_URL, application_id, 'application', correlation_id)
     is_success, data = get(endpoint, config.VIPS_API_USERNAME, config.VIPS_API_PASSWORD, correlation_id)
     if is_success and "resp" in data:
@@ -122,7 +121,7 @@ def application_get(application_id: str, config, correlation_id: str) -> tuple:
 
 def application_create(form_type: str, **args):
     config = args.get('config')
-    correlation_id = args.get('correlation_id')
+    correlation_id = 'abcd'
     prohibition_number = args.get('prohibition_number')
     endpoint = build_endpoint(config.VIPS_API_ROOT_URL, form_type, prohibition_number, 'application', correlation_id)
     payload = {
@@ -142,7 +141,7 @@ def application_create(form_type: str, **args):
     return create(endpoint, config.VIPS_API_USERNAME, config.VIPS_API_PASSWORD, payload, correlation_id)
 
 
-def application_update(guid: str, config, correlation_id: str):
+def application_update(guid: str, config, correlation_id='abcd'):
     endpoint = build_endpoint(config.VIPS_API_ROOT_URL, guid, 'application', correlation_id)
     return get(endpoint, config.VIPS_API_USERNAME, config.VIPS_API_PASSWORD, correlation_id)
 
@@ -194,23 +193,27 @@ def build_endpoint(*args) -> str:
     return delimiter.join(args)
 
 
-def get(endpoint: str, user: str, password: str, correlation_id='ABC') -> tuple:
+def get(endpoint: str, user: str, password: str, correlation_id='abcd') -> tuple:
     logging.info('vips get api endpoint: {}'.format(endpoint))
     try:
-        response = requests.get(endpoint, verify=False, auth=(user, password))
+        response = requests.get(endpoint, auth=(user, password))
     except requests.ConnectionError as error:
         logging.warning('no response from the VIPS API: {}'.format(error))
         return False, dict()
+    try:
+        data = response.json()
+    except json.decoder.JSONDecodeError:
+        logging.warning("VIPS JSONDecodeError: " + response.text)
+        return False, dict()
 
-    data = response.json()
     # Note: VIPS response could be either record found or record not found
     logging.debug('VIPS API response: {} correlation_id: {}'.format(json.dumps(data), correlation_id))
     return 'resp' in data, data
 
 
-def create(endpoint: str, user: str, password: str,  payload: dict, correlation_id='ABC') -> tuple:
+def create(endpoint: str, user: str, password: str,  payload: dict, correlation_id='abcd') -> tuple:
     try:
-        response = requests.post(endpoint, verify=False, json=payload, auth=(user, password))
+        response = requests.post(endpoint, json=payload, auth=(user, password))
     except requests.ConnectionError as error:
         logging.warning('no response from the VIPS API: {}'.format(error))
         return False, dict()
@@ -226,7 +229,7 @@ def create(endpoint: str, user: str, password: str,  payload: dict, correlation_
     return False, dict()
 
 
-def patch(endpoint: str, user: str, password: str,  payload: dict, correlation_id='ABC') -> tuple:
+def patch(endpoint: str, user: str, password: str,  payload: dict, correlation_id='abcd') -> tuple:
     logging.info('patch endpoint: {}'.format(endpoint))
     logging.info('patch payload: {}'.format(json.dumps(payload)))
     try:
@@ -338,6 +341,3 @@ def vips_datetime(date_time: datetime) -> str:
     dt_string = date_time.strftime("%Y-%m-%d %H:%M:%S %z")
     return dt_string[0:23] + ':' + dt_string[23:25]
 
-
-def generate_correlation_id():
-    return str(uuid.uuid4())

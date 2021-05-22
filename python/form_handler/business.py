@@ -21,7 +21,6 @@ def process_incoming_form() -> dict:
                 {"try": actions.add_to_hold_queue, "fail": []}
             ]},
             {"try": middleware.get_data_from_disclosure_event, "fail": []},
-            {"try": middleware.create_correlation_id, "fail": []},
             {"try": middleware.determine_current_datetime, "fail": []},
             {"try": middleware.get_vips_status, "fail": []},
             {"try": middleware.prohibition_exists_in_vips, "fail": []},
@@ -48,7 +47,6 @@ def process_incoming_form() -> dict:
                 {"try": actions.add_to_hold_queue, "fail": []}
             ]},
             {"try": middleware.get_data_from_verify_schedule_event, "fail": []},
-            {"try": middleware.create_correlation_id, "fail": []},
             {"try": middleware.determine_current_datetime, "fail": []},
             {"try": middleware.get_vips_status, "fail": []},
             {"try": middleware.prohibition_exists_in_vips, "fail": []},
@@ -60,7 +58,6 @@ def process_incoming_form() -> dict:
         ],
         "review_schedule_picker": [
             # aka: review scheduler
-            {"try": middleware.create_correlation_id, "fail": []},
             {"try": middleware.determine_current_datetime, "fail": []},
             {"try": middleware.get_data_from_schedule_form, "fail": []},
             {"try": middleware.clean_prohibition_number, "fail": []},
@@ -100,7 +97,6 @@ def process_incoming_form() -> dict:
             {"try": middleware.get_user_entered_notice_type_from_message, "fail": []},
             {"try": middleware.clean_prohibition_number, "fail": []},
             {"try": middleware.populate_driver_name_fields_if_null, "fail": []},
-            {"try": middleware.create_correlation_id, "fail": []},
             {"try": middleware.determine_current_datetime, "fail": []},
             {"try": middleware.get_vips_status, "fail": [
                 {"try": actions.add_to_hold_queue, "fail": []}
@@ -149,7 +145,6 @@ def process_incoming_form() -> dict:
         ],
         "Document_submission": [
             # aka: evidence submission form
-            {"try": middleware.create_correlation_id, "fail": []},
             {"try": middleware.determine_current_datetime, "fail": []},
             {"try": middleware.get_data_from_document_submission_form, "fail": []},
             {"try": middleware.clean_prohibition_number, "fail": []},

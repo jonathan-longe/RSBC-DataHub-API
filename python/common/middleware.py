@@ -14,16 +14,10 @@ import json
 import xmltodict
 import base64
 import zlib
+import uuid
 
 
 logging.basicConfig(level=Config.LOG_LEVEL, format=Config.LOG_FORMAT)
-
-
-def create_correlation_id(**args) -> tuple:
-    correlation_id = vips.generate_correlation_id()
-    args['correlation_id'] = correlation_id
-    logging.info('CorrelationID: {}'.format(correlation_id))
-    return True, args
 
 
 def get_data_from_application_form(**args) -> tuple:
@@ -107,8 +101,7 @@ def get_vips_status(**args) -> tuple:
     """
     config = args.get('config')
     prohibition_number = args.get('prohibition_number')
-    correlation_id = args.get('correlation_id')
-    is_api_callout_successful, vips_status_data = vips.status_get(prohibition_number, config, correlation_id)
+    is_api_callout_successful, vips_status_data = vips.status_get(prohibition_number, config)
     if is_api_callout_successful:
         args['vips_status'] = vips_status_data
         return True, args
@@ -124,9 +117,8 @@ def get_application_details(**args) -> tuple:
     Further middleware required to determine if the application is valid
     """
     config = args.get('config')
-    correlation_id = args.get('correlation_id')
     guid = args.get('application_id')
-    is_api_callout_successful, vips_application_data = vips.application_get(guid, config, correlation_id)
+    is_api_callout_successful, vips_application_data = vips.application_get(guid, config)
     if is_api_callout_successful:
         args['vips_application_data'] = vips_application_data
         return True, args
@@ -188,8 +180,9 @@ def application_has_been_paid(**args) -> tuple:
     Check that application has been paid
     """
     vips_data = args.get('vips_data')
-    if 'receiptNumberTxt' in vips_data:
-        return True, args
+    if len(vips_data['reviews']) > 0:
+        if 'receiptNumberTxt' in vips_data['reviews'][0]:
+            return True, args
     error = 'the application has not been paid'
     logging.info(error)
     args['error_string'] = "The application review fee must be paid to continue."
@@ -201,8 +194,9 @@ def application_not_paid(**args) -> tuple:
     Check that application has NOT been paid
     """
     vips_data = args.get('vips_data')
-    if 'receiptNumberTxt' not in vips_data:
-        return True, args
+    if len(vips_data['reviews']) > 0:
+        if 'receiptNumberTxt' not in vips_data['reviews'][0]:
+            return True, args
     error = 'the application has previously been paid'
     logging.info(error)
     args['error_string'] = "The application review fee has already been paid."
@@ -214,9 +208,10 @@ def application_has_been_saved_to_vips(**args) -> tuple:
     Check that application has been saved to VIPS
     """
     vips_data = args.get('vips_data')
-    if 'applicationId' in vips_data:
-        args['application_id'] = vips_data['applicationId']
-        return True, args
+    if len(vips_data['reviews']) > 0:
+        if 'applicationId' in vips_data['reviews'][0]:
+            args['application_id'] = vips_data['reviews'][0]['applicationId']
+            return True, args
     error = 'the application has not been submitted'
     logging.info(error)
     args['error_string'] = "You must submit an application before you can pay."

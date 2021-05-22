@@ -12,16 +12,15 @@ def search_for_invoice() -> list:
         - the window to apply (if applicable) has not expired
     """
     return [
-        {"try": middleware.create_correlation_id, "fail": []},
         {"try": middleware.determine_current_datetime, "fail": []},
         {"try": middleware.clean_prohibition_number, "fail": []},
         {"try": middleware.validate_prohibition_number, "fail": []},
         {"try": middleware.get_vips_status, "fail": []},
         {"try": middleware.prohibition_exists_in_vips, "fail": []},
         {"try": middleware.user_submitted_last_name_matches_vips, "fail": []},
+        {"try": middleware.application_has_been_saved_to_vips, "fail": []},
         {"try": middleware.application_not_paid, "fail": []},
         {"try": middleware.is_applicant_within_window_to_pay, "fail": []},
-        {"try": middleware.application_has_been_saved_to_vips, "fail": []},
     ]
 
 
@@ -34,7 +33,6 @@ def generate_invoice() -> list:
         - the window to apply (if applicable) has not expired
     """
     return [
-        {"try": middleware.create_correlation_id, "fail": []},
         {"try": middleware.determine_current_datetime, "fail": []},
         {"try": middleware.clean_prohibition_number, "fail": []},
         {"try": middleware.validate_prohibition_number, "fail": []},
@@ -56,14 +54,13 @@ def save_payment() -> list:
     does not receive a successful response, PayBC will try again indefinitely.
     """
     return [
-        {"try": middleware.create_correlation_id, "fail": []},
         {"try": middleware.validate_pay_bc_post_receipt, "fail": []},
         {"try": middleware.get_vips_status, "fail": []},
         {"try": middleware.prohibition_exists_in_vips, "fail": []},
+        {"try": middleware.application_has_been_saved_to_vips, "fail": []},
         {"try": middleware.application_not_paid, "fail": [
             # If VIPS says the application is paid, tell PayBC that the payment was successful.
             # Likely PayBC didn't receive the initial successful response and is trying again
-            {"try": middleware.application_has_been_saved_to_vips, "fail": []},
             {"try": middleware.get_application_details, "fail": []},
             {"try": middleware.valid_application_received_from_vips, "fail": []},
             {"try": middleware.get_invoice_details, "fail": []},
@@ -74,7 +71,6 @@ def save_payment() -> list:
             {"try": actions.add_hold_to_verify_schedule, "fail": []},
             {"try": actions.add_to_hold_queue, "fail": []}
         ]},
-        {"try": middleware.application_has_been_saved_to_vips, "fail": []},
         {"try": middleware.get_application_details, "fail": []},
         {"try": middleware.valid_application_received_from_vips, "fail": []},
         {"try": middleware.get_invoice_details, "fail": []},

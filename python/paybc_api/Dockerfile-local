@@ -16,4 +16,6 @@ WORKDIR /home/appuser
 
 USER appuser
 
+RUN ["python", "-m", "pytest"]
+
 CMD [ "gunicorn", "--bind", "0.0.0.0:5001", "--pythonpath", "/home/appuser/python/paybc_api", "wsgi:create_app()" ]

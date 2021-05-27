@@ -2,7 +2,8 @@ import pytest
 import os
 import pytz
 import datetime
-import logging
+import responses
+import python.common.tests.vips_mock as vips_mock
 import python.common.helper as helper
 import python.common.middleware as middleware
 import python.common.actions as actions
@@ -14,65 +15,7 @@ import python.common.common_email_services as common_email_services
 os.environ['TZ'] = 'UTC'
 
 
-def mock_status_not_found(*args, **kwargs):
-    return True, dict({
-        "resp": "fail",
-        "error": {
-            "message": "Record not found",
-            "httpStatus": 404
-        }
-    })
-
-
-def status_gets(is_success, prohibition_type, date_served, last_name, seized, cause, already_applied):
-    data = {
-            "data": {
-                "status": {
-                    "noticeTypeCd": prohibition_type,
-                    "noticeServedDt": date_served + " 00:00:00 -07:00",
-                    "reviewFormSubmittedYn": "N",
-                    "reviewCreatedYn": "N",
-                    "originalCause": cause,
-                    "surnameNm": last_name,
-                    "driverLicenceSeizedYn": seized,
-                    "disclosure": []
-                }
-            }
-        }
-    if already_applied == "True":
-        data['data']['status']['applicationId'] = 'GUID-GUID-GUID-GUID'
-    if is_success:
-        data['resp'] = "success"
-    else:
-        data['resp'] = 'error'
-    return True, data
-
-
-def get_status_with_review_booked(date_served, prohibition_type):
-    data = {
-            "resp": "success",
-            "data": {
-                "status": {
-                    "noticeTypeCd": prohibition_type,
-                    "reviewStartDtm": "some-date",
-                    "reviewEndDtm": "some-date",
-                    "noticeServedDt": date_served + " 00:00:00 -07:00",
-                    "reviewFormSubmittedYn": "N",
-                    "reviewCreatedYn": "N",
-                    "originalCause": "IRP90FAIL",
-                    "surnameNm": "Gordon",
-                    "driverLicenceSeizedYn": "Y",
-                    "disclosure": []
-                }
-            }
-        }
-    return True, data
-
-
-irp_or_adp = ["IRP", "ADP"]
-
-
-@pytest.mark.parametrize("prohib", irp_or_adp)
+@pytest.mark.parametrize("prohib", ["IRP", "ADP"])
 def test_an_applicant_that_was_served_yesterday_but_not_in_vips_gets_not_yet_email(prohib, monkeypatch):
 
     def mock_send_email(*args, **kwargs):
@@ -97,7 +40,6 @@ def test_an_applicant_that_was_served_yesterday_but_not_in_vips_gets_not_yet_ema
 
     monkeypatch.setattr(actions, "add_to_hold_queue", mock_add_to_hold)
     monkeypatch.setattr(middleware, "determine_current_datetime", mock_datetime_now)
-    monkeypatch.setattr(vips, "status_get", mock_status_not_found)
     monkeypatch.setattr(common_email_services, "send_email", mock_send_email)
 
     message_dict = get_sample_application_submission(prohib)
@@ -108,7 +50,8 @@ def test_an_applicant_that_was_served_yesterday_but_not_in_vips_gets_not_yet_ema
                                   writer=None)
 
 
-@pytest.mark.parametrize("prohib", irp_or_adp)
+@pytest.mark.parametrize("prohib", ["IRP", "ADP"])
+@responses.activate
 def test_an_applicant_that_was_served_7_days_ago_but_not_in_vips_gets_still_not_found_email(prohib, monkeypatch):
 
     def mock_send_email(*args, **kwargs):
@@ -131,9 +74,13 @@ def test_an_applicant_that_was_served_7_days_ago_but_not_in_vips_gets_still_not_
         print('inside mock_add_to_hold()')
         return True, args
 
+    responses.add(responses.GET,
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "21999344", "21999344", "21999344"),
+                  json=vips_mock.status_not_found(),
+                  status=200, match_querystring=True)
+
     monkeypatch.setattr(actions, "add_to_hold_queue", mock_add_to_hold)
     monkeypatch.setattr(middleware, "determine_current_datetime", mock_datetime_now)
-    monkeypatch.setattr(vips, "status_get", mock_status_not_found)
     monkeypatch.setattr(common_email_services, "send_email", mock_send_email)
 
     message_dict = get_sample_application_submission(prohib)
@@ -144,7 +91,8 @@ def test_an_applicant_that_was_served_7_days_ago_but_not_in_vips_gets_still_not_
                                   writer=None)
 
 
-@pytest.mark.parametrize("prohib", irp_or_adp)
+@pytest.mark.parametrize("prohib", ["IRP", "ADP"])
+@responses.activate
 def test_an_applicant_without_a_valid_prohibition_gets_appropriate_email(prohib, monkeypatch):
     """
     Applicant gets the "Not Found" email if the date served (as entered by the applicant)
@@ -162,7 +110,11 @@ def test_an_applicant_without_a_valid_prohibition_gets_appropriate_email(prohib,
         email_sent = True
         return True
 
-    monkeypatch.setattr(vips, "status_get", mock_status_not_found)
+    responses.add(responses.GET,
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "21999344", "21999344"),
+                  json=vips_mock.status_not_found(),
+                  status=200, match_querystring=True)
+
     monkeypatch.setattr(common_email_services, "send_email", mock_send_email)
 
     message_dict = get_sample_application_submission(prohib)
@@ -174,12 +126,15 @@ def test_an_applicant_without_a_valid_prohibition_gets_appropriate_email(prohib,
     assert email_sent
 
 
-@pytest.mark.parametrize("prohib", irp_or_adp)
+@pytest.mark.parametrize("prohib", ["IRP", "ADP"])
+@responses.activate
 def test_an_applicant_that_applies_using_incorrect_last_name_gets_appropriate_email(prohib, monkeypatch):
+    date_served = "2020-09-23"
 
-    def mock_status_get(*args, **kwargs):
-        date_served = "2020-09-23"
-        return status_gets(True, prohib, date_served, "NORRIS", "Y", "FAIL90", "N")
+    responses.add(responses.GET,
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "21999344", "21999344"),
+                  json=vips_mock.status_has_never_applied(prohib, date_served, "Wrong"),
+                  status=200, match_querystring=True)
 
     def mock_send_email(*args, **kwargs):
         template_content = args[3]
@@ -189,7 +144,6 @@ def test_an_applicant_that_applies_using_incorrect_last_name_gets_appropriate_em
         assert "You must re-apply within 7 days from the date of prohibition issue." in template_content
         return True
 
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
     monkeypatch.setattr(common_email_services, "send_email", mock_send_email)
 
     message_dict = get_sample_application_submission(prohib)
@@ -200,13 +154,15 @@ def test_an_applicant_that_applies_using_incorrect_last_name_gets_appropriate_em
                                   writer=None)
 
 
-@pytest.mark.parametrize("prohib", irp_or_adp)
+@pytest.mark.parametrize("prohib", ["IRP", "ADP"])
+@responses.activate
 def test_an_applicant_that_has_not_surrendered_their_licence_gets_appropriate_email(prohib, monkeypatch):
+    date_served = datetime.datetime.now().strftime("%Y-%m-%d")
 
-    def mock_status_get(*args, **kwargs):
-        # (is_success, prohibition_type, date_served, last_name, seized, cause, already_applied):
-        date_served = datetime.datetime.now().strftime("%Y-%m-%d")
-        return status_gets(True, prohib, date_served, "Gordon", "N", "FAIL90", "N")
+    responses.add(responses.GET,
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "21999344", "21999344"),
+                  json=vips_mock.status_has_never_applied(prohib, date_served, "Gordon", "N"),
+                  status=200, match_querystring=True)
 
     def mock_send_email(*args, **kwargs):
         template_content = args[3]
@@ -216,7 +172,6 @@ def test_an_applicant_that_has_not_surrendered_their_licence_gets_appropriate_em
         assert "You're ineligible to apply online because your licence wasn't surrendered" in template_content
         return True
 
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
     monkeypatch.setattr(common_email_services, "send_email", mock_send_email)
 
     message_dict = get_sample_application_submission(prohib)
@@ -227,13 +182,14 @@ def test_an_applicant_that_has_not_surrendered_their_licence_gets_appropriate_em
                                   writer=None)
 
 
-@pytest.mark.parametrize("prohib", irp_or_adp)
-def test_an_applicant_that_has_previously_applied_gets_appropriate_email(prohib, monkeypatch):
-
-    def mock_status_get(*args, **kwargs):
-        # (is_success, prohibition_type, date_served, last_name, seized, cause, already_applied):
-        date_served = datetime.datetime.now().strftime("%Y-%m-%d")
-        return status_gets(True, prohib, date_served, "Gordon", "Y", "FAIL90", "True")
+@pytest.mark.parametrize("prohib", ["IRP", "ADP"])
+@responses.activate
+def test_an_irp_or_adp_applicant_that_has_previously_applied_gets_appropriate_email(prohib, monkeypatch):
+    date_served = datetime.datetime.now().strftime("%Y-%m-%d")
+    responses.add(responses.GET,
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "21999344", "21999344"),
+                  json=vips_mock.status_applied_not_paid(prohib, date_served),
+                  status=200, match_querystring=True)
 
     def mock_send_email(*args, **kwargs):
         template_content = args[3]
@@ -244,7 +200,6 @@ def test_an_applicant_that_has_previously_applied_gets_appropriate_email(prohib,
         assert "You must call to make changes to your application." in template_content
         return True
 
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
     monkeypatch.setattr(common_email_services, "send_email", mock_send_email)
 
     message_dict = get_sample_application_submission(prohib)
@@ -255,14 +210,16 @@ def test_an_applicant_that_has_previously_applied_gets_appropriate_email(prohib,
                                   writer=None)
 
 
-@pytest.mark.parametrize("prohib", irp_or_adp)
+@pytest.mark.parametrize("prohib", ["IRP", "ADP"])
+@responses.activate
 def test_an_applicant_that_has_missed_the_window_to_apply_gets_appropriate_email(prohib, monkeypatch):
+    tz = pytz.timezone('America/Vancouver')
+    date_served = (datetime.datetime.now(tz) - datetime.timedelta(days=8)).strftime("%Y-%m-%d")
 
-    def mock_status_get(*args, **kwargs):
-        # (is_success, prohibition_type, date_served, last_name, seized, cause, already_applied):
-        tz = pytz.timezone('America/Vancouver')
-        date_served = (datetime.datetime.now(tz) - datetime.timedelta(days=8)).strftime("%Y-%m-%d")
-        return status_gets(True, prohib, date_served, "Gordon", "Y", "FAIL90", "False")
+    responses.add(responses.GET,
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "21999344", "21999344"),
+                  json=vips_mock.status_has_never_applied(prohib, date_served),
+                  status=200, match_querystring=True)
 
     def mock_send_email(*args, **kwargs):
         template_content = args[3]
@@ -273,9 +230,7 @@ def test_an_applicant_that_has_missed_the_window_to_apply_gets_appropriate_email
         assert "Our records show your Notice of Prohibition was issued more than 7 days ago." in template_content
         return True
 
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
     monkeypatch.setattr(common_email_services, "send_email", mock_send_email)
-
     message_dict = get_sample_application_submission(prohib)
 
     results = helper.middle_logic(helper.get_listeners(business.process_incoming_form(), message_dict['event_type']),
@@ -284,17 +239,24 @@ def test_an_applicant_that_has_missed_the_window_to_apply_gets_appropriate_email
                                   writer=None)
 
 
-@pytest.mark.parametrize("prohib", irp_or_adp)
+@pytest.mark.parametrize("prohib", ["IRP", "ADP"])
+@responses.activate
 def test_a_successful_applicant_gets_an_application_accepted_email(prohib, monkeypatch):
+    date_served = "2021-02-19"
+
+    responses.add(responses.GET,
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "21999344", "21999344"),
+                  json=vips_mock.status_has_never_applied(prohib, date_served),
+                  status=200, match_querystring=True)
+
+    responses.add(responses.POST,
+                  '{}/{}/{}/application/{}'.format(Config.VIPS_API_ROOT_URL, prohib, "21999344", "21999344"),
+                  json={},
+                  status=200)
 
     def mock_datetime_now(**args):
         args['today_date'] = helper.localize_timezone(datetime.datetime.strptime("2021-02-23", "%Y-%m-%d"))
         return True, args
-
-    def mock_status_get(*args, **kwargs):
-        # (is_success, prohibition_type, date_served, last_name, seized, cause, already_applied):
-        date_served = "2021-02-19"
-        return status_gets(True, prohib, date_served, "Gordon", "Y", "FAIL90", "False")
 
     def mock_send_email(*args, **kwargs):
         template_content = args[3]
@@ -307,13 +269,6 @@ def test_a_successful_applicant_gets_an_application_accepted_email(prohib, monke
         assert "http://link-to-paybc" in template_content
         return True
 
-    def mock_save(*args, **kwargs):
-        return True, dict({
-
-        })
-
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
-    monkeypatch.setattr(vips, "application_create", mock_save)
     monkeypatch.setattr(common_email_services, "send_email", mock_send_email)
     monkeypatch.setattr(middleware, "determine_current_datetime", mock_datetime_now)
 
@@ -325,6 +280,7 @@ def test_a_successful_applicant_gets_an_application_accepted_email(prohib, monke
                                   writer=None)
 
 
+@responses.activate
 def test_a_unlicenced_applicant_that_was_served_yesterday_but_not_in_vips_gets_not_yet_email(monkeypatch):
 
     def mock_send_email(*args, **kwargs):
@@ -346,9 +302,13 @@ def test_a_unlicenced_applicant_that_was_served_yesterday_but_not_in_vips_gets_n
         print('inside mock_add_to_hold()')
         return True, args
 
+    responses.add(responses.GET,
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20999344", "20999344"),
+                  json=vips_mock.status_not_found(),
+                  status=404, match_querystring=True)
+
     monkeypatch.setattr(actions, "add_to_hold_queue", mock_add_to_hold)
     monkeypatch.setattr(middleware, "determine_current_datetime", mock_datetime_now)
-    monkeypatch.setattr(vips, "status_get", mock_status_not_found)
     monkeypatch.setattr(common_email_services, "send_email", mock_send_email)
 
     message_dict = get_sample_application_submission("UL")
@@ -359,6 +319,7 @@ def test_a_unlicenced_applicant_that_was_served_yesterday_but_not_in_vips_gets_n
                                   writer=None)
 
 
+@responses.activate
 def test_a_unlicenced_applicant_that_was_served_7_days_ago_but_not_in_vips_gets_still_not_found_email(monkeypatch):
 
     def mock_send_email(*args, **kwargs):
@@ -379,9 +340,13 @@ def test_a_unlicenced_applicant_that_was_served_7_days_ago_but_not_in_vips_gets_
     def mock_add_to_hold(**args):
         return True, args
 
+    responses.add(responses.GET,
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "21999344", "21999344"),
+                  json=vips_mock.status_not_found(),
+                  status=404, match_querystring=True)
+
     monkeypatch.setattr(actions, "add_to_hold_queue", mock_add_to_hold)
     monkeypatch.setattr(middleware, "determine_current_datetime", mock_datetime_now)
-    monkeypatch.setattr(vips, "status_get", mock_status_not_found)
     monkeypatch.setattr(common_email_services, "send_email", mock_send_email)
 
     message_dict = get_sample_application_submission("UL")
@@ -392,20 +357,17 @@ def test_a_unlicenced_applicant_that_was_served_7_days_ago_but_not_in_vips_gets_
                                   writer=None)
 
 
+@responses.activate
 def test_an_unlicenced_applicant_without_a_valid_prohibition_gets_not_found_email(monkeypatch):
     """
     Applicant gets the "Not Found" email if the date served (as entered by the applicant)
     has allowed sufficient time for the prohibition to be entered into VIPS
     """
 
-    def mock_status_get(*args, **kwargs):
-        return True, dict({
-            "resp": "fail",
-            "error": {
-                "message": "Record not found",
-                "httpStatus": 404
-            }
-        })
+    responses.add(responses.GET,
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "21999344", "21999344"),
+                  json=vips_mock.status_not_found(),
+                  status=404, match_querystring=True)
 
     def mock_send_email(*args, **kwargs):
         template_content = args[3]
@@ -415,9 +377,7 @@ def test_an_unlicenced_applicant_without_a_valid_prohibition_gets_not_found_emai
         assert "You must apply in-person." in template_content
         return True
 
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
     monkeypatch.setattr(common_email_services, "send_email", mock_send_email)
-
     message_dict = get_sample_application_submission("UL")
 
     results = helper.middle_logic(helper.get_listeners(business.process_incoming_form(), message_dict['event_type']),
@@ -426,11 +386,13 @@ def test_an_unlicenced_applicant_without_a_valid_prohibition_gets_not_found_emai
                                   writer=None)
 
 
+@responses.activate
 def test_an_unlicenced_applicant_that_applies_using_incorrect_last_name_gets_appropriate_email(monkeypatch):
-
-    def mock_status_get(*args, **kwargs):
-        date_served = "2020-09-23"
-        return status_gets(True, "UL", date_served, "NORRIS", "Y", "FAIL90", "N")
+    date_served = "2020-09-23"
+    responses.add(responses.GET,
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "21999344", "21999344"),
+                  json=vips_mock.status_has_never_applied("UL", date_served, "Wrong"),
+                  status=404, match_querystring=True)
 
     def mock_send_email(*args, **kwargs):
         template_content = args[3]
@@ -440,7 +402,6 @@ def test_an_unlicenced_applicant_that_applies_using_incorrect_last_name_gets_app
         assert "You can re-apply at any time." in template_content
         return True
 
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
     monkeypatch.setattr(common_email_services, "send_email", mock_send_email)
 
     message_dict = get_sample_application_submission("UL")
@@ -451,12 +412,18 @@ def test_an_unlicenced_applicant_that_applies_using_incorrect_last_name_gets_app
                                   writer=None)
 
 
-def test_an_unlicenced_applicant_has_no_licence_to_surrender_get_accepted_email(monkeypatch):
+@responses.activate
+def test_an_unlicenced_applicant_has_no_licence_to_surrender_gets_accepted_email(monkeypatch):
+    date_served = datetime.datetime.now().strftime("%Y-%m-%d")
+    responses.add(responses.GET,
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "21999344", "21999344"),
+                  json=vips_mock.status_has_never_applied("UL", date_served, "Gordon", "N"),
+                  status=200, match_querystring=True)
 
-    def mock_status_get(*args, **kwargs):
-        # (is_success, prohibition_type, date_served, last_name, seized, cause, already_applied):
-        date_served = datetime.datetime.now().strftime("%Y-%m-%d")
-        return status_gets(True, "UL", date_served, "Gordon", "N", "FAIL90", "N")
+    responses.add(responses.POST,
+                  '{}/{}/{}/application/{}'.format(Config.VIPS_API_ROOT_URL, "UL", "21999344", "21999344"),
+                  json={},
+                  status=200)
 
     def mock_send_email(*args, **kwargs):
         template_content = args[3]
@@ -471,8 +438,6 @@ def test_an_unlicenced_applicant_has_no_licence_to_surrender_get_accepted_email(
 
         })
 
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
-    monkeypatch.setattr(vips, "application_create", mock_save)
     monkeypatch.setattr(common_email_services, "send_email", mock_send_email)
 
     message_dict = get_sample_application_submission("UL")
@@ -482,13 +447,18 @@ def test_an_unlicenced_applicant_has_no_licence_to_surrender_get_accepted_email(
                                   config=Config,
                                   writer=None)
 
-
+@responses.activate
 def test_an_unlicenced_applicant_that_has_previously_applied_gets_already_applied_email(monkeypatch):
 
-    def mock_status_get(*args, **kwargs):
-        # (is_success, prohibition_type, date_served, last_name, seized, cause, already_applied):
-        date_served = datetime.datetime.now().strftime("%Y-%m-%d")
-        return status_gets(True, "UL", date_served, "Gordon", "Y", "FAIL90", "True")
+    responses.add(responses.GET,
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "21999344", "21999344"),
+                  json=vips_mock.status_applied_not_paid("UL"),
+                  status=200, match_querystring=True)
+
+    responses.add(responses.POST,
+                  '{}/{}/{}/application/{}'.format(Config.VIPS_API_ROOT_URL, "UL", "21999344", "21999344"),
+                  json={},
+                  status=200)
 
     def mock_send_email(*args, **kwargs):
         template_content = args[3]
@@ -500,9 +470,7 @@ def test_an_unlicenced_applicant_that_has_previously_applied_gets_already_applie
         assert "You must apply in person." in template_content
         return True
 
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
     monkeypatch.setattr(common_email_services, "send_email", mock_send_email)
-
     message_dict = get_sample_application_submission("UL")
 
     results = helper.middle_logic(helper.get_listeners(business.process_incoming_form(), message_dict['event_type']),
@@ -511,12 +479,18 @@ def test_an_unlicenced_applicant_that_has_previously_applied_gets_already_applie
                                   writer=None)
 
 
+@responses.activate
 def test_an_unlicenced_applicant_can_apply_anytime_and_get_application_accepted_email(monkeypatch):
+    date_served = (datetime.datetime.now() - datetime.timedelta(days=8)).strftime("%Y-%m-%d")
+    responses.add(responses.GET,
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "21999344", "21999344"),
+                  json=vips_mock.status_has_never_applied("UL", date_served),
+                  status=200, match_querystring=True)
 
-    def mock_status_get(*args, **kwargs):
-        # (is_success, prohibition_type, date_served, last_name, seized, cause, already_applied):
-        date_served = (datetime.datetime.now() - datetime.timedelta(days=8)).strftime("%Y-%m-%d")
-        return status_gets(True, "UL", date_served, "Gordon", "Y", "FAIL90", "False")
+    responses.add(responses.POST,
+                  '{}/{}/{}/application/{}'.format(Config.VIPS_API_ROOT_URL, "UL", "21999344", "21999344"),
+                  json={},
+                  status=200)
 
     def mock_send_email(*args, **kwargs):
         template_content = args[3]
@@ -526,15 +500,7 @@ def test_an_unlicenced_applicant_can_apply_anytime_and_get_application_accepted_
         assert "Your application for a review of driving prohibition 21999344 has been accepted." in template_content
         return True
 
-    def mock_save(*args, **kwargs):
-        return True, dict({
-
-        })
-
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
-    monkeypatch.setattr(vips, "application_create", mock_save)
     monkeypatch.setattr(common_email_services, "send_email", mock_send_email)
-
     message_dict = get_sample_application_submission("UL")
 
     results = helper.middle_logic(helper.get_listeners(business.process_incoming_form(), message_dict['event_type']),
@@ -543,12 +509,18 @@ def test_an_unlicenced_applicant_can_apply_anytime_and_get_application_accepted_
                                   writer=None)
 
 
+@responses.activate
 def test_an_unlicenced_successful_applicant_gets_an_application_accepted_email(monkeypatch):
+    date_served = (datetime.datetime.now() - datetime.timedelta(days=6)).strftime("%Y-%m-%d")
+    responses.add(responses.GET,
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "21999344", "21999344"),
+                  json=vips_mock.status_has_never_applied("UL", date_served),
+                  status=200, match_querystring=True)
 
-    def mock_status_get(*args, **kwargs):
-        # (is_success, prohibition_type, date_served, last_name, seized, cause, already_applied):
-        date_served = (datetime.datetime.now() - datetime.timedelta(days=6)).strftime("%Y-%m-%d")
-        return status_gets(True, "UL", date_served, "Gordon", "Y", "FAIL90", "False")
+    responses.add(responses.POST,
+                  '{}/{}/{}/application/{}'.format(Config.VIPS_API_ROOT_URL, "UL", "21999344", "21999344"),
+                  json={},
+                  status=200)
 
     def mock_send_email(*args, **kwargs):
         template_content = args[3]
@@ -560,15 +532,7 @@ def test_an_unlicenced_successful_applicant_gets_an_application_accepted_email(m
         assert "http://link-to-paybc" in template_content
         return True
 
-    def mock_save(*args, **kwargs):
-        return True, dict({
-
-        })
-
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
-    monkeypatch.setattr(vips, "application_create", mock_save)
     monkeypatch.setattr(common_email_services, "send_email", mock_send_email)
-
     message_dict = get_sample_application_submission("UL")
 
     results = helper.middle_logic(helper.get_listeners(business.process_incoming_form(), message_dict['event_type']),
@@ -577,11 +541,14 @@ def test_an_unlicenced_successful_applicant_gets_an_application_accepted_email(m
                                   writer=None)
 
 
+@responses.activate
 def test_a_ul_applicant_that_applies_at_icbc_gets_already_applied_email(monkeypatch):
-
-    def mock_status_get(*args, **kwargs):
-        date_served = datetime.datetime.now().strftime("%Y-%m-%d")
-        return get_status_with_review_booked(date_served, "UL")
+    tz = pytz.timezone('America/Vancouver')
+    review_start_date = vips.vips_datetime(datetime.datetime.now(tz) + datetime.timedelta(days=2))
+    responses.add(responses.GET,
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "21999344", "21999344"),
+                  json=vips_mock.status_applied_at_icbc("UL", review_start_date),
+                  status=200, match_querystring=True)
 
     def mock_send_email(*args, **kwargs):
         template_content = args[3]
@@ -593,7 +560,6 @@ def test_a_ul_applicant_that_applies_at_icbc_gets_already_applied_email(monkeypa
         assert "Please do not respond to this email." in template_content
         return True
 
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
     monkeypatch.setattr(common_email_services, "send_email", mock_send_email)
 
     message_dict = get_sample_application_submission("UL")
@@ -604,11 +570,14 @@ def test_a_ul_applicant_that_applies_at_icbc_gets_already_applied_email(monkeypa
                                   writer=None)
 
 
+@responses.activate
 def test_an_irp_applicant_that_applies_at_icbc_gets_already_applied_email(monkeypatch):
-
-    def mock_status_get(*args, **kwargs):
-        date_served = datetime.datetime.now().strftime("%Y-%m-%d")
-        return get_status_with_review_booked(date_served, "IRP")
+    tz = pytz.timezone('America/Vancouver')
+    review_start_date = vips.vips_datetime(datetime.datetime.now(tz) + datetime.timedelta(days=2))
+    responses.add(responses.GET,
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "21999344", "21999344"),
+                  json=vips_mock.status_applied_at_icbc("IRP", review_start_date),
+                  status=200, match_querystring=True)
 
     def mock_send_email(*args, **kwargs):
         template_content = args[3]
@@ -620,7 +589,6 @@ def test_an_irp_applicant_that_applies_at_icbc_gets_already_applied_email(monkey
         assert "Please do not respond to this email." in template_content
         return True
 
-    monkeypatch.setattr(vips, "status_get", mock_status_get)
     monkeypatch.setattr(common_email_services, "send_email", mock_send_email)
 
     message_dict = get_sample_application_submission("IRP")

@@ -1,5 +1,5 @@
 import pytest
-import python.tests.vips_mock as vips_mock
+import python.common.tests.vips_mock as vips_mock
 import pytz
 import json
 import datetime
@@ -7,10 +7,9 @@ import logging
 import base64
 import responses
 from python.paybc_api.website.config import Config
-from python.tests.rabbit_mock import MockRabbitMQ
+from python.common.tests.rabbit_mock import MockRabbitMQ
 import python.paybc_api.website.routes as routes
 import python.paybc_api.website.app as app
-import python.common.vips_api as vips
 import python.common.common_email_services as common_email
 
 
@@ -54,7 +53,7 @@ def test_search_endpoint_requires_an_access_token(token, client, monkeypatch):
 @responses.activate
 def test_applicant_search_returns_error_if_entered_last_name_incorrect(prohibition_types, token, client):
     responses.add(responses.GET,
-                  'http://localhost/20123456/status/abcd',
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_applied_not_paid(prohibition_types),
                   status=404, match_querystring=True)
     response = client.get('/api_v2/search', query_string=get_search_payload(last_name='Missing'), headers=get_oauth_auth_header(token))
@@ -67,7 +66,7 @@ def test_applicant_search_returns_error_if_entered_last_name_incorrect(prohibiti
 @responses.activate
 def test_applicant_search_returns_error_if_already_paid(prohibition_types, token, client):
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_applied_and_paid_not_scheduled(prohibition_types),
                   status=200)
     response = client.get('/api_v2/search', query_string=get_search_payload(), headers=get_oauth_auth_header(token))
@@ -79,7 +78,7 @@ def test_applicant_search_returns_error_if_already_paid(prohibition_types, token
 @responses.activate
 def test_applicant_search_returns_error_if_not_found_in_vips(token, client):
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_not_found(),
                   status=404)
     response = client.get('/api_v2/search', query_string=get_search_payload(), headers=get_oauth_auth_header(token))
@@ -96,7 +95,7 @@ def test_applicant_search_returns_error_if_irp_or_adp_older_than_8_days(prohibit
     date_served = (datetime.datetime.now(tz) - datetime.timedelta(days=9)).strftime(iso_format)
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_applied_not_paid(prohibition_type, date_served),
                   status=200)
 
@@ -114,7 +113,7 @@ def test_applicant_search_successful_if_irp_or_adp_7_days_old(prohibition_type, 
     date_served = (datetime.datetime.now(tz) - datetime.timedelta(days=8)).strftime(iso_format)
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_applied_not_paid(prohibition_type, date_served),
                   status=200)
 
@@ -132,7 +131,7 @@ def test_applicant_search_successful_if_a_ul_review_older_than_8_days(token, cli
     date_served = (datetime.datetime.now(tz) - datetime.timedelta(days=9)).strftime(iso_format)
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_applied_not_paid("UL", date_served),
                   status=200)
 
@@ -151,7 +150,7 @@ def test_successful_search_response_includes_url_to_invoice_endpoint(prohibition
     date_served = (datetime.datetime.now(tz) - datetime.timedelta(days=6)).strftime(iso_format)
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, prohibition_number),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, prohibition_number, prohibition_number),
                   json=vips_mock.status_applied_not_paid("UL", date_served),
                   status=200)
 
@@ -175,7 +174,7 @@ def test_invoice_endpoint_requires_an_access_token(client):
 def test_search_endpoint_gracefully_handles_text_response_from_vips(token, client):
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   body=vips_mock.status_returns_html_response(),
                   status=200)
 
@@ -190,7 +189,7 @@ def test_search_endpoint_gracefully_handles_text_response_from_vips(token, clien
 def test_applicant_invoice_returns_error_if_already_paid(prohibition_types, token, client):
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_applied_and_paid_not_scheduled(prohibition_types),
                   status=200)
 
@@ -204,7 +203,7 @@ def test_applicant_invoice_returns_error_if_already_paid(prohibition_types, toke
 def test_applicant_invoice_returns_error_if_not_found_in_vips(token, client):
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_not_found(),
                   status=200)
 
@@ -222,7 +221,7 @@ def test_applicant_invoice_returns_error_if_irp_or_adp_older_than_8_days(prohibi
     date_served = (datetime.datetime.now(tz) - datetime.timedelta(days=9)).strftime(iso_format)
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_applied_not_paid(prohibition_type, date_served),
                   status=200)
 
@@ -239,12 +238,13 @@ def test_applicant_invoice_successful_if_a_ul_review_older_than_8_days(token, cl
     date_served = (datetime.datetime.now(tz) - datetime.timedelta(days=9)).strftime(iso_format)
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_applied_not_paid("UL", date_served),
                   status=200)
 
     responses.add(responses.GET,
-                  '{}/{}/application/abcd'.format(Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452"),
+                  '{}/{}/application/{}'.format(
+                      Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452", "20123456"),
                   json=vips_mock.application_get(),
                   status=200)
 
@@ -267,12 +267,13 @@ def test_successful_invoice_response_includes_url_to_invoice_endpoint(prohibitio
     date_served = (datetime.datetime.now(tz) - datetime.timedelta(days=7)).strftime(iso_format)
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_applied_not_paid(prohibition_type, date_served),
                   status=200)
 
     responses.add(responses.GET,
-                  '{}/{}/application/abcd'.format(Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452"),
+                  '{}/{}/application/{}'.format(
+                      Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452", "20123456"),
                   json=vips_mock.application_get("ORAL"),
                   status=200)
 
@@ -295,12 +296,13 @@ def test_invoice_amount_is_determined_by_review_presentation_type(presentation_t
     date_served = (datetime.datetime.now(tz) - datetime.timedelta(days=6)).strftime(iso_format)
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_applied_not_paid("IRP", date_served),
                   status=200)
 
     responses.add(responses.GET,
-                  '{}/{}/application/abcd'.format(Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452"),
+                  '{}/{}/application/{}'.format(
+                      Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452", "20123456"),
                   json=vips_mock.application_get(presentation_type[0]),
                   status=200)
 
@@ -326,7 +328,7 @@ def test_receipt_endpoint_requires_an_access_token(client):
 def test_receipt_endpoint_returns_error_if_prohibition_not_found(prohibition_types, token, client, monkeypatch):
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_not_found(),
                   status=404)
 
@@ -344,7 +346,7 @@ def test_receipt_endpoint_returns_error_if_prohibition_not_found(prohibition_typ
 @responses.activate
 def test_receipt_endpoint_returns_error_if_application_not_saved(prohibition_types, token, client, monkeypatch):
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_has_never_applied(prohibition_types),
                   status=200)
 
@@ -361,12 +363,13 @@ def test_receipt_endpoint_returns_error_if_application_not_saved(prohibition_typ
 def test_receipt_endpoint_returns_error_if_application_data_not_returned(prohibition_types, token, client, monkeypatch):
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_applied_not_paid(prohibition_types),
                   status=200)
 
     responses.add(responses.GET,
-                  '{}/{}/application/abcd'.format(Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452"),
+                  '{}/{}/application/{}'.format(
+                      Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452", "20123456"),
                   json=vips_mock.application_get_not_found(), status=404)
 
     monkeypatch.setattr(routes, "RabbitMQ", MockRabbitMQ)
@@ -386,11 +389,12 @@ def test_receipt_endpoint_returns_success_if_prohibition_already_paid(prohibitio
     """
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_applied_and_paid_not_scheduled(prohibition_types), status=200)
 
     responses.add(responses.GET,
-                  '{}/{}/application/abcd'.format(Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452"),
+                  '{}/{}/application/{}'.format(
+                      Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452", "20123456"),
                   json=vips_mock.application_get(), status=200)
 
     def mock_send_email(*args, **kwargs):
@@ -419,15 +423,17 @@ def test_receipt_endpoint_returns_success_if_prohibition_already_paid(prohibitio
 def test_receipt_endpoint_returns_success_creates_verify_schedule_event(prohibition_types, token, client, monkeypatch):
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_applied_and_paid_not_scheduled(prohibition_types), status=200)
 
     responses.add(responses.GET,
-                  '{}/{}/application/abcd'.format(Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452"),
+                  '{}/{}/application/{}'.format(
+                      Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452", "20123456"),
                   json=vips_mock.application_get(), status=200)
 
     responses.add(responses.PATCH,
-                  '{}/{}/payment/abcd'.format(Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452"),
+                  '{}/{}/payment/{}'.format(
+                      Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452", "20123456"),
                   json=vips_mock.payment_patch_payload(), status=200)
 
     def mock_send_email(*args, **kwargs):
@@ -461,15 +467,17 @@ def test_receipt_endpoint_returns_success_creates_verify_schedule_event(prohibit
 def test_receipt_endpoint_returns_success_and_sends_schedule_email(prohibition_types, token, client, monkeypatch):
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_applied_and_paid_not_scheduled(prohibition_types), status=200)
 
     responses.add(responses.GET,
-                  '{}/{}/application/abcd'.format(Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452"),
+                  '{}/{}/application/{}'.format(
+                      Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452", "20123456"),
                   json=vips_mock.application_get(), status=200)
 
     responses.add(responses.PATCH,
-                  '{}/{}/payment/abcd'.format(Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452"),
+                  '{}/{}/payment/{}'.format(
+                      Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452", "20123456"),
                   json=vips_mock.payment_patch_payload(), status=200)
 
     def mock_send_email(*args, **kwargs):
@@ -499,15 +507,17 @@ def test_receipt_endpoint_returns_success_and_sends_schedule_email(prohibition_t
 def test_receipt_endpoint_sends_adp_select_review_date_with_order_number(token, client, monkeypatch):
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_applied_and_paid_not_scheduled("ADP"), status=200)
 
     responses.add(responses.GET,
-                  '{}/{}/application/abcd'.format(Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452"),
+                  '{}/{}/application/{}'.format(
+                      Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452", "20123456"),
                   json=vips_mock.application_get(), status=200)
 
     responses.add(responses.PATCH,
-                  '{}/{}/payment/abcd'.format(Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452"),
+                  '{}/{}/payment/{}'.format(
+                      Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452", "20123456"),
                   json=vips_mock.payment_patch_payload(), status=200)
 
     def mock_send_email(*args, **kwargs):

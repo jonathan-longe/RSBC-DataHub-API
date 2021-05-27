@@ -73,8 +73,8 @@ def disclosure_get(document_id: str, config, correlation_id='abcd'):
     return False, dict({})
 
 
-def payment_get(prohibition_id: str, config, correlation_id='abcd'):
-    endpoint = build_endpoint(config.VIPS_API_ROOT_URL, prohibition_id, 'payment', 'status', correlation_id)
+def payment_get(application_id: str, config, correlation_id='abcd'):
+    endpoint = build_endpoint(config.VIPS_API_ROOT_URL, application_id, 'payment', 'status', correlation_id)
     is_response_successful, data = get(endpoint, config.VIPS_API_USERNAME, config.VIPS_API_PASSWORD, correlation_id)
     if 'resp' in data:
         return True, data
@@ -98,17 +98,16 @@ def payment_patch(prohibition_id: str, config, correlation_id='abcd', **args):
 
 def disclosure_patch(document_id: str, **args):
     config = args.get('config')
-    correlation_id = args.get('correlation_id')
     today = args.get('today_date')
     logging.info('inside disclosure_patch()')
-    endpoint = build_endpoint(config.VIPS_API_ROOT_URL, 'disclosure', correlation_id)
+    endpoint = build_endpoint(config.VIPS_API_ROOT_URL, 'disclosure', 'abcd')
     payload = {
             "disclosure": {
                 "disclosedDtm": vips_datetime(today),
                 "documentId": document_id
             }
         }
-    return patch(endpoint, config.VIPS_API_USERNAME, config.VIPS_API_PASSWORD, payload, correlation_id)
+    return patch(endpoint, config.VIPS_API_USERNAME, config.VIPS_API_PASSWORD, payload)
 
 
 def application_get(application_id: str, config, correlation_id='abcd') -> tuple:
@@ -121,9 +120,8 @@ def application_get(application_id: str, config, correlation_id='abcd') -> tuple
 
 def application_create(form_type: str, **args):
     config = args.get('config')
-    correlation_id = 'abcd'
     prohibition_number = args.get('prohibition_number')
-    endpoint = build_endpoint(config.VIPS_API_ROOT_URL, form_type, prohibition_number, 'application', correlation_id)
+    endpoint = build_endpoint(config.VIPS_API_ROOT_URL, form_type, prohibition_number, 'application', prohibition_number)
     payload = {
         "applicationInfo": {
             "email": args.get('applicant_email_address'),
@@ -138,7 +136,7 @@ def application_create(form_type: str, **args):
         }
     }
     logging.info("application create payload: {}".format(json.dumps(payload)))
-    return create(endpoint, config.VIPS_API_USERNAME, config.VIPS_API_PASSWORD, payload, correlation_id)
+    return create(endpoint, config.VIPS_API_USERNAME, config.VIPS_API_PASSWORD, payload, prohibition_number)
 
 
 def application_update(guid: str, config, correlation_id='abcd'):
@@ -146,7 +144,7 @@ def application_update(guid: str, config, correlation_id='abcd'):
     return get(endpoint, config.VIPS_API_USERNAME, config.VIPS_API_PASSWORD, correlation_id)
 
 
-def schedule_get(notice_type: str, review_type: str, first_date: datetime, last_date: datetime, config, correlation_id):
+def schedule_get(notice_type: str, review_type: str, first_date: datetime, last_date: datetime, config, correlation_id='abcd'):
     time_slots = list()
     number_review_days_offered = 0
     for query_date in list_of_weekdays_dates_between(first_date, last_date):
@@ -173,14 +171,13 @@ def schedule_get(notice_type: str, review_type: str, first_date: datetime, last_
 
 def schedule_create(**args):
     config = args.get('config')
-    correlation_id = args.get('correlation_id')
     prohibition_number = args.get('prohibition_number')
-    endpoint = build_endpoint(config.VIPS_API_ROOT_URL, prohibition_number, 'review', 'schedule', correlation_id)
+    endpoint = build_endpoint(config.VIPS_API_ROOT_URL, prohibition_number, 'review', 'schedule', prohibition_number)
     payload = {
         "timeSlot": args.get('requested_time_slot')
     }
     logging.info("schedule create payload: {}".format(json.dumps(payload)))
-    return create(endpoint, config.VIPS_API_USERNAME, config.VIPS_API_PASSWORD, payload, correlation_id)
+    return create(endpoint, config.VIPS_API_USERNAME, config.VIPS_API_PASSWORD, payload, prohibition_number)
 
 
 def health_get(config) -> tuple:

@@ -206,12 +206,6 @@ def test_transform_applicant_role_types(role_type, expected, is_success):
     assert args['applicant_role'] == expected
 
 
-def test_create_correlation_id():
-    response, args = middleware.create_correlation_id()
-    assert 'correlation_id' in args
-    assert len(args['correlation_id']) == 36
-
-
 prohibition_numbers = [
     ("1234", False),
     ("21900055", True),
@@ -268,10 +262,10 @@ def test_validate_application_received_from_vips(response_under_test, is_valid):
 
 
 prohibitions_paid = [
-    ({"receiptNumberTxt": "1234"}, True),
-    ({"receiptNumberTxt": ""}, True),
-    ({"otherAttribute": "1234"}, False),
-    ({}, False),
+    ({"reviews": [{"receiptNumberTxt": "1234"}]}, True),
+    ({"reviews": [{"receiptNumberTxt": ""}]}, True),
+    ({"reviews": [{"otherAttribute": "1234"}]}, False),
+    ({"reviews": []}, False),
 ]
 
 
@@ -288,10 +282,10 @@ def test_application_not_paid(response_under_test, is_valid):
 
 
 status_responses = [
-    ({"applicationId": "1234"}, True),
-    ({"applicationId": ""}, True),
-    ({"otherAttribute": "1234"}, False),
-    ({}, False),
+    ({"reviews": [{"applicationId": "1234"}]}, True),
+    ({"reviews": [{"applicationId": ""}]}, True),
+    ({"reviews": [{"otherAttribute": "1234"}]}, False),
+    ({"reviews": []}, False),
 ]
 
 
@@ -539,7 +533,7 @@ review_date_in_the_future = [
 
 @pytest.mark.parametrize("review_date, current_time_is, expected", review_date_in_the_future)
 def test_review_date_in_the_future(review_date, current_time_is, expected):
-    vips_data = dict({'reviewStartDtm': review_date})
+    vips_data = dict({"reviews": [{'reviewStartDtm': review_date}]})
     tz = pytz.timezone('America/Vancouver')
     today_unaware = datetime.strptime(current_time_is, "%Y-%m-%d %H:%M:%S")
     today_date = tz.localize(today_unaware, is_dst=False)

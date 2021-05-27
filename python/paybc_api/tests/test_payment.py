@@ -28,18 +28,18 @@ def client(monkeypatch):
 @pytest.fixture
 def token(client, monkeypatch):
     headers = get_basic_authentication_header(Config)
-    logging.warning(headers)
+    logging.info(headers)
     response = client.post('/oauth/token', data={'grant_type': 'client_credentials'}, headers=headers)
     token = response.json['access_token']
-    logging.warning("token {}".format(token))
+    logging.info("token {}".format(token))
     return token
 
 
 def test_get_token_endpoint(client, monkeypatch):
     headers = get_basic_authentication_header(Config)
-    logging.warning(headers)
+    logging.info(headers)
     response = client.post('/oauth/token', data={'grant_type': 'client_credentials'}, headers=headers)
-    logging.warning(response.json)
+    logging.info(response.json)
     assert response.status_code == 200
 
 
@@ -57,7 +57,7 @@ def test_applicant_search_returns_error_if_entered_last_name_incorrect(prohibiti
                   json=vips_mock.status_applied_not_paid(prohibition_types),
                   status=404, match_querystring=True)
     response = client.get('/api_v2/search', query_string=get_search_payload(last_name='Missing'), headers=get_oauth_auth_header(token))
-    logging.warning("search: {}".format(response.json))
+    logging.info("search: {}".format(response.json))
     assert "The last name doesn't match a driving prohibition in the system." in response.json['error']
     assert response.status_code == 200
 
@@ -70,7 +70,7 @@ def test_applicant_search_returns_error_if_already_paid(prohibition_types, token
                   json=vips_mock.status_applied_and_paid_not_scheduled(prohibition_types),
                   status=200)
     response = client.get('/api_v2/search', query_string=get_search_payload(), headers=get_oauth_auth_header(token))
-    logging.warning("search: {}".format(response.json))
+    logging.info("search: {}".format(response.json))
     assert "The application review fee has already been paid." in response.json['error']
     assert response.status_code == 200
 
@@ -82,7 +82,7 @@ def test_applicant_search_returns_error_if_not_found_in_vips(token, client):
                   json=vips_mock.status_not_found(),
                   status=404)
     response = client.get('/api_v2/search', query_string=get_search_payload(), headers=get_oauth_auth_header(token))
-    logging.warning("search: {}".format(response.json))
+    logging.info("search: {}".format(response.json))
     assert "The driving prohibition isn't in the system." in response.json['error']
     assert response.status_code == 200
 
@@ -100,7 +100,7 @@ def test_applicant_search_returns_error_if_irp_or_adp_older_than_8_days(prohibit
                   status=200)
 
     response = client.get('/api_v2/search', query_string=get_search_payload(), headers=get_oauth_auth_header(token))
-    logging.warning("search: {}".format(response.json['error']))
+    logging.info("search: {}".format(response.json['error']))
     assert "The Notice of Prohibition was issued more than 7 days ago." in response.json['error']
     assert response.status_code == 200
 
@@ -118,7 +118,7 @@ def test_applicant_search_successful_if_irp_or_adp_7_days_old(prohibition_type, 
                   status=200)
 
     response = client.get('/api_v2/search', query_string=get_search_payload(), headers=get_oauth_auth_header(token))
-    logging.warning("search: {}".format(response.json))
+    logging.info("search: {}".format(response.json))
     assert "error" not in response.json
     assert "https://localhost/api_v2/invoice/20123456" in response.json['items'][0]['selected_invoice']['$ref']
     assert response.status_code == 200
@@ -136,7 +136,7 @@ def test_applicant_search_successful_if_a_ul_review_older_than_8_days(token, cli
                   status=200)
 
     response = client.get('/api_v2/search', query_string=get_search_payload(), headers=get_oauth_auth_header(token))
-    logging.warning("search: {}".format(response.json))
+    logging.info("search: {}".format(response.json))
     assert "error" not in response.json
     assert "https://localhost/api_v2/invoice/20123456" in response.json['items'][0]['selected_invoice']['$ref']
     assert response.status_code == 200
@@ -157,7 +157,7 @@ def test_successful_search_response_includes_url_to_invoice_endpoint(prohibition
     response = client.get('/api_v2/search',
                           query_string=get_search_payload(prohibition_number),
                           headers=get_oauth_auth_header(token))
-    logging.warning("search: {}".format(response.json))
+    logging.info("search: {}".format(response.json))
     endpoint = "https://localhost/api_v2/invoice/{}".format(prohibition_number)
     assert "error" not in response.json
     assert endpoint in response.json['items'][0]['selected_invoice']['$ref']
@@ -166,7 +166,7 @@ def test_successful_search_response_includes_url_to_invoice_endpoint(prohibition
 
 def test_invoice_endpoint_requires_an_access_token(client):
     response = client.get('/api_v2/invoice/20123456')
-    logging.warning("invoice: {}".format(response.json))
+    logging.info("invoice: {}".format(response.json))
     assert response.status_code == 401
 
 
@@ -179,7 +179,7 @@ def test_search_endpoint_gracefully_handles_text_response_from_vips(token, clien
                   status=200)
 
     response = client.get('/api_v2/search', query_string=get_search_payload(), headers=get_oauth_auth_header(token))
-    logging.warning("search: {}".format(response.json))
+    logging.info("search: {}".format(response.json))
     assert "error" in response.json
     assert response.status_code == 200
 
@@ -194,7 +194,7 @@ def test_applicant_invoice_returns_error_if_already_paid(prohibition_types, toke
                   status=200)
 
     response = client.get('/api_v2/invoice/20123456', headers=get_oauth_auth_header(token))
-    logging.warning("invoice: {}".format(response.json))
+    logging.info("invoice: {}".format(response.json))
     assert "The application review fee has already been paid." in response.json['error']
     assert response.status_code == 200
 
@@ -208,7 +208,7 @@ def test_applicant_invoice_returns_error_if_not_found_in_vips(token, client):
                   status=200)
 
     response = client.get('/api_v2/invoice/20123456', headers=get_oauth_auth_header(token))
-    logging.warning("invoice: {}".format(response.json))
+    logging.info("invoice: {}".format(response.json))
     assert "The driving prohibition isn't in the system." in response.json['error']
     assert response.status_code == 200
 
@@ -226,7 +226,7 @@ def test_applicant_invoice_returns_error_if_irp_or_adp_older_than_8_days(prohibi
                   status=200)
 
     response = client.get('/api_v2/invoice/20123456', headers=get_oauth_auth_header(token))
-    logging.warning("invoice: {}".format(response.json))
+    logging.info("invoice: {}".format(response.json))
     assert "The Notice of Prohibition was issued more than 7 days ago." in response.json['error']
     assert response.status_code == 200
 
@@ -249,7 +249,7 @@ def test_applicant_invoice_successful_if_a_ul_review_older_than_8_days(token, cl
                   status=200)
 
     response = client.get('/api_v2/invoice/20123456', headers=get_oauth_auth_header(token))
-    logging.warning("invoice: {}".format(response.json))
+    logging.info("invoice: {}".format(response.json))
     assert "error" not in response.json
     assert "20123456" == response.json["invoice_number"]
     assert "10008" == response.json["pbc_ref_number"]
@@ -278,7 +278,7 @@ def test_successful_invoice_response_includes_url_to_invoice_endpoint(prohibitio
                   status=200)
 
     response = client.get('/api_v2/invoice/20123456', headers=get_oauth_auth_header(token))
-    logging.warning("invoice: {}".format(response.json))
+    logging.info("invoice: {}".format(response.json))
     assert "error" not in response.json
     assert "20123456" == response.json["invoice_number"]
     assert "10008" == response.json["pbc_ref_number"]
@@ -307,7 +307,7 @@ def test_invoice_amount_is_determined_by_review_presentation_type(presentation_t
                   status=200)
 
     response = client.get('/api_v2/invoice/20123456', headers=get_oauth_auth_header(token))
-    logging.warning("invoice: {}".format(response.json))
+    logging.info("invoice: {}".format(response.json))
     assert "error" not in response.json
     assert "20123456" == response.json["invoice_number"]
     assert "10008" == response.json["pbc_ref_number"]
@@ -319,7 +319,7 @@ def test_invoice_amount_is_determined_by_review_presentation_type(presentation_t
 
 def test_receipt_endpoint_requires_an_access_token(client):
     response = client.post('/api_v2/receipt')
-    logging.warning("receipt: {}".format(response.json))
+    logging.info("receipt: {}".format(response.json))
     assert response.status_code == 401
 
 
@@ -337,7 +337,7 @@ def test_receipt_endpoint_returns_error_if_prohibition_not_found(prohibition_typ
     response = client.post('/api_v2/receipt',
                            headers=get_oauth_auth_header(token),
                            json=get_receipt_payload())
-    logging.warning("receipt: {}".format(response.json))
+    logging.info("receipt: {}".format(response.json))
     assert "INCMP" in response.json['status']  # INCMP == INCOMPLETE
     assert response.status_code == 400
 
@@ -353,7 +353,7 @@ def test_receipt_endpoint_returns_error_if_application_not_saved(prohibition_typ
     monkeypatch.setattr(routes, "RabbitMQ", MockRabbitMQ)
 
     response = client.post('/api_v2/receipt', headers=get_oauth_auth_header(token), json=get_receipt_payload())
-    logging.warning("receipt: {}".format(response.json))
+    logging.info("receipt: {}".format(response.json))
     assert "INCMP" in response.json['status']  # INCMP == INCOMPLETE
     assert response.status_code == 400
 
@@ -374,7 +374,7 @@ def test_receipt_endpoint_returns_error_if_application_data_not_returned(prohibi
 
     monkeypatch.setattr(routes, "RabbitMQ", MockRabbitMQ)
     response = client.post('/api_v2/receipt', headers=get_oauth_auth_header(token), json=get_receipt_payload())
-    logging.warning("receipt: {}".format(response.json))
+    logging.info("receipt: {}".format(response.json))
     assert "INCMP" in response.json['status']  # INCMP == INCOMPLETE
     assert response.status_code == 400
 
@@ -413,7 +413,7 @@ def test_receipt_endpoint_returns_success_if_prohibition_already_paid(prohibitio
     response = client.post('/api_v2/receipt',
                            headers=get_oauth_auth_header(token),
                            json=get_receipt_payload())
-    logging.warning("receipt: {}".format(response.json))
+    logging.info("receipt: {}".format(response.json))
     assert "APP" in response.json['status']  # APP == APPROVED
     assert response.status_code == 200
 
@@ -457,7 +457,7 @@ def test_receipt_endpoint_returns_success_creates_verify_schedule_event(prohibit
     response = client.post('/api_v2/receipt',
                            headers=get_oauth_auth_header(token),
                            json=get_receipt_payload())
-    logging.warning("receipt: {}".format(response.json))
+    logging.info("receipt: {}".format(response.json))
     assert "APP" in response.json['status']  # APP == APPROVED
     assert response.status_code == 200
 
@@ -498,7 +498,7 @@ def test_receipt_endpoint_returns_success_and_sends_schedule_email(prohibition_t
     response = client.post('/api_v2/receipt',
                            headers=get_oauth_auth_header(token),
                            json=get_receipt_payload())
-    logging.warning("receipt: {}".format(response.json))
+    logging.info("receipt: {}".format(response.json))
     assert "APP" in response.json['status']  # APP == APPROVED
     assert response.status_code == 200
 
@@ -542,7 +542,7 @@ def test_receipt_endpoint_sends_adp_select_review_date_with_order_number(token, 
     response = client.post('/api_v2/receipt',
                            headers=get_oauth_auth_header(token),
                            json=get_receipt_payload())
-    logging.warning("receipt: {}".format(response.json))
+    logging.info("receipt: {}".format(response.json))
     assert "APP" in response.json['status']  # APP == APPROVED
     assert response.status_code == 200
 

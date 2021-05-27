@@ -56,7 +56,7 @@ def setup_app(app, config):
             db.session.add(client)
             db.session.commit()
         else:
-            logging.warning("database already exists - no need to recreate")
+            logging.info("database already exists - no need to recreate")
 
     db.init_app(app)
     config_oauth(app)

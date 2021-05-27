@@ -138,7 +138,7 @@ class UnlicencedDriver(ProhibitionBase):
         """
         ULs have no deadline to apply. This method should not be called by ULs.
         """
-        return "Not applicable"
+        return "UL's have no deadline date"
 
 
 class ImmediateRoadside(ProhibitionBase):

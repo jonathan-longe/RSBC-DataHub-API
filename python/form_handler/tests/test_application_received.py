@@ -16,7 +16,13 @@ os.environ['TZ'] = 'UTC'
 
 
 @pytest.mark.parametrize("prohib", ["IRP", "ADP"])
+@responses.activate
 def test_an_applicant_that_was_served_yesterday_but_not_in_vips_gets_not_yet_email(prohib, monkeypatch):
+
+    responses.add(responses.GET,
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "21999344", "21999344", "21999344"),
+                  json=vips_mock.status_not_found(),
+                  status=404, match_querystring=True)
 
     def mock_send_email(*args, **kwargs):
         template_content = args[3]
@@ -77,7 +83,7 @@ def test_an_applicant_that_was_served_7_days_ago_but_not_in_vips_gets_still_not_
     responses.add(responses.GET,
                   '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "21999344", "21999344", "21999344"),
                   json=vips_mock.status_not_found(),
-                  status=200, match_querystring=True)
+                  status=404, match_querystring=True)
 
     monkeypatch.setattr(actions, "add_to_hold_queue", mock_add_to_hold)
     monkeypatch.setattr(middleware, "determine_current_datetime", mock_datetime_now)
@@ -303,7 +309,7 @@ def test_a_unlicenced_applicant_that_was_served_yesterday_but_not_in_vips_gets_n
         return True, args
 
     responses.add(responses.GET,
-                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20999344", "20999344"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "21999344", "21999344"),
                   json=vips_mock.status_not_found(),
                   status=404, match_querystring=True)
 

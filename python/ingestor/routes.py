@@ -5,6 +5,7 @@ import python.ingestor.business as business
 from flask import request, jsonify, Response, g
 from flask_api import FlaskAPI
 import logging
+import json
 from functools import wraps
 import python.common.rsi_email as rsi_email
 
@@ -17,8 +18,6 @@ logging.warning('*** flask initialized ***')
 
 @application.before_request
 def before_request_function():
-    logging.info("Remote address: {}".format(request.remote_addr))
-    logging.debug("Data: {}".format(request.remote_addr, request.get_data()))
     g.writer = RabbitMQ(Config())
 
 
@@ -51,7 +50,7 @@ def basic_auth_required(f):
 @basic_auth_required
 def ingest_form():
     if request.method == 'POST':
-        # invoke middleware functions
+        logging.info("ingest_form() invoked: {} | {}".format(request.remote_addr, request.get_data()))
         args = helper.middle_logic(business.ingest_form(),
                                    writer=g.writer,
                                    form_parameters=available_parameters,
@@ -67,7 +66,7 @@ def ingest_form_deprecated():
     DEPRECATED - USE "form_take" endpoint instead
     """
     if request.method == 'POST':
-        # invoke middleware functions
+        logging.info("ingest_form_deprecated() invoked: {} | {}".format(request.remote_addr, request.get_data()))
         args = helper.middle_logic(business.ingest_form(),
                                    writer=g.writer,
                                    form_parameters=available_parameters,
@@ -87,7 +86,7 @@ def schedule():
     special characters from Orbeon.
     """
     if request.method == 'POST':
-        # invoke middleware functions
+        logging.info("schedule() invoked: {} | {}".format(request.remote_addr, request.get_data()))
         args = helper.middle_logic(business.get_available_time_slots(),
                                    prohibition_number=request.form['prohibition_number'],
                                    driver_last_name=request.form['last_name'],
@@ -117,7 +116,7 @@ def evidence():
     applicant business rules satisfied to submit evidence.
     """
     if request.method == 'POST':
-        # invoke middleware functions
+        logging.info("evidence() invoked: {} | {}".format(request.remote_addr, request.get_data()))
         args = helper.middle_logic(business.is_okay_to_submit_evidence(),
                                    prohibition_number=request.form['prohibition_number'],
                                    driver_last_name=request.form['last_name'],

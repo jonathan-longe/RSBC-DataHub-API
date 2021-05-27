@@ -33,7 +33,7 @@ def test_verify_schedule_event_sends_email_to_business_if_applicant_has_not_sche
     business_email_address = "business-address@gov.bc.ca"
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(BaseConfig.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(BaseConfig.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_applied_and_paid_not_scheduled("IRP"),
                   status=200, match_querystring=True)
 
@@ -63,7 +63,7 @@ def test_verify_no_email_sent_to_business_if_applicant_scheduled(monkeypatch):
     message_dict = get_verify_schedule_event(past_date)
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(BaseConfig.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(BaseConfig.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_applied_paid_and_scheduled("IRP", "2021-03-24 12:00:00 -0700"),
                   status=200, match_querystring=True)
 
@@ -84,7 +84,7 @@ def test_verify_schedule_check_placed_back_on_hold_if_vips_not_available(monkeyp
     message_dict = get_verify_schedule_event(past_date)
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(BaseConfig.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(BaseConfig.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_returns_html_response(),
                   status=200, match_querystring=True)
 

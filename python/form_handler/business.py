@@ -89,7 +89,7 @@ def process_incoming_form() -> dict:
             {"try": actions.add_to_hold_queue, "fail": []}
         ],
         "prohibition_review": [
-            # aka: submit prohibition application
+            # aka: submit prohibition review application
             {"try": actions.is_not_on_hold, "fail": [
                 {"try": actions.add_to_hold_queue, "fail": []}
             ]},

@@ -1,4 +1,5 @@
 import logging
+import json
 from datetime import datetime, timedelta
 from python.common.message import encode_message, add_error_to_message
 from python.common.config import Config
@@ -81,7 +82,7 @@ def add_to_hold_queue(**args) -> tuple:
     config = args.get('config')
     message = args.get('message')
     writer = args.get('writer')
-    logging.warning('writing to hold queue')
+    logging.info('add_to_hold_queue(): {}'.format(json.dumps(message)))
     if not writer.publish(config.HOLD_QUEUE, encode_message(message, config.ENCRYPT_KEY)):
         logging.critical('unable to write to RabbitMQ {} queue'.format(config.HOLD_QUEUE))
         return False, args

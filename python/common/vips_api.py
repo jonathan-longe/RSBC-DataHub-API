@@ -99,8 +99,8 @@ def payment_patch(prohibition_id: str, config, correlation_id='abcd', **args):
 def disclosure_patch(document_id: str, **args):
     config = args.get('config')
     today = args.get('today_date')
-    logging.info('inside disclosure_patch()')
-    endpoint = build_endpoint(config.VIPS_API_ROOT_URL, 'disclosure', 'abcd')
+    prohibition_number = args.get('prohibition_number')
+    endpoint = build_endpoint(config.VIPS_API_ROOT_URL, 'disclosure', prohibition_number)
     payload = {
             "disclosure": {
                 "disclosedDtm": vips_datetime(today),

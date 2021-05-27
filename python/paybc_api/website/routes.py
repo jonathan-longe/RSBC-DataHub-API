@@ -27,10 +27,9 @@ def search():
     invoice number and a check_value.  We return an array of items to be paid.
     """
     if request.method == 'GET':
-        # invoke middleware business logic
+        logging.info("search() invoked: {} | {}".format(request.remote_addr, request.get_data()))
         prohibition_number = request.args.get('invoice_number')
         driver_last_name = request.args.get('check_value')
-        logging.info('inputs: {}, {}'.format(prohibition_number, driver_last_name))
         args = helper.middle_logic(
             rules.search_for_invoice(),
             config=Config,
@@ -54,7 +53,7 @@ def show(prohibition_number):
     PayBC requests details on the item to be paid from this endpoint.
     """
     if request.method == 'GET':
-        # invoke middleware business logic
+        logging.info("show() invoked: {} | {}".format(request.remote_addr, request.get_data()))
         args = helper.middle_logic(rules.generate_invoice(),
                                    prohibition_number=prohibition_number,
                                    config=Config)
@@ -90,9 +89,9 @@ def receipt():
     payment info to VIPS and acknowledge receipt of payment.
     """
     if request.method == 'POST':
+        logging.info("receipt() invoked: {} | {}".format(request.remote_addr, request.get_data()))
         payload = request.json
         # invoke middleware business logic
-        logging.info('receipt payload: {}'.format(json.dumps(payload)))
         args = helper.middle_logic(rules.save_payment(),
                                    payload=payload,
                                    config=Config,

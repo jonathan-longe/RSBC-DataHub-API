@@ -37,7 +37,7 @@ def test_when_an_applicants_review_has_concluded_the_disclosure_event_is_deleted
     review_start_date = vips.vips_datetime(datetime.datetime.now(tz) - datetime.timedelta(days=1))
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_applied_paid_and_scheduled("IRP", review_start_date),
                   status=200, match_querystring=True)
 
@@ -61,7 +61,7 @@ def test_if_no_disclosure_add_back_to_hold_queue(monkeypatch):
     review_start_date = vips.vips_datetime(datetime.datetime.now(tz) - datetime.timedelta(days=1))
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_with_no_disclosure("IRP", review_start_date),
                   status=200, match_querystring=True)
 
@@ -85,7 +85,7 @@ def test_disclosure_documents_marked_sent_are_not_sent_again(monkeypatch):
     review_start_date = vips.vips_datetime(datetime.datetime.now(tz) - datetime.timedelta(days=1))
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_applied_paid_and_scheduled("IRP", review_start_date),
                   status=200, match_querystring=True)
 
@@ -109,17 +109,17 @@ def test_when_one_document_not_disclosed_one_document_is_emailed_to_applicant(mo
     review_start_date = vips.vips_datetime(datetime.datetime.now(tz) + datetime.timedelta(days=2))
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_with_one_sent_on_unsent_disclosure("IRP", review_start_date),
                   status=200, match_querystring=True)
 
     responses.add(responses.GET,
-                  '{}/{}/disclosure/abcd'.format(Config.VIPS_API_ROOT_URL, "111"),
+                  '{}/{}/disclosure/{}'.format(Config.VIPS_API_ROOT_URL, "111", "20123456"),
                   json=vips_mock.disclosure_get(),
                   status=200, match_querystring=True)
 
     responses.add(responses.PATCH,
-                  '{}/disclosure/abcd'.format(Config.VIPS_API_ROOT_URL),
+                  '{}/disclosure/{}'.format(Config.VIPS_API_ROOT_URL, "20123456"),
                   json=vips_mock.disclosure_get(),
                   status=200, match_querystring=True)
 
@@ -149,22 +149,22 @@ def test_when_two_documents_not_disclosed_two_documents_emailed_to_applicant(mon
     review_start_date = vips.vips_datetime(datetime.datetime.now(tz) + datetime.timedelta(days=2))
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_with_two_unsent_disclosures("IRP", review_start_date),
                   status=200, match_querystring=True)
 
     responses.add(responses.GET,
-                  '{}/{}/disclosure/abcd'.format(Config.VIPS_API_ROOT_URL, "111"),
+                  '{}/{}/disclosure/{}'.format(Config.VIPS_API_ROOT_URL, "111", "20123456"),
                   json=vips_mock.disclosure_get(),
                   status=200, match_querystring=True)
 
     responses.add(responses.GET,
-                  '{}/{}/disclosure/abcd'.format(Config.VIPS_API_ROOT_URL, "222"),
+                  '{}/{}/disclosure/{}'.format(Config.VIPS_API_ROOT_URL, "222", "20123456"),
                   json=vips_mock.disclosure_get(),
                   status=200, match_querystring=True)
 
     responses.add(responses.PATCH,
-                  '{}/disclosure/abcd'.format(Config.VIPS_API_ROOT_URL),
+                  '{}/disclosure/{}'.format(Config.VIPS_API_ROOT_URL, "20123456"),
                   json=dict({}),
                   status=200, match_querystring=True)
 
@@ -195,22 +195,22 @@ def test_disclosure_email_template_has_unique_text_for_irp_and_adp_prohibitions(
     review_start_date = vips.vips_datetime(datetime.datetime.now(tz) + datetime.timedelta(days=2))
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_with_two_unsent_disclosures(prohibition_type, review_start_date),
                   status=200, match_querystring=True)
 
     responses.add(responses.GET,
-                  '{}/{}/disclosure/abcd'.format(Config.VIPS_API_ROOT_URL, "111"),
+                  '{}/{}/disclosure/{}'.format(Config.VIPS_API_ROOT_URL, "111", "20123456"),
                   json=vips_mock.disclosure_get(),
                   status=200, match_querystring=True)
 
     responses.add(responses.GET,
-                  '{}/{}/disclosure/abcd'.format(Config.VIPS_API_ROOT_URL, "222"),
+                  '{}/{}/disclosure/{}'.format(Config.VIPS_API_ROOT_URL, "222", "20123456"),
                   json=vips_mock.disclosure_get(),
                   status=200, match_querystring=True)
 
     responses.add(responses.PATCH,
-                  '{}/disclosure/abcd'.format(Config.VIPS_API_ROOT_URL),
+                  '{}/disclosure/{}'.format(Config.VIPS_API_ROOT_URL, "20123456"),
                   json=dict({}),
                   status=200, match_querystring=True)
 
@@ -244,7 +244,7 @@ def test_disclosure_email_template_has_unique_text_for_ul_prohibitions(monkeypat
     review_start_date = vips.vips_datetime(datetime.datetime.now(tz) + datetime.timedelta(days=2))
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_with_two_unsent_disclosures("UL", review_start_date),
                   status=200, match_querystring=True)
 
@@ -261,17 +261,17 @@ def test_disclosure_email_template_has_unique_text_for_ul_prohibitions(monkeypat
         return True
 
     responses.add(responses.GET,
-                  '{}/{}/disclosure/abcd'.format(Config.VIPS_API_ROOT_URL, "111"),
+                  '{}/{}/disclosure/{}'.format(Config.VIPS_API_ROOT_URL, "111", "20123456"),
                   json=vips_mock.disclosure_get(),
                   status=200, match_querystring=True)
 
     responses.add(responses.GET,
-                  '{}/{}/disclosure/abcd'.format(Config.VIPS_API_ROOT_URL, "222"),
+                  '{}/{}/disclosure/{}'.format(Config.VIPS_API_ROOT_URL, "222", "20123456"),
                   json=vips_mock.disclosure_get(),
                   status=200, match_querystring=True)
 
     responses.add(responses.PATCH,
-                  '{}/disclosure/abcd'.format(Config.VIPS_API_ROOT_URL),
+                  '{}/disclosure/{}'.format(Config.VIPS_API_ROOT_URL, "20123456"),
                   json=dict({}),
                   status=200, match_querystring=True)
 
@@ -294,22 +294,22 @@ def test_adp_disclosure_includes_blood_alcohol_pdf_document_during_initial_discl
     number_of_attachments_expected = 3
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_with_two_unsent_disclosures("ADP", review_start_date),
                   status=200, match_querystring=True)
 
     responses.add(responses.GET,
-                  '{}/{}/disclosure/abcd'.format(Config.VIPS_API_ROOT_URL, "111"),
+                  '{}/{}/disclosure/{}'.format(Config.VIPS_API_ROOT_URL, "111", "20123456"),
                   json=vips_mock.disclosure_get(),
                   status=200, match_querystring=True)
 
     responses.add(responses.GET,
-                  '{}/{}/disclosure/abcd'.format(Config.VIPS_API_ROOT_URL, "222"),
+                  '{}/{}/disclosure/{}'.format(Config.VIPS_API_ROOT_URL, "222", "20123456"),
                   json=vips_mock.disclosure_get(),
                   status=200, match_querystring=True)
 
     responses.add(responses.PATCH,
-                  '{}/disclosure/abcd'.format(Config.VIPS_API_ROOT_URL),
+                  '{}/disclosure/{}'.format(Config.VIPS_API_ROOT_URL, "20123456"),
                   json=dict({}),
                   status=200, match_querystring=True)
 
@@ -343,17 +343,17 @@ def test_subsequent_adp_disclosure_does_not_include_blood_alcohol_pdf_document(m
     number_of_attachments_expected = 1
 
     responses.add(responses.GET,
-                  '{}/{}/status/abcd'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_with_one_sent_on_unsent_disclosure("ADP", review_start_date),
                   status=200, match_querystring=True)
 
     responses.add(responses.GET,
-                  '{}/{}/disclosure/abcd'.format(Config.VIPS_API_ROOT_URL, "111"),
+                  '{}/{}/disclosure/{}'.format(Config.VIPS_API_ROOT_URL, "111", "20123456"),
                   json=vips_mock.disclosure_get(),
                   status=200, match_querystring=True)
 
     responses.add(responses.PATCH,
-                  '{}/disclosure/abcd'.format(Config.VIPS_API_ROOT_URL),
+                  '{}/disclosure/{}'.format(Config.VIPS_API_ROOT_URL, "20123456"),
                   json=dict({}),
                   status=200, match_querystring=True)
 

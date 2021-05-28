@@ -55,7 +55,7 @@ class Config:
         },
         'handlers': {
             'splunk': {
-                'level': 'DEBUG',
+                'level': LOG_LEVEL,
                 'class': 'splunk_handler.SplunkHandler',
                 'formatter': 'json',
                 'host': SPLUNK_HOST,
@@ -66,14 +66,14 @@ class Config:
                 'verify': False
             },
             'console': {
-                'level': 'DEBUG',
+                'level': LOG_LEVEL,
                 'class': 'logging.StreamHandler',
             }
         },
         'loggers': {
             '': {
                 'handlers': LOGGERS_IN_USE,
-                'level': 'DEBUG'
+                'level': LOG_LEVEL
             }
         }
     }

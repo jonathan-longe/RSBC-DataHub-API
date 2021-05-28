@@ -5,6 +5,7 @@ import python.ingestor.business as business
 from flask import request, jsonify, Response, g
 from flask_api import FlaskAPI
 import logging
+import logging.config
 import json
 from functools import wraps
 import python.common.rsi_email as rsi_email
@@ -12,7 +13,7 @@ import python.common.rsi_email as rsi_email
 
 application = FlaskAPI(__name__)
 application.secret = Config.FLASK_SECRET_KEY
-logging.basicConfig(level=Config.LOG_LEVEL, format=Config.LOG_FORMAT)
+logging.config.dictConfig(Config.LOGGING)
 logging.warning('*** flask initialized ***')
 
 

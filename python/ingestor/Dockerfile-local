@@ -11,8 +11,6 @@ USER appuser
 COPY common /home/appuser/python/common
 COPY ingestor /home/appuser/python/ingestor
 
-RUN [ "ls", "-R" ]
-
 RUN ["python", "-m", "pytest"]
 
 #TODO - Add worker processes to gunicorn below 

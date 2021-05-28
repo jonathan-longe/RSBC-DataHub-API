@@ -1,8 +1,9 @@
 import logging
+import logging.config
 from flask import make_response, jsonify
 from python.paybc_api.website.config import Config
 
-logging.basicConfig(level=Config.LOG_LEVEL, format=Config.LOG_FORMAT)
+logging.config.dictConfig(Config.LOGGING)
 
 
 def payment_incomplete(**args):

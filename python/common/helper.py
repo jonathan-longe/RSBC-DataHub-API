@@ -2,10 +2,11 @@ import json
 import csv
 import pytz
 import logging
+import logging.config
 import datetime
 from python.common.config import Config
 
-logging.basicConfig(level=Config.LOG_LEVEL, format=Config.LOG_FORMAT)
+logging.config.dictConfig(Config.LOGGING)
 
 
 def load_json_into_dict(file_name) -> dict:

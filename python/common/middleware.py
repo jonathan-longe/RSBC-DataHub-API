@@ -4,6 +4,7 @@ from python.common.vips_api import vips_str_to_datetime
 import python.common.helper as helper
 import python.common.prohibitions as pro
 import logging
+import logging.config
 from cerberus import Validator as Cerberus
 from python.common.config import Config
 import python.common.vips_api as vips
@@ -15,7 +16,7 @@ import xmltodict
 import base64
 import zlib
 
-logging.basicConfig(level=Config.LOG_LEVEL, format=Config.LOG_FORMAT)
+logging.config.dictConfig(Config.LOGGING)
 
 
 def get_data_from_application_form(**args) -> tuple:

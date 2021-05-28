@@ -3,8 +3,9 @@ from python.common.config import Config
 import requests
 import json
 import logging
+import logging.config
 
-logging.basicConfig(level=Config.LOG_LEVEL, format=Config.LOG_FORMAT)
+logging.config.dictConfig(Config.LOGGING)
 
 
 def send_email(to: list, subject: str, config, template, attachments=None) -> bool:

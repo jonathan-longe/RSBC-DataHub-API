@@ -4,9 +4,10 @@ import python.common.common_email_services as common_email_services
 from datetime import datetime
 import json
 import logging
+import logging.config
 from jinja2 import Environment, select_autoescape, FileSystemLoader
 
-logging.basicConfig(level=Config.LOG_LEVEL, format=Config.LOG_FORMAT)
+logging.config.dictConfig(Config.LOGGING)
 
 
 def application_accepted(**args):

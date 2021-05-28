@@ -36,7 +36,7 @@ def test_applicant_sent_email_confirming_evidence_received(monkeypatch):
 
     monkeypatch.setattr(common_email_services, "send_email", mock_send_email)
 
-    message_dict = helper.load_json_into_dict('python/tests/sample_data/form/document_submission.json')
+    message_dict = helper.load_json_into_dict('python/common/tests/sample_data/form/document_submission.json')
 
     results = helper.middle_logic(helper.get_listeners(business.process_incoming_form(), message_dict['event_type']),
                                   message=message_dict,

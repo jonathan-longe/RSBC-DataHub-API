@@ -1,5 +1,6 @@
 import time
 import logging
+import logging.config
 from flask import Flask
 from python.paybc_api.website.models import db, User, OAuth2Client
 from python.paybc_api.website.oauth2 import config_oauth

@@ -4,6 +4,7 @@ import pytz
 import json
 import datetime
 import logging
+import logging.config
 import base64
 import responses
 from python.paybc_api.website.config import Config

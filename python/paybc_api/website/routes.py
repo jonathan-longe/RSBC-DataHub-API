@@ -6,9 +6,10 @@ import python.paybc_api.business as rules
 from python.paybc_api.website.config import Config
 from python.common.rabbitmq import RabbitMQ
 import logging
+import logging.config
 import json
 
-logging.basicConfig(level=Config.LOG_LEVEL, format=Config.LOG_FORMAT)
+logging.config.dictConfig(Config.LOGGING)
 logging.warning('*** Pay BC API initialized ***')
 bp = Blueprint(__name__, 'home')
 

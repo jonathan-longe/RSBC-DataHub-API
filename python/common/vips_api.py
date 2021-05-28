@@ -1,5 +1,6 @@
 import requests
 import logging
+import logging.config
 import json
 import holidays
 from datetime import datetime, timedelta
@@ -8,7 +9,7 @@ from unicodedata import normalize
 from python.common.config import Config
 import base64
 
-logging.basicConfig(level=Config.LOG_LEVEL, format=Config.LOG_FORMAT)
+logging.config.dictConfig(Config.LOGGING)
 
 
 def list_of_weekdays_dates_between(start: datetime, end: datetime) -> list:

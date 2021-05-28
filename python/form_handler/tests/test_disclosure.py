@@ -13,7 +13,7 @@ from python.common.rabbitmq import RabbitMQ
 
 
 def test_disclosure_that_has_not_reached_the_hold_until_datetime_is_placed_back_on_hold(monkeypatch):
-    message_dict = helper.load_json_into_dict('python/tests/sample_data/form/disclosure_payload.json')
+    message_dict = helper.load_json_into_dict('python/common/tests/sample_data/form/disclosure_payload.json')
     message_dict['hold_until'] = (datetime.datetime.now() + datetime.timedelta(hours=1)).isoformat()
 
     def mock_publish(queue_name: str, payload: bytes):
@@ -31,7 +31,7 @@ def test_disclosure_that_has_not_reached_the_hold_until_datetime_is_placed_back_
 
 @responses.activate
 def test_when_an_applicants_review_has_concluded_the_disclosure_event_is_deleted(monkeypatch):
-    message_dict = helper.load_json_into_dict('python/tests/sample_data/form/disclosure_payload.json')
+    message_dict = helper.load_json_into_dict('python/common/tests/sample_data/form/disclosure_payload.json')
     message_dict['hold_until'] = (datetime.datetime.now() - datetime.timedelta(hours=1)).isoformat()
     tz = pytz.timezone('America/Vancouver')
     review_start_date = vips.vips_datetime(datetime.datetime.now(tz) - datetime.timedelta(days=1))
@@ -55,7 +55,7 @@ def test_when_an_applicants_review_has_concluded_the_disclosure_event_is_deleted
 
 @responses.activate
 def test_if_no_disclosure_add_back_to_hold_queue(monkeypatch):
-    message_dict = helper.load_json_into_dict('python/tests/sample_data/form/disclosure_payload.json')
+    message_dict = helper.load_json_into_dict('python/common/tests/sample_data/form/disclosure_payload.json')
     message_dict['hold_until'] = (datetime.datetime.now() - datetime.timedelta(hours=1)).isoformat()
     tz = pytz.timezone('America/Vancouver')
     review_start_date = vips.vips_datetime(datetime.datetime.now(tz) - datetime.timedelta(days=1))
@@ -79,7 +79,7 @@ def test_if_no_disclosure_add_back_to_hold_queue(monkeypatch):
 
 @responses.activate
 def test_disclosure_documents_marked_sent_are_not_sent_again(monkeypatch):
-    message_dict = helper.load_json_into_dict('python/tests/sample_data/form/disclosure_payload.json')
+    message_dict = helper.load_json_into_dict('python/common/tests/sample_data/form/disclosure_payload.json')
     message_dict['hold_until'] = (datetime.datetime.now() - datetime.timedelta(hours=1)).isoformat()
     tz = pytz.timezone('America/Vancouver')
     review_start_date = vips.vips_datetime(datetime.datetime.now(tz) - datetime.timedelta(days=1))
@@ -103,7 +103,7 @@ def test_disclosure_documents_marked_sent_are_not_sent_again(monkeypatch):
 
 @responses.activate
 def test_when_one_document_not_disclosed_one_document_is_emailed_to_applicant(monkeypatch):
-    message_dict = helper.load_json_into_dict('python/tests/sample_data/form/disclosure_payload.json')
+    message_dict = helper.load_json_into_dict('python/common/tests/sample_data/form/disclosure_payload.json')
     message_dict['hold_until'] = (datetime.datetime.now() - datetime.timedelta(hours=1)).isoformat()
     tz = pytz.timezone('America/Vancouver')
     review_start_date = vips.vips_datetime(datetime.datetime.now(tz) + datetime.timedelta(days=2))
@@ -143,7 +143,7 @@ def test_when_one_document_not_disclosed_one_document_is_emailed_to_applicant(mo
 
 @responses.activate
 def test_when_two_documents_not_disclosed_two_documents_emailed_to_applicant(monkeypatch):
-    message_dict = helper.load_json_into_dict('python/tests/sample_data/form/disclosure_payload.json')
+    message_dict = helper.load_json_into_dict('python/common/tests/sample_data/form/disclosure_payload.json')
     message_dict['hold_until'] = (datetime.datetime.now() - datetime.timedelta(hours=1)).isoformat()
     tz = pytz.timezone('America/Vancouver')
     review_start_date = vips.vips_datetime(datetime.datetime.now(tz) + datetime.timedelta(days=2))
@@ -189,7 +189,7 @@ def test_when_two_documents_not_disclosed_two_documents_emailed_to_applicant(mon
 @pytest.mark.parametrize("prohibition_type", ['IRP', 'ADP'])
 @responses.activate
 def test_disclosure_email_template_has_unique_text_for_irp_and_adp_prohibitions(prohibition_type, monkeypatch):
-    message_dict = helper.load_json_into_dict('python/tests/sample_data/form/disclosure_payload.json')
+    message_dict = helper.load_json_into_dict('python/common/tests/sample_data/form/disclosure_payload.json')
     message_dict['hold_until'] = (datetime.datetime.now() - datetime.timedelta(hours=1)).isoformat()
     tz = pytz.timezone('America/Vancouver')
     review_start_date = vips.vips_datetime(datetime.datetime.now(tz) + datetime.timedelta(days=2))
@@ -238,7 +238,7 @@ def test_disclosure_email_template_has_unique_text_for_irp_and_adp_prohibitions(
 
 @responses.activate
 def test_disclosure_email_template_has_unique_text_for_ul_prohibitions(monkeypatch):
-    message_dict = helper.load_json_into_dict('python/tests/sample_data/form/disclosure_payload.json')
+    message_dict = helper.load_json_into_dict('python/common/tests/sample_data/form/disclosure_payload.json')
     message_dict['hold_until'] = (datetime.datetime.now() - datetime.timedelta(hours=1)).isoformat()
     tz = pytz.timezone('America/Vancouver')
     review_start_date = vips.vips_datetime(datetime.datetime.now(tz) + datetime.timedelta(days=2))
@@ -287,7 +287,7 @@ def test_disclosure_email_template_has_unique_text_for_ul_prohibitions(monkeypat
 
 @responses.activate
 def test_adp_disclosure_includes_blood_alcohol_pdf_document_during_initial_disclosure(monkeypatch):
-    message_dict = helper.load_json_into_dict('python/tests/sample_data/form/disclosure_payload.json')
+    message_dict = helper.load_json_into_dict('python/common/tests/sample_data/form/disclosure_payload.json')
     message_dict['hold_until'] = (datetime.datetime.now() - datetime.timedelta(hours=1)).isoformat()
     tz = pytz.timezone('America/Vancouver')
     review_start_date = vips.vips_datetime(datetime.datetime.now(tz) + datetime.timedelta(days=2))
@@ -336,7 +336,7 @@ def test_adp_disclosure_includes_blood_alcohol_pdf_document_during_initial_discl
 
 @responses.activate
 def test_subsequent_adp_disclosure_does_not_include_blood_alcohol_pdf_document(monkeypatch):
-    message_dict = helper.load_json_into_dict('python/tests/sample_data/form/disclosure_payload.json')
+    message_dict = helper.load_json_into_dict('python/common/tests/sample_data/form/disclosure_payload.json')
     message_dict['hold_until'] = (datetime.datetime.now() - datetime.timedelta(hours=1)).isoformat()
     tz = pytz.timezone('America/Vancouver')
     review_start_date = vips.vips_datetime(datetime.datetime.now(tz) + datetime.timedelta(days=2))

@@ -1,9 +1,10 @@
 import logging
+import logging.config
 from datetime import datetime, timedelta
 from python.common.config import Config
 import re
 
-logging.basicConfig(level=Config.LOG_LEVEL, format=Config.LOG_FORMAT)
+logging.config.dictConfig(Config.LOGGING)
 
 
 def prohibition_factory(prohibition_type: str):

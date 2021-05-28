@@ -606,7 +606,7 @@ def test_an_irp_applicant_that_applies_at_icbc_gets_already_applied_email(monkey
 
 
 def get_sample_application_submission(prohibition_type: str = "IRP") -> dict:
-    message_dict = helper.load_json_into_dict('python/tests/sample_data/form/irp_form_submission.json')
+    message_dict = helper.load_json_into_dict('python/common/tests/sample_data/form/irp_form_submission.json')
     event_type = message_dict['event_type']
     if prohibition_type == "UL":
         message_dict[event_type]['form']['prohibition-information']['control-is-adp'] = "false"

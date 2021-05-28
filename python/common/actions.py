@@ -1,11 +1,12 @@
 import logging
+import logging.config
 import json
 from datetime import datetime, timedelta
 from python.common.message import encode_message, add_error_to_message
 from python.common.config import Config
 import iso8601
 
-logging.basicConfig(level=Config.LOG_LEVEL, format=Config.LOG_FORMAT)
+logging.config.dictConfig(Config.LOGGING)
 
 
 def is_not_on_hold(**args) -> tuple:

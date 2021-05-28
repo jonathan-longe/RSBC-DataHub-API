@@ -4,9 +4,10 @@ import python.form_handler.business as business
 from python.common.rabbitmq import RabbitMQ
 from python.common.message import decode_message
 import logging
+import logging.config
 import json
 
-logging.basicConfig(level=Config.LOG_LEVEL, format=Config.LOG_FORMAT)
+logging.config.dictConfig(Config.LOGGING)
 
 
 class Listener:

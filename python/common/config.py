@@ -50,12 +50,15 @@ class Config:
         'formatters': {
             'json': {
                 '()': 'pythonjsonlogger.jsonlogger.JsonFormatter',
-                'format': '%(asctime)s %(created)f %(exc_info)s %(filename)s %(funcName)s %(levelname)s %(levelno)s %(lineno)d %(module)s %(message)s %(pathname)s %(process)s %(processName)s %(relativeCreated)d %(thread)s %(threadName)s'
+                'format': '%(asctime)s %(filename)s %(levelname)s %(lineno)d %(message)s %(name)s'
+            },
+            'brief': {
+                'format': LOG_FORMAT
             }
         },
         'handlers': {
             'splunk': {
-                'level': LOG_LEVEL,
+                'level': 'INFO',
                 'class': 'splunk_handler.SplunkHandler',
                 'formatter': 'json',
                 'host': SPLUNK_HOST,
@@ -68,6 +71,7 @@ class Config:
             'console': {
                 'level': LOG_LEVEL,
                 'class': 'logging.StreamHandler',
+                'formatter': 'brief'
             }
         },
         'loggers': {

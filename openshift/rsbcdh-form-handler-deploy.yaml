@@ -29,6 +29,7 @@ parameters:
 - name: LINK_TO_APPLICATION_FORM
 - name: SPLUNK_HOST
 - name: SPLUNK_TOKEN
+- name: SPLUNK_INDEX
 - name: LOGGERS_IN_USE
   value: 'console splunk'
 - name: LINK_TO_ICBC
@@ -204,6 +205,11 @@ objects:
                 secretKeyRef:
                   name: ${NAME}-${PHASE}
                   key: splunk-token
+            - name: SPLUNK_INDEX
+              valueFrom:
+                secretKeyRef:
+                  name: ${NAME}-${PHASE}
+                  key: splunk-index
             - name: LOGGERS_IN_USE
               value: ${LOGGERS_IN_USE}
             - name: LINK_TO_ICBC

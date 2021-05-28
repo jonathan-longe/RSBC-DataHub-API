@@ -30,6 +30,7 @@ parameters:
 - name: AUTHLIB_INSECURE_TRANSPORT
 - name: SPLUNK_HOST
 - name: SPLUNK_TOKEN
+- name: SPLUNK_INDEX
 - name: LOGGERS_IN_USE
   value: 'console splunk'
 - name: LOG_LEVEL
@@ -214,6 +215,11 @@ objects:
                 secretKeyRef:
                   name: ${NAME}-${PHASE}
                   key: splunk-token
+            - name: SPLUNK_INDEX
+              valueFrom:
+                secretKeyRef:
+                  name: ${NAME}-${PHASE}
+                  key: splunk-index
             - name: LOGGERS_IN_USE
               value: ${LOGGERS_IN_USE}
             - name: LOG_LEVEL

@@ -63,10 +63,14 @@ class Config:
                 'token': SPLUNK_TOKEN,
                 'index': SPLUNK_INDEX,
                 'sourcetype': 'json',
+                'kwargs': {
+                    'verify': False,
+                }
             },
             'console': {
                 'level': 'DEBUG',
                 'class': 'logging.StreamHandler',
+                'format': 'json'
             }
         },
         'loggers': {

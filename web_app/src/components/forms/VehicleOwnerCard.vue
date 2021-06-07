@@ -6,12 +6,7 @@
         <div class="row p-0 mt-0 mb-0">
           <div class="col-6 pt-1">{{ title }}</div>
           <div class="col-6 text-right">
-            <div class="custom-control custom-switch">
-              <input type="checkbox" class="custom-control-input" :id="id"
-              @change="updateCheckBox" :checked="checkBoxStatus(id,option)" :value="option">
-              <label class="custom-control-label small" :for="id">Driver is the vehicle owner</label>
-<!--              <check-field class="custom-control-input" :show_label="false" id="owner_is_driver" :options="['Driver is the vehicle owner']" >Driver is also the registered owner</check-field>-->
-            </div>
+            <check-field :show_label="false" :id="id" :options="['Driver is the vehicle owner']">Driver is the vehicle owner</check-field>
           </div>
         </div>
       </div>
@@ -25,9 +20,11 @@
 
 <script>
 import {mapGetters, mapMutations} from "vuex";
+import CheckField from "@/components/questions/CheckField";
 
 export default {
   name: "VehicleOwnerCard",
+  components: {CheckField},
   props: {
     title: String
   },

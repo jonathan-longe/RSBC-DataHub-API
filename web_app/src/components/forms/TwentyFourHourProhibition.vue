@@ -1,5 +1,5 @@
 <template>
-  <form-container title="Notice of 24 Hour Licence Suspension">
+  <form-container title="Notice of 24 Hour Licence Prohibition">
     <form-card title="Vehicle Licence Plate">
       <form-row>
         <province-field id="plate_province" fg_class="col-sm-2">Jurisdiction</province-field>
@@ -157,7 +157,11 @@
         <form-row>
           <check-field :show_label="false"  id="test_administered" fg_class="col-sm-6"
                        :options='["Alco-Sensor FST (ASD)"]'>Test Administered</check-field>
+        </form-row>
+        <form-row>
           <date-field v-if="isProhibitionTypeAlcohol && isTestAdministeredASD" id="asd_expiry_date" fg_class="col-sm-6" rules="notExpired">ASD expiry date</date-field>
+        </form-row>
+        <form-row>
           <radio-field v-if="isProhibitionTypeAlcohol && isTestAdministeredASD" id="result_alcohol" fg_class="col-sm-12"
                        :options='["51-99 mg%", "Over 99 mg%"]'>Result</radio-field>
         </form-row>
@@ -180,8 +184,6 @@
           </check-field>
         </form-row>
         <form-row>
-          <check-field v-if="isTestAdministeredADSE" id="positive_adse" fg_class="col-sm-6"
-                       :options='["THC", "Cocaine"]'>Test result</check-field>
           <date-time v-if="isTestAdministeredADSE" id="time_of_physical_test_adse" fg_class="col-sm-6">Time of test</date-time>
         </form-row>
       </shadow-box>
@@ -190,6 +192,8 @@
           <check-field :show_label="false" id="test_administered" fg_class="col-sm-6"
                        :options='["Prescribed Physical Coordination Test (SFST)"]'>&nbsp;
           </check-field>
+        </form-row>
+        <form-row>
           <date-time v-if="isTestAdministeredSFST" id="time_of_physical_test_sfst" fg_class="col-sm-6">Time of test</date-time>
         </form-row>
       </shadow-box>
@@ -200,8 +204,6 @@
           </check-field>
         </form-row>
         <form-row v-if="isTestAdministeredDRE">
-          <radio-field id="result_dre_affected" fg_class="col-sm-6"
-                       :options='["Affected", "Impaired"]'>Opinion of evaluator</radio-field>
           <date-time id="start_time_of_physical_test_dre" fg_class="col-sm-6">Time of opinion</date-time>
           <text-field id="positive_dre" fg_class="col-sm-12">Notes (expand to 3 lines)</text-field>
 

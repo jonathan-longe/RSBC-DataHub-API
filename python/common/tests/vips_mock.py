@@ -1,4 +1,7 @@
 import json
+from datetime import datetime, timedelta
+import python.common.vips_api as vips
+import python.common.helper as help
 
 
 def status_has_never_applied(prohibition_type, date_served='2018-04-12', last_name='Gordon', licence_seized='Y') -> dict:
@@ -59,7 +62,9 @@ def status_with_no_disclosure(prohibition_type, review_start_date: str) -> dict:
 
 def status_with_one_sent_on_unsent_disclosure(prohibition_type, review_start_date: str) -> dict:
     data = json.loads(json.dumps(status_applied_paid_and_scheduled(prohibition_type, review_start_date)))  # deep copy
+    yesterday = help.localize_timezone(datetime.today()) - timedelta(days=1)
     del data['data']['status']['disclosure'][0]['disclosedDtm']
+    data['data']['status']['disclosure'][1]['disclosedDtm'] = vips.vips_datetime(yesterday)
     return data
 
 
@@ -67,6 +72,14 @@ def status_with_two_unsent_disclosures(prohibition_type, review_start_date: str)
     data = json.loads(json.dumps(status_applied_paid_and_scheduled(prohibition_type, review_start_date)))  # deep copy
     del data['data']['status']['disclosure'][0]['disclosedDtm']
     del data['data']['status']['disclosure'][1]['disclosedDtm']
+    return data
+
+
+def status_with_two_disclosures_sent_last_month(prohibition_type, review_start_date: str) -> dict:
+    data = json.loads(json.dumps(status_applied_paid_and_scheduled(prohibition_type, review_start_date)))  # deep copy
+    last_month = help.localize_timezone(datetime.today() - timedelta(days=35))
+    data['data']['status']['disclosure'][0]['disclosedDtm'] = vips.vips_datetime(last_month)
+    data['data']['status']['disclosure'][1]['disclosedDtm'] = vips.vips_datetime(last_month)
     return data
 
 

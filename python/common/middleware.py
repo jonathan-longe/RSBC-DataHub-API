@@ -806,11 +806,15 @@ def is_any_unsent_disclosure(**args) -> tuple:
     Returns True if there is unsent disclosure to send to applicant
     """
     vips_data = args.get('vips_data')
+    config = args.get('config')
+    today = args.get('today_date')
     unsent_disclosure = list()
     args['subsequent_disclosure'] = False
     if 'disclosure' in vips_data:
         for item in vips_data['disclosure']:
             if 'disclosedDtm' not in item:
+                unsent_disclosure.append(item)
+            elif (today - vips.vips_str_to_datetime(item['disclosedDtm'])).days > config.DAYS_ELAPSED_TO_RESEND_DISCLOSURE:
                 unsent_disclosure.append(item)
             else:
                 args['subsequent_disclosure'] = True

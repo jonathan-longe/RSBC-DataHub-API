@@ -198,6 +198,55 @@ def test_when_two_documents_not_disclosed_two_documents_emailed_to_applicant(mon
     assert len(email_payload['attachments']) == 2
 
 
+@responses.activate
+def test_when_two_documents_previously_disclosed_two_documents_emailed_to_applicant(monkeypatch):
+    message_dict = helper.load_json_into_dict('python/common/tests/sample_data/form/disclosure_payload.json')
+    message_dict['hold_until'] = (datetime.datetime.now() - datetime.timedelta(hours=1)).isoformat()
+    tz = pytz.timezone('America/Vancouver')
+    review_start_date = vips.vips_datetime(datetime.datetime.now(tz) + datetime.timedelta(days=2))
+
+    responses.add(responses.GET,
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
+                  json=vips_mock.status_with_two_disclosures_sent_last_month("UL", review_start_date),
+                  status=200, match_querystring=True)
+
+    responses.add(responses.GET,
+                  '{}/{}/disclosure/{}'.format(Config.VIPS_API_ROOT_URL, "111", "20123456"),
+                  json=vips_mock.disclosure_get(),
+                  status=200, match_querystring=True)
+
+    responses.add(responses.GET,
+                  '{}/{}/disclosure/{}'.format(Config.VIPS_API_ROOT_URL, "222", "20123456"),
+                  json=vips_mock.disclosure_get(),
+                  status=200, match_querystring=True)
+
+    responses.add(responses.PATCH,
+                  '{}/disclosure/{}'.format(Config.VIPS_API_ROOT_URL, "20123456"),
+                  json=dict({}),
+                  status=200, match_querystring=True)
+
+    responses.add(responses.POST, '{}/realms/{}/protocol/openid-connect/token'.format(
+         Config.COMM_SERV_AUTH_URL, Config.COMM_SERV_REALM), json={"access_token": "token"}, status=200)
+
+    responses.add(responses.POST, '{}/api/v1/email'.format(
+        Config.COMM_SERV_API_ROOT_URL), json={"sample": "test"}, status=200)
+
+    def mock_publish(queue_name: str, payload: bytes):
+        assert queue_name == "DF.hold"
+        return True
+
+    monkeypatch.setattr(Config, "ENCRYPT_KEY", "something-secret")
+    monkeypatch.setattr(RabbitMQ, "publish", mock_publish)
+
+    results = helper.middle_logic(helper.get_listeners(business.process_incoming_form(), message_dict['event_type']),
+                                  message=message_dict,
+                                  config=Config,
+                                  writer=RabbitMQ)
+
+    email_payload = json.loads(responses.calls[4].request.body.decode())
+    assert 'me@gov.bc.ca' in email_payload['to']
+    assert len(email_payload['attachments']) == 2
+
 
 @pytest.mark.parametrize("prohibition_type", ['IRP', 'ADP'])
 @responses.activate

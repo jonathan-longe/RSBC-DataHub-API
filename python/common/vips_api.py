@@ -218,7 +218,7 @@ def create(endpoint: str, user: str, password: str,  payload: dict, correlation_
 
     if response.status_code == 201 or response.status_code == 200:
         data = response.json()
-        logging.info("create success response: {}".format(json.dumps(data)))
+        _log_vips_save(correlation_id, payload, data, 'POST')
         return True, data
     logging.info('VIPS create() was not successful')
     logging.info('create endpoint: {}'.format(endpoint))
@@ -236,9 +236,11 @@ def patch(endpoint: str, user: str, password: str,  payload: dict, correlation_i
         logging.warning('no response from the VIPS API: {}'.format(error))
         return False, dict()
 
-    data = response.json()
-    logging.info('VIPS API patch response: {} correlation_id: {}'.format(json.dumps(data), correlation_id))
-    return response.status_code == 200, data
+    if response.status_code == 200:
+        data = response.json()
+        _log_vips_save(correlation_id, payload, data, 'PATCH')
+        return True, data
+    return False, {}
 
 
 def remove_accents(input_str):
@@ -339,3 +341,14 @@ def vips_datetime(date_time: datetime) -> str:
     dt_string = date_time.strftime("%Y-%m-%d %H:%M:%S %z")
     return dt_string[0:23] + ':' + dt_string[23:25]
 
+
+def _log_vips_save(prohibition_number, payload, response, action='POST') -> None:
+    logging.info(action + ' to VIPS successful')
+    logging.info(json.dumps(dict({
+        "vips": "success",
+        "action": action,
+        "prohibition_number": prohibition_number,
+        "payload": payload,
+        "response": response
+    })))
+    return

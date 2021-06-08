@@ -465,8 +465,8 @@ def test_receipt_endpoint_returns_success_creates_verify_schedule_event(prohibit
 
 @pytest.mark.parametrize("prohibition_types", ['IRP', 'ADP', 'UL'])
 @responses.activate
-def test_receipt_endpoint_returns_success_and_sends_schedule_email(prohibition_types, token, client, monkeypatch):
-
+def test_receipt_endpoint_returns_success_and_sends_schedule_email(prohibition_types, token, client, monkeypatch, caplog):
+    caplog.set_level(logging.INFO)
     responses.add(responses.GET,
                   '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
                   json=vips_mock.status_applied_and_paid_not_scheduled(prohibition_types), status=200)
@@ -481,11 +481,11 @@ def test_receipt_endpoint_returns_success_and_sends_schedule_email(prohibition_t
                       Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452", "20123456"),
                   json=vips_mock.payment_patch_payload(), status=200)
 
-    def mock_send_email(*args, **kwargs):
-        assert "applicant_fake@gov.bc.ca" == args[0][0]
-        assert "Dear Developer Norris," in args[3]
-        assert "Select Review Date - Driving Prohibition 20-123456 Review" == args[1]
-        return True
+    responses.add(responses.POST, '{}/realms/{}/protocol/openid-connect/token'.format(
+        Config.COMM_SERV_AUTH_URL, Config.COMM_SERV_REALM), json={"access_token": "token"}, status=200)
+
+    responses.add(responses.POST, '{}/api/v1/email'.format(
+        Config.COMM_SERV_API_ROOT_URL), json={"sample": "test"}, status=201)
 
     class TestRabbit(MockRabbitMQ):
 
@@ -494,7 +494,6 @@ def test_receipt_endpoint_returns_success_and_sends_schedule_email(prohibition_t
             return True
 
     monkeypatch.setattr(routes, "RabbitMQ", TestRabbit)
-    monkeypatch.setattr(common_email, "send_email", mock_send_email)
 
     response = client.post('/api_v2/receipt',
                            headers=get_oauth_auth_header(token),
@@ -502,6 +501,10 @@ def test_receipt_endpoint_returns_success_and_sends_schedule_email(prohibition_t
     logging.info("receipt: {}".format(response.json))
     assert "APP" in response.json['status']  # APP == APPROVED
     assert response.status_code == 200
+    assert '"to": ["applicant_fake@gov.bc.ca"]' in responses.calls[3].request.body.decode('utf-8')
+    assert '"subject": "Select Review Date - Driving Prohibition 20-123456 Review"' in responses.calls[3].request.body.decode('utf-8')
+    assert 'Dear Developer Norris,' in responses.calls[3].request.body.decode('utf-8')
+    assert '"email": "success", "prohibition_number": "20123456"' in caplog.text
 
 
 @responses.activate

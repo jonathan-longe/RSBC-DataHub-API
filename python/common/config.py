@@ -18,17 +18,17 @@ class Config:
     ENCRYPT_KEY                         = os.getenv('ENCRYPT_KEY')
 
     # Common Hosted Email Services API
-    COMM_SERV_AUTH_URL                  = os.getenv('COMM_SERV_AUTH_URL')
-    COMM_SERV_API_ROOT_URL              = os.getenv('COMM_SERV_API_ROOT_URL')
-    COMM_SERV_REALM                     = os.getenv('COMM_SERV_REALM')
-    COMM_SERV_CLIENT_ID                 = os.getenv('COMM_SERV_CLIENT_ID')
-    COMM_SERV_CLIENT_SECRET             = os.getenv('COMM_SERV_CLIENT_SECRET')
+    COMM_SERV_AUTH_URL                  = os.getenv('COMM_SERV_AUTH_URL', 'http://localhost')
+    COMM_SERV_API_ROOT_URL              = os.getenv('COMM_SERV_API_ROOT_URL', 'http://localhost')
+    COMM_SERV_REALM                     = os.getenv('COMM_SERV_REALM', 'realm')
+    COMM_SERV_CLIENT_ID                 = os.getenv('COMM_SERV_CLIENT_ID', '')
+    COMM_SERV_CLIENT_SECRET             = os.getenv('COMM_SERV_CLIENT_SECRET', '')
 
     ADMIN_EMAIL_ADDRESS                 = os.getenv('ADMIN_EMAIL_ADDRESS')
     REPLY_EMAIL_ADDRESS                 = os.getenv('REPLY_EMAIL_ADDRESS', 'do-not-reply-rsi@gov.bc.ca')
 
     # comma separated list of email addresses to receive a bcc of all outgoing emails
-    BCC_EMAIL_ADDRESSES                 = os.getenv('BCC_EMAIL_ADDRESSES')
+    BCC_EMAIL_ADDRESSES                 = os.getenv('BCC_EMAIL_ADDRESSES', 'fake1@gov.bc.ca, fake2@gov.bc.ca')
 
     # OpenShift Environment (dev, test, prod)
     ENVIRONMENT                         = os.getenv('ENVIRONMENT', 'dev')
@@ -50,7 +50,7 @@ class Config:
         'formatters': {
             'json': {
                 '()': 'pythonjsonlogger.jsonlogger.JsonFormatter',
-                'format': '%(asctime)s %(filename)s %(levelname)s %(lineno)d %(message)s %(name)s'
+                'format': '%(asctime)s %(filename)s %(funcName)s %(levelname)s %(lineno)d %(module)s %(message)s %(pathname)s'
             },
             'brief': {
                 'format': LOG_FORMAT

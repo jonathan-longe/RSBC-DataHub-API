@@ -1,24 +1,22 @@
 <template>
-  <div id="app" class="container">
-    <div class="row">
-      <div id="header" class="card w-100">
-          <div class="card-title">
-            <div class="d-flex flex-row pt-3 pl-3 pr-3">
+  <div id="app" class="card border-0 ml-4 mr-4">
+    <div id="roadsafety-header" class="card-header">
+            <div class="d-flex justify-content-between">
               <img width="300px" src="@/assets/BCID_RoadSafetyBC_logo_transparent.png" >
+              <p class="font-weight-bold text-warning">DRAFT <span class="text-light small">{{ getAppVersion }}</span></p>
             </div>
-          </div>
-      </div>
     </div>
-    <offline-banner v-if="isNetworkOnline"></offline-banner>
-    <component v-if="isFormBeingEdited" :data="getCurrentlyEditedForm.data"
-               :is="getSelectedFormComponent" :name="getCurrentlyEditedForm.short_name">
-    </component>
-    <recent-prohibitions v-if="isRecentProhibitions && ! isFormBeingEdited"></recent-prohibitions>
-    <issue-prohibitions v-if=" ! isFormBeingEdited"></issue-prohibitions>
-    <prohibition-search v-if=" ! isFormBeingEdited"></prohibition-search>
-    <feedback-welcome v-if=" ! isFormBeingEdited"></feedback-welcome>
-
-
+    <div class="card-body">
+      <offline-banner v-if="isNetworkOnline"></offline-banner>
+      <component v-if="isFormBeingEdited" :data="getCurrentlyEditedForm.data"
+                 :is="getSelectedFormComponent" :name="getCurrentlyEditedForm.short_name">
+      </component>
+      <recent-prohibitions v-if="isRecentProhibitions && ! isFormBeingEdited"></recent-prohibitions>
+      <issue-prohibitions v-if=" ! isFormBeingEdited"></issue-prohibitions>
+      <prohibition-search v-if=" ! isFormBeingEdited"></prohibition-search>
+      <feedback-welcome v-if=" ! isFormBeingEdited"></feedback-welcome>
+    </div>
+    <div class="card-footer bg-transparent border-0 text-muted small">Version: {{ getAppVersion }}</div>
   </div>
 </template>
 
@@ -47,22 +45,12 @@ export default {
     ImmediateRoadsideProhibition
   },
   computed: {
-    ...mapGetters(['isFormBeingEdited',"getSelectedFormComponent","getCurrentlyEditedForm","isRecentProhibitions","isNetworkOnline"]),
+    ...mapGetters(['getAppVersion', 'isFormBeingEdited',"getSelectedFormComponent","getCurrentlyEditedForm","isRecentProhibitions","isNetworkOnline"]),
   },
 
   methods: {
     ...mapMutations(["networkOffline","networkBackOnline"])
   },
-
-  // created: function () {
-  //     window.addEventListener('offline', this.offline);
-  //     window.addEventListener('online', this.online);
-  // },
-  //
-  // destroyed: function () {
-  //     window.removeEventListener('offline', this.offline);
-  //     window.removeEventListener('online', this.online);
-  // }
 
 }
 </script>
@@ -77,7 +65,7 @@ export default {
   margin-top: 60px;
 }
 
-#header.card {
+#roadsafety-header {
   background-color: #003366;
 
 }

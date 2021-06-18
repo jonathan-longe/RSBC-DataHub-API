@@ -6,6 +6,10 @@ export default {
       return state.form_schemas.forms;
     },
 
+    getAppVersion: state => {
+      return state.version;
+    },
+
     getAllEditedProhibitions: state => {
         return state.edited_forms;
     },

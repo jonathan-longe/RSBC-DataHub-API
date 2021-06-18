@@ -12,6 +12,7 @@ import form_schemas from "@/config/form_schemas.json";
 import bc_city_names from "@/config/cities.json";
 import car_colors from "@/config/car_colors.json"
 import './registerServiceWorker'
+import {version} from "../package"
 
 Vue.use(Vuex)
 
@@ -28,6 +29,7 @@ Vue.config.productionTip = false
 
 const store = new Vuex.Store({
   state: {
+    version: version,
     provinces: ["BC", "AB"],
     isOnline: null,
     bc_city_names: bc_city_names,

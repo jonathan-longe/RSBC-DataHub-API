@@ -1,5 +1,3 @@
-import xfdf from "@/helpers/xfdf_generator"
-
 export default {
 
     getAllAvailableForms: state => {
@@ -31,7 +29,6 @@ export default {
         if (prohibition_index == null) {
             return null;
         }
-        console.log("check edited_forms: " + JSON.stringify(state.edited_forms))
         return state.edited_forms[prohibition_index].component;
     },
 
@@ -42,6 +39,31 @@ export default {
             return null;
         }
         return state.edited_forms[prohibition_index];
+    },
+
+    getFormSteps: state => {
+        let prohibition_index = state.currently_editing_prohibition_index
+        return state.edited_forms[prohibition_index].steps;
+    },
+
+    getFormCurrentStep: state => {
+        let prohibition_index = state.currently_editing_prohibition_index
+        return state.edited_forms[prohibition_index].data.current_step;
+    },
+
+    isPreviousButtonDisabled: state => {
+        let prohibition_index = state.currently_editing_prohibition_index
+        if (state.edited_forms[prohibition_index].data.current_step === 1) {
+            return true
+        }
+    },
+
+    isNextButtonDisabled: state => {
+        let prohibition_index = state.currently_editing_prohibition_index
+        let max_steps = state.edited_forms[prohibition_index].steps.length
+        if (state.edited_forms[prohibition_index].data.current_step === max_steps) {
+            return true
+        }
     },
 
     getAttributeValue: state => id => {
@@ -94,21 +116,19 @@ export default {
         return "Not Served"
     },
 
-    generateXFDF: state => prohibition_index => {
-        let key_value_pairs = getKeyValuePairs(state, prohibition_index);
-        let pdf_template_name = state.edited_forms[prohibition_index].pdf_template;
-        let xml_file = xfdf.generate(pdf_template_name, key_value_pairs)
-        console.log('xfdf_xml', xml_file)
-        return xml_file
-    },
-
-    getXdfFileName: state => prohibition_index => {
+    getXdfFileName: state => {
+        let prohibition_index = state.currently_editing_prohibition_index
         let file_extension = ".xdp"
         let last_name = state.edited_forms[prohibition_index].data.last_name;
         let prohibition_number = state.edited_forms[prohibition_index].data.prohibition_number;
         let file_name = last_name + "_" + prohibition_number + file_extension;
         console.log('filename', file_name)
         return file_name
+    },
+
+    getPDFTemplateFileName: state => {
+        let prohibition_index = state.currently_editing_prohibition_index
+        return state.edited_forms[prohibition_index].pdf_template;
     },
 
     getArrayOfProvinces: state => {
@@ -145,16 +165,16 @@ export default {
         return root['corporate_owner'].includes("Owned by corporate entity")
     },
 
+    getCurrentFormData: state => {
+        let prohibition_index = state.currently_editing_prohibition_index
+        return state.edited_forms[prohibition_index].data;
+    },
+
+    getXFDF: state => {
+        let prohibition_index = state.currently_editing_prohibition_index;
+        let root = state.edited_forms[prohibition_index].data
+        return root['xfdf']
+    }
+
 }
 
-function getKeyValuePairs (state, prohibition_index) {
-    console.log("getKeyValuePairs(): ", prohibition_index)
-    let form_data = state.edited_forms[prohibition_index].data;
-    console.log("getFormKeyValuePairs()", form_data)
-    let key_value_pairs = Array();
-    for( let object in form_data) {
-        key_value_pairs[object] = form_data[object];
-    }
-    console.log('getKeyValuePairs()', key_value_pairs)
-    return key_value_pairs;
-}

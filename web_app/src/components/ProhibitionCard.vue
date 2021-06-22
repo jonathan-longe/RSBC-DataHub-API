@@ -6,7 +6,7 @@
       <div class="card-body bg-light">
       <p class="card-text text-dark">{{ form.description }}</p>
       <p class="card-text"><small class="text-muted">Last updated: {{ lastUpdatedFriendly }}</small></p>
-        <button @click="serveForm" type="submit" class="btn btn-primary">View {{ form.short_name }} Form</button>
+        <button @click="viewForm" type="submit" class="btn btn-primary">View {{ form.short_name }} Form</button>
     </div>
     </div>
 </template>
@@ -21,7 +21,7 @@ export default {
       form: {}
   },
   methods: {
-      serveForm() {
+      viewForm() {
         this.$store.commit("setNewFormToEdit", this.form)
       }
   },

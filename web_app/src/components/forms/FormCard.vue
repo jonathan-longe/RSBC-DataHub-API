@@ -1,6 +1,6 @@
 <template>
 <div class="card-body text-dark text-left">
-  <div class="card w-100">
+  <div class="card">
     <div class="card-header lightgray text-dark font-weight-bold pt-2 pb-2">
       <div class="container p-0 m-0">
         <div class="row p-0 mt-0 mb-0">

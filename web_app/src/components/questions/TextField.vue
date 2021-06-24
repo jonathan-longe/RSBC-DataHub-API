@@ -1,8 +1,8 @@
 <template>
 <div v-if="visible" class="form-group" :class="fg_class">
-  <validation-provider :rules="rules" :name="id" v-slot="{ errors, required }">
+  <validation-provider :rules="rules" :name="id" v-slot="{ errors }">
     <label v-if="show_label" class="small" :for="id"><slot></slot>
-      <span v-if="required" class="text-danger"> *</span>
+      <span v-if="isShowOptional" class="text-muted"> (optional)</span>
     </label>
     <input type="text"
          class="form-control form-control-sm"
@@ -30,6 +30,9 @@ export default {
   },
   computed: {
     ...mapGetters(["getAttributeValue"]),
+    isShowOptional() {
+      return ! this.required && ! this.disabled;
+    }
   },
   methods: {
     ...mapMutations(["updateFormField"])

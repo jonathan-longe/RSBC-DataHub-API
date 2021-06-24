@@ -1,5 +1,6 @@
 import { ulid } from 'ulid'
 import Vue from 'vue'
+import xfdf from "@/helpers/xfdf_generator";
 
 export default {
 
@@ -9,6 +10,7 @@ export default {
         let root = state.edited_forms[new_index]
         console.log("root", root)
         Vue.set( root, "data", Object())
+        Vue.set( root.data, "current_step", 1);
         Vue.set( root.data, "served", false);
         Vue.set( root.data, "submitted", false);
         Vue.set( root.data, "prohibition_number", ulid().substr(0,12))
@@ -42,7 +44,7 @@ export default {
         let prohibition_index = state.currently_editing_prohibition_index
         let root = state.edited_forms[prohibition_index].data
         if (root[id]) {
-            if ((root[id].includes(value)) ) {
+            if (root[id].includes(value) && typeof root[id] === "object") {
                 // item exists; remove it
                 console.log(value, 'exists, remove it')
                 let indexOfValue = root[id].indexOf(value)
@@ -56,7 +58,6 @@ export default {
             console.log('initial push', value)
             Vue.set(root, id, [value])
         }
-
     },
 
     saveFormsToLocalStorage (state) {
@@ -87,6 +88,7 @@ export default {
     },
 
     markFormStatusAsServed(state) {
+        console.log("inside markFormStatusAsServed()")
         let prohibition_index = state.currently_editing_prohibition_index
         Vue.set(state.edited_forms[prohibition_index].data, "served", true)
     },
@@ -97,6 +99,13 @@ export default {
 
     networkOffline(state) {
         state.isOnline = false;
+    },
+
+    generateXFDF(state, xml_filename) {
+        let prohibition_index = state.currently_editing_prohibition_index
+        let key_value_pairs = getKeyValuePairs(state, prohibition_index);
+        let root = state.edited_forms[prohibition_index].data
+        Vue.set(root, 'xfdf', xfdf.generate(xml_filename, key_value_pairs))
     },
 
     populateDriversFromICBC(state, prohibition_index) {
@@ -115,6 +124,30 @@ export default {
         populateVehicleInfo(state,prohibition_index);
     },
 
+    nextStep(state) {
+        let prohibition_index = state.currently_editing_prohibition_index
+        let current_step_number = state.edited_forms[prohibition_index].data.current_step;
+        Vue.set(state.edited_forms[prohibition_index].data, "current_step", current_step_number + 1);
+    },
+
+    previousStep(state) {
+        let prohibition_index = state.currently_editing_prohibition_index
+        let current_step_number = state.edited_forms[prohibition_index].data.current_step;
+        Vue.set(state.edited_forms[prohibition_index].data, "current_step", current_step_number - 1);
+    }
+
+}
+
+function getKeyValuePairs (state, prohibition_index) {
+    console.log("getKeyValuePairs(): ", prohibition_index)
+    let form_data = state.edited_forms[prohibition_index].data;
+    console.log("getFormKeyValuePairs()", form_data)
+    let key_value_pairs = Array();
+    for( let object in form_data) {
+        key_value_pairs[object] = form_data[object];
+    }
+    console.log('getKeyValuePairs()', key_value_pairs)
+    return key_value_pairs;
 }
 
 function populateVehicleInfo(state, prohibition_index) {

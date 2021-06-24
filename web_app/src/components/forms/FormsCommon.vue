@@ -1,8 +1,8 @@
 <script>
 import FormContainer from "@/components/forms/FormContainer";
+import FormStep from "@/components/forms/FormStep";
 import FormCard from "@/components/forms/FormCard";
 import FormRow from "@/components/forms/FormRow";
-import FormSubmissionButtons from "@/components/forms/FormSubmissionButtons";
 import TextField from "@/components/questions/TextField";
 import ProvinceField from "@/components/questions/ProvinceField";
 import DriverLicenceNumber from "@/components/questions/DriverLicenceNumber";
@@ -17,7 +17,9 @@ import PrintConfirmationModal from "@/components/PrintConfirmationModal";
 import RadioField from "@/components/questions/RadioField";
 import CheckField from "@/components/questions/CheckField";
 import ShadowBox from "@/components/forms/ShadowBox";
-import VehicleOwnerCard from "@/components/forms/VehicleOwnerCard";
+import VehicleOwnerCard from "@/components/cards/VehicleOwnerCard";
+import VehicleInformationCard from "@/components/cards/VehicleInformationCard";
+import VehicleImpoundmentCard from "@/components/cards/VehicleImpoundmentCard";
 import { mapGetters } from "vuex";
 
 
@@ -37,9 +39,9 @@ export default {
   },
   components: {
     FormContainer,
+    FormStep,
     FormCard,
     FormRow,
-    FormSubmissionButtons,
     DobField,
     TextField,
     ProvinceField,
@@ -54,7 +56,10 @@ export default {
     CheckField,
     DateField,
     ShadowBox,
-    VehicleOwnerCard
+    VehicleOwnerCard,
+    VehicleInformationCard,
+    VehicleImpoundmentCard
+
   }
 }
 </script>

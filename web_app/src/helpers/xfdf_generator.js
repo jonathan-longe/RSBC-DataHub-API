@@ -1,16 +1,15 @@
 const builder = require('xmlbuilder2');
 
-function generate(pdf_filename, form_key_value_pairs) {
-
-    const base64_encoded_template = encode_template(pdf_filename)
+function generate(pdf_template_filename, form_key_value_pairs) {
+    const base64_encoded_template = encode_template(pdf_template_filename)
     const xml = get_xml(base64_encoded_template, form_key_value_pairs)
     return new File([xml], "documentElement.xml")
 
 }
 
-function encode_template(pdf_filename) {
-    console.log("pdf_filename", pdf_filename)
-    const pdf_template = require("@/assets/pdf/" + pdf_filename)
+function encode_template(pdf_template_filename) {
+    console.log("inside encode_template()", pdf_template)
+    const pdf_template = require("@/assets/pdf/" + pdf_template_filename)
     const base64_string = pdf_template.split(',')[1];
     console.log("pdf_template", base64_string)
     return base64_string

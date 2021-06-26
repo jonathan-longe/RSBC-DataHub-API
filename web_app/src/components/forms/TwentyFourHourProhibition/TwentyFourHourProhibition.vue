@@ -9,6 +9,8 @@
       <vehicle-owner-card></vehicle-owner-card>
       <return-of-licence-card></return-of-licence-card>
       <prohibition-information-card></prohibition-information-card>
+      <reasonable-grounds-card></reasonable-grounds-card>
+      <officers-report></officers-report>
 
     </form-step>
     <form-step :step_number=2>
@@ -19,6 +21,7 @@
       <vehicle-owner-card :is-read-only=true></vehicle-owner-card>
       <return-of-licence-card :is-read-only=true></return-of-licence-card>
       <prohibition-information-card :is-read-only=true></prohibition-information-card>
+
 
       <form-card title="Print and Serve" border_class="border-primary">
         <p>You've entered sufficient information to print and serve the 24 hour prohibition.</p>
@@ -39,23 +42,8 @@
 
       </form-card>
     </form-step>
-
-    <form-step :step_number=3>
-      <reasonable-grounds-card></reasonable-grounds-card>
-      <officers-report></officers-report>
-    </form-step>
-    <form-step :step_number=4>
-      <form-card title="Prohibition Complete">
-        <p>The Prohibition entered has been sent to RoadSafety and ICBC.  If you're offline, the
-        data will be sent as soon as your computer is reconnected to the network.  Please keep this browser
-        open until the prohibition has been sent.</p>
-        <p class="w-100 text-right">
-          <a class="btn btn-outline-primary" @click="stopEditingCurrentForm">Close</a>
-        </p>
-      </form-card>
-    </form-step>
-
     <print-confirmation-modal id="printConfirmationModal" title="printConfirmation"></print-confirmation-modal>
+    <supplementary-modal id="SupplementaryModal" title="SupplementaryModal"></supplementary-modal>
   </form-container>
 </template>
 
@@ -64,14 +52,15 @@
 import FormsCommon from "@/components/forms/FormsCommon";
 import { mapMutations, mapGetters, mapActions } from 'vuex';
 
-import VehicleInformationCard from "@/components/cards/VehicleInformationCard";
-import VehicleImpoundmentCard from "@/components/cards/VehicleImpoundmentCard";
-import DriversInformationCard from "@/components/cards/DriversInformationCard";
-import ReturnOfLicenceCard from "@/components/cards/ReturnOfLicenceCard";
-import LicencePlateCard from "@/components/cards/LicencePlateCard";
-import ProhibitionInformationCard from "@/components/cards/ProhibitionInformationCard";
-import ReasonableGroundsCard from "@/components/cards/ReasonableGroundsCard";
-import OfficersReport from "@/components/cards/OfficersReport";
+import VehicleInformationCard from "@/components/forms/TwentyFourHourProhibition/VehicleInformationCard";
+import VehicleImpoundmentCard from "@/components/forms/TwentyFourHourProhibition/VehicleImpoundmentCard";
+import DriversInformationCard from "@/components/forms/TwentyFourHourProhibition/DriversInformationCard";
+import ReturnOfLicenceCard from "@/components/forms/TwentyFourHourProhibition/ReturnOfLicenceCard";
+import LicencePlateCard from "@/components/forms/TwentyFourHourProhibition/LicencePlateCard";
+import ProhibitionInformationCard from "@/components/forms/TwentyFourHourProhibition/ProhibitionInformationCard";
+import ReasonableGroundsCard from "@/components/forms/TwentyFourHourProhibition/ReasonableGroundsCard";
+import OfficersReport from "@/components/forms/TwentyFourHourProhibition/OfficersReport";
+import SupplementaryModal from "@/components/forms/TwentyFourHourProhibition/SupplementaryModal";
 
 export default {
   name: "TwentyFourHourProhibition",
@@ -80,6 +69,7 @@ export default {
     ReasonableGroundsCard,
     ProhibitionInformationCard,
     LicencePlateCard,
+    SupplementaryModal,
     VehicleImpoundmentCard, VehicleInformationCard, DriversInformationCard, ReturnOfLicenceCard},
   mixins: [FormsCommon],
   computed: {

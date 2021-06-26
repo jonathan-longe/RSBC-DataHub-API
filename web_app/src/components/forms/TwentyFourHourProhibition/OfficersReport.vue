@@ -47,8 +47,6 @@
       </check-field>
     </form-row>
     <form-row v-if="isTestAdministeredDRE">
-      <radio-field id="result_dre_affected" fg_class="col-sm-6"
-                   :options='["Affected", "Impaired"]'>Opinion of evaluator</radio-field>
       <date-time id="start_time_of_physical_test_dre" fg_class="col-sm-6">Time of opinion</date-time>
       <text-field id="positive_dre" fg_class="col-sm-12">Notes (expand to 3 lines)</text-field>
 
@@ -62,7 +60,7 @@
 </template>
 
 <script>
-import CardsCommon from "@/components/cards/CardsCommon";
+import CardsCommon from "@/components/forms/TwentyFourHourProhibition/CardsCommon";
 
 export default {
   name: "OfficersReport",

@@ -13,13 +13,13 @@ import DateTime from "@/components/questions/DateTime";
 import DateField from "@/components/questions/DateField";
 import DobField from "@/components/questions/DoBField";
 import PlateNumber from "@/components/questions/PlateNumber";
-import PrintConfirmationModal from "@/components/PrintConfirmationModal";
+import PrintConfirmationModal from "@/components/forms/TwentyFourHourProhibition/PrintConfirmationModal";
 import RadioField from "@/components/questions/RadioField";
 import CheckField from "@/components/questions/CheckField";
 import ShadowBox from "@/components/forms/ShadowBox";
-import VehicleOwnerCard from "@/components/cards/VehicleOwnerCard";
-import VehicleInformationCard from "@/components/cards/VehicleInformationCard";
-import VehicleImpoundmentCard from "@/components/cards/VehicleImpoundmentCard";
+import VehicleOwnerCard from "@/components/forms/TwentyFourHourProhibition/VehicleOwnerCard";
+import VehicleInformationCard from "@/components/forms/TwentyFourHourProhibition/VehicleInformationCard";
+import VehicleImpoundmentCard from "@/components/forms/TwentyFourHourProhibition/VehicleImpoundmentCard";
 import { mapGetters } from "vuex";
 
 

@@ -13,7 +13,7 @@
           </form-row>
           <form-row>
             <radio-field id="prescribed_device" fg_class="col-sm-12"
-                         :options='["Yes", "Yes, requested by driver",
+                         :options='["Yes",
                          "No, opinion formed the driver was affected by alcohol and/or drugs",
                          "No, refused by driver"]'>Was a prescribed test used to form reasonable grounds?
             </radio-field>
@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import CardsCommon from "@/components/cards/CardsCommon";
+import CardsCommon from "@/components/forms/TwentyFourHourProhibition/CardsCommon";
 
 export default {
   name: "ReasonableGroundsCard",

@@ -10,7 +10,7 @@
     },
     "24Hour": {
       "component": "TwentyFourHourProhibition",
-      "steps": ["Prohibition" ,"Validate & Serve", "Officer's Report", "Finish"],
+      "steps": ["Prohibition" ,"Validate & Serve"],
       "last_updated": "2021-04-28",
       "short_name": "24Hour",
       "full_name": "24-Hour Prohibition",

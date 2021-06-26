@@ -45,7 +45,7 @@
 
 <script>
 
-import CardsCommon from "@/components/cards/CardsCommon";
+import CardsCommon from "@/components/forms/TwentyFourHourProhibition/CardsCommon";
 import { mapGetters } from 'vuex';
 
 

@@ -29,9 +29,11 @@ export default {
       confirmServedToDriver() {
         this.markFormStatusAsServed()
         this.$bvModal.hide('printConfirmationModal')
+        this.$bvModal.show('SupplementaryModal')
       },
       confirmNotServedToDriver() {
         this.$bvModal.hide('printConfirmationModal')
+        this.$bvModal.show('SupplementaryModal')
       },
     }
 }

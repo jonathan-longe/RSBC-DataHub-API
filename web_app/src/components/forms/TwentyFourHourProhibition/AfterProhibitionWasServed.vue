@@ -31,34 +31,39 @@
   </shadow-box>
   <shadow-box v-if="isProhibitionTypeDrugs">
     <form-row>
-      <check-field :show_label="false" id="after_test_administered" fg_class="col-sm-6"
+      <check-field :show_label="false" id="after_test_administered" fg_class="col-sm-12"
                    :options='["Approved Drug Screening Equipment"]'>Test Administered
       </check-field>
     </form-row>
     <form-row>
-      <check-field v-if="isTestAdministeredADSE" id="after_positive_adse" fg_class="col-sm-6"
+      <check-field v-if="isTestAdministeredADSE" id="after_positive_adse" fg_class="col-sm-12"
                    :options='["THC", "Cocaine"]'>Test result</check-field>
-      <date-time v-if="isTestAdministeredADSE" id="after_time_of_physical_test_adse" fg_class="col-sm-6">Time of test</date-time>
+    </form-row>
+    <form-row>
+      <date-time v-if="isTestAdministeredADSE" id="after_time_of_physical_test_adse" fg_class="col-sm-12">Time of test</date-time>
     </form-row>
   </shadow-box>
   <shadow-box v-if="isProhibitionTypeDrugs && isPrescribedTestUsed">
     <form-row>
-      <check-field :show_label="false" id="after_test_administered" fg_class="col-sm-6"
+      <check-field :show_label="false" id="after_test_administered" fg_class="col-sm-12"
                    :options='["Prescribed Physical Coordination Test (SFST)"]'>&nbsp;
       </check-field>
-      <date-time v-if="isTestAdministeredSFST" id="after_time_of_physical_test_sfst" fg_class="col-sm-6">Time of test</date-time>
+    </form-row>
+    <form-row>
+      <date-time v-if="isTestAdministeredSFST" id="after_time_of_physical_test_sfst" fg_class="col-sm-12">Time of test</date-time>
     </form-row>
   </shadow-box>
   <shadow-box v-if="isProhibitionTypeDrugs && isPrescribedTestUsed">
     <form-row>
-      <check-field :show_label="false" id="after_test_administered" fg_class="col-sm-6"
+      <check-field :show_label="false" id="after_test_administered" fg_class="col-sm-12"
                    :options='["Prescribed Physical Coordination Test (DRE)"]'>&nbsp;
       </check-field>
     </form-row>
     <form-row v-if="isTestAdministeredDRE">
-      <date-time id="after_start_time_of_physical_test_dre" fg_class="col-sm-6">Time of opinion</date-time>
+      <date-time id="after_start_time_of_physical_test_dre" fg_class="col-sm-12">Time of opinion</date-time>
+    </form-row>
+    <form-row>
       <text-field id="after_positive_dre" fg_class="col-sm-12">Notes (expand to 3 lines)</text-field>
-
     </form-row>
   </shadow-box>
   <form-row v-if="isPrescribedTestUsed && isProhibitionTypeDrugs">

@@ -31,7 +31,10 @@ export default {
   computed: {
     ...mapGetters(["getAttributeValue"]),
     isShowOptional() {
-      return ! this.required && ! this.disabled;
+      if(this.rules) {
+        return ! this.rules.includes('required')
+      }
+      return true
     }
   },
   methods: {

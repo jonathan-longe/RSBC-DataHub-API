@@ -1,7 +1,7 @@
 <template>
 <div class="row m-0 p-0 text-muted">
     <div class="col-sm-3"><slot></slot></div>
-    <div class="col-sm-4">{{ displayAttributeValue }}</div>
+    <div class="col-sm-7">{{ displayAttributeValue }}</div>
   </div>
 </template>
 
@@ -21,7 +21,7 @@ name: "ReadOnlyElement",
           if (value.length === 0) {
             return "No"
           }
-          return ", ".join(value)
+          return value.join(", ")
       }
       return value
     }

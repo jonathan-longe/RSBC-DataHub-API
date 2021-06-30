@@ -10,7 +10,9 @@
       <return-of-licence-card></return-of-licence-card>
       <prohibition-information-card></prohibition-information-card>
       <reasonable-grounds-card></reasonable-grounds-card>
-      <officers-report></officers-report>
+      <test-administered-alcohol-card v-if="isPrescribedTestUsed && isProhibitionTypeAlcohol"></test-administered-alcohol-card>
+      <test-administered-drugs-card v-if="isPrescribedTestUsed && isProhibitionTypeDrugs"></test-administered-drugs-card>
+      <officer-details-card></officer-details-card>
 
     </form-step>
     <form-step :step_number=2>
@@ -21,25 +23,28 @@
       <vehicle-owner-card :is-read-only=true></vehicle-owner-card>
       <return-of-licence-card :is-read-only=true></return-of-licence-card>
       <prohibition-information-card :is-read-only=true></prohibition-information-card>
-
+      <reasonable-grounds-card :is-read-only=true></reasonable-grounds-card>
+      <test-administered-alcohol-card
+          v-if="isPrescribedTestUsed && isProhibitionTypeAlcohol"
+          :is-read-only="true"></test-administered-alcohol-card>
+      <test-administered-drugs-card
+          v-if="isPrescribedTestUsed && isProhibitionTypeDrugs"
+          :is-read-only="true"></test-administered-drugs-card>
+      <officer-details-card :is-read-only=true></officer-details-card>
 
       <form-card title="Print and Serve" border_class="border-primary">
         <p>You've entered sufficient information to print and serve the 24 hour prohibition.</p>
         <p>Once you click the download button below:</p>
         <ul>
-          <li>the fields entered on the previous screen will be locked from further editing;</li>
-          <li>a prohibition document will be created to serve the driver, and;</li>
+          <li>a prohibition document will be created to serve the driver;</li>
           <li>if the vehicle is being impounded, an additional document will be created for
-            the impound lot operator.</li>
+            the impound lot operator, and;</li>
+          <li>if the document is printed successfully, the fields entered will be
+            locked from further editing.</li>
         </ul>
-        <p>The next section, "Office's Report", is required as evidence to support the charge.
-          The information contained in the Officer's Report  is not provided to the driver
-          unless the prohibition is appealed.</p>
-        <p>You must print and serve the prohibition prior to completing the Officer's Report.</p>
         <div class="w-100 text-right">
-          <button @click="saveAndPrint(getPDFTemplateFileName)" class="btn btn-outline-primary m-1">Download PDF</button>
+          <button @click="saveAndPrint(getPDFTemplateFileName)" class="btn btn-success m-1">Download PDF</button>
         </div>
-
       </form-card>
     </form-step>
     <print-confirmation-modal id="printConfirmationModal" title="printConfirmation"></print-confirmation-modal>
@@ -59,22 +64,36 @@ import ReturnOfLicenceCard from "@/components/forms/TwentyFourHourProhibition/Re
 import LicencePlateCard from "@/components/forms/TwentyFourHourProhibition/LicencePlateCard";
 import ProhibitionInformationCard from "@/components/forms/TwentyFourHourProhibition/ProhibitionInformationCard";
 import ReasonableGroundsCard from "@/components/forms/TwentyFourHourProhibition/ReasonableGroundsCard";
-import OfficersReport from "@/components/forms/TwentyFourHourProhibition/OfficersReport";
+import TestAdministeredAlcoholCard from "@/components/forms/TwentyFourHourProhibition/TestAdministeredAlcoholCard";
+import TestAdministeredDrugsCard from "@/components/forms/TwentyFourHourProhibition/TestAdministeredDrugsCard";
 import SupplementaryModal from "@/components/forms/TwentyFourHourProhibition/SupplementaryModal";
+import OfficerDetailsCard from "@/components/forms/TwentyFourHourProhibition/OfficerDetailsCard";
 
 export default {
   name: "TwentyFourHourProhibition",
   components: {
-    OfficersReport,
+    TestAdministeredAlcoholCard,
+    TestAdministeredDrugsCard,
     ReasonableGroundsCard,
     ProhibitionInformationCard,
     LicencePlateCard,
     SupplementaryModal,
-    VehicleImpoundmentCard, VehicleInformationCard, DriversInformationCard, ReturnOfLicenceCard},
+    VehicleImpoundmentCard, VehicleInformationCard,
+    DriversInformationCard, ReturnOfLicenceCard,
+    OfficerDetailsCard},
   mixins: [FormsCommon],
   computed: {
     ...mapGetters(["getAttributeValue", "isPlateJurisdictionBC", "driverIsNotRegisteredOwner",
       "corporateOwner", "getXdfFileName", "getPDFTemplateFileName", "getXFDF", "getCurrentFormData"]),
+    isProhibitionTypeDrugs() {
+      return this.getAttributeValue('prohibition_type') === "Drugs 215(3)";
+    },
+    isProhibitionTypeAlcohol() {
+      return this.getAttributeValue('prohibition_type') === "Alcohol 215(2)";
+    },
+    isPrescribedTestUsed() {
+      return this.getAttributeValue('prescribed_device').substr(0,3) === "Yes";
+    },
   },
   methods: {
     ...mapActions(["saveDoNotPrint", "deleteSpecificForm"]),

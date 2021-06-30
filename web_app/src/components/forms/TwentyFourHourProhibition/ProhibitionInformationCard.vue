@@ -10,9 +10,8 @@
       <type-ahead-field id="offence_city" fg_class="col-sm-4" :suggestions="getArrayOfBCCityNames" rules="required">City</type-ahead-field>
     </form-row>
     <form-row>
-      <text-field id="agency" fg_class="col-sm-2">Agency</text-field>
       <text-field id="file_number" fg_class="col-sm-3">File Number</text-field>
-      <date-time id="prohibition_start_time" fg_class="col-sm-7">
+      <date-time id="prohibition_start_time" fg_class="col-sm-9">
         Time of driving, care or control
       </date-time>
     </form-row>
@@ -20,7 +19,7 @@
   <div v-if="isReadOnly">
     <read-only-element id="prohibition_type">Prohibition Type</read-only-element>
     <read-only-element id="offence_address">Location of offence</read-only-element>
-    <read-only-element id="agency">Agency</read-only-element>
+    <read-only-element id="offence_city">Offence City</read-only-element>
     <read-only-element id="file_number">File number</read-only-element>
     <read-only-element id="prohibition_start_time">Time of driving, care or control</read-only-element>
   </div>

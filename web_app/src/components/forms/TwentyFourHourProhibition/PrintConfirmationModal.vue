@@ -33,7 +33,6 @@ export default {
       },
       confirmNotServedToDriver() {
         this.$bvModal.hide('printConfirmationModal')
-        this.$bvModal.show('SupplementaryModal')
       },
     }
 }

@@ -10,7 +10,6 @@ import python.common.middleware as middleware
 import python.form_handler.business as business
 from python.form_handler.config import Config
 import python.common.vips_api as vips
-import python.common.common_email_services as common_email_services
 from python.common.rabbitmq import RabbitMQ
 
 

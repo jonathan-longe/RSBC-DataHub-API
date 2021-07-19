@@ -22,6 +22,7 @@ class ProhibitionBase:
     WRITTEN_REVIEW_PRICE = 100
     ORAL_REVIEW_PRICE = 200
     DRIVERS_LICENCE_MUST_BE_SEIZED_BEFORE_APPLICATION_ACCEPTED = True
+    CAN_APPLY_FOR_REVIEW_MORE_THAN_ONCE = False
 
     # We can't schedule a review immediately, we have to give time for
     # an applicant to receive disclosure and submit their evidence
@@ -100,6 +101,7 @@ class UnlicencedDriver(ProhibitionBase):
     MIN_DAYS_FROM_SCHEDULING_TO_REVIEW = 8
     DAYS_FROM_MIN_REVIEW_DATE_TO_MAX = 6
     DRIVERS_LICENCE_MUST_BE_SEIZED_BEFORE_APPLICATION_ACCEPTED = False
+    CAN_APPLY_FOR_REVIEW_MORE_THAN_ONCE = True
 
     @staticmethod
     def is_okay_to_apply(date_served: datetime, today: datetime) -> bool:

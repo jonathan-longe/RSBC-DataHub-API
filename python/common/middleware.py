@@ -220,16 +220,29 @@ def application_has_been_saved_to_vips(**args) -> tuple:
     return False, args
 
 
-def application_not_previously_saved_to_vips(**args) -> tuple:
-    """
-    Check that application has NOT been saved to VIPS
-    """
+def applicant_has_not_applied_previously(**args) -> tuple:
     result, args = application_has_been_saved_to_vips(**args)
     if not result:
         return True, args
     error = 'this prohibition already has an application on file'
     logging.info(error)
     args['error_string'] = "An application to review this prohibition has already been submitted."
+    return False, args
+
+
+def applicant_is_eligible_to_reapply(**args) -> tuple:
+    """
+    Check that an applicant is eligible to (re)apply. IRP and ADP prohibitions cannot reapply.
+    For UL prohibitions, applicants can reapply if the previous review is complete and wasn't successful.
+    """
+    vips_data = args.get('vips_data')
+    prohibition = pro.prohibition_factory(vips_data['noticeTypeCd'])
+    if prohibition.CAN_APPLY_FOR_REVIEW_MORE_THAN_ONCE:
+        if 'status' in vips_data['reviews'][0]:
+            return vips_data['reviews'][0]['status'] == 'complete_failed', args
+    error = 'the applicant not eligible to reapply'
+    logging.info(error)
+    args['error_string'] = "The applicant is not eligible to reapply"
     return False, args
 
 

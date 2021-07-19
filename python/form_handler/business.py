@@ -89,7 +89,7 @@ def process_incoming_form() -> dict:
             {"try": actions.add_to_hold_queue, "fail": []}
         ],
         "prohibition_review": [
-            # aka: submit prohibition review application
+            # aka: prohibition application received
             {"try": actions.is_not_on_hold, "fail": [
                 {"try": actions.add_to_hold_queue, "fail": []}
             ]},
@@ -114,8 +114,32 @@ def process_incoming_form() -> dict:
                 {"try": actions.add_hold_before_trying_vips_again, "fail": []},
                 {"try": actions.add_to_hold_queue, "fail": []}
             ]},
-            {"try": middleware.application_not_previously_saved_to_vips, "fail": [
-                {"try": rsi_email.already_applied, "fail": []},
+            {"try": middleware.applicant_has_not_applied_previously, "fail": [
+                {"try": middleware.applicant_is_eligible_to_reapply, "fail": [
+                    {"try": rsi_email.already_applied, "fail": []},
+                ]},
+                {"try": middleware.user_submitted_last_name_matches_vips, "fail": [
+                    {"try": rsi_email.applicant_last_name_mismatch, "fail": []}
+                ]},
+                {"try": middleware.is_applicant_within_window_to_apply, "fail": [
+                    {"try": rsi_email.applicant_prohibition_served_more_than_7_days_ago, "fail": []}
+                ]},
+                {"try": middleware.has_drivers_licence_been_seized, "fail": [
+                    {"try": rsi_email.applicant_licence_not_seized, "fail": []}
+                ]},
+                {"try": middleware.transform_hearing_request_type, "fail": []},
+                {"try": middleware.force_presentation_type_to_written_if_ineligible_for_oral, "fail": []},
+                {"try": middleware.transform_applicant_role_type, "fail": []},
+                {"try": middleware.compress_form_data_xml, "fail": []},
+                {"try": middleware.save_application_to_vips, "fail": [
+                    {"try": actions.add_to_failed_queue, "fail": []},
+                    {"try": rsi_email.admin_unable_to_save_to_vips, "fail": []}
+                ]},
+                {"try": rsi_email.application_accepted, "fail": []},
+                {"try": middleware.is_applicant_ineligible_for_oral_review_but_requested_oral, "fail": [
+                    # end of successful application process
+                ]},
+                {"try": rsi_email.applicant_review_type_change, "fail": []}
             ]},
             {"try": middleware.review_has_not_been_scheduled, "fail": [
                 {"try": rsi_email.applicant_applied_at_icbc, "fail": []},

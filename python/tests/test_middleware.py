@@ -298,7 +298,7 @@ def test_application_saved_to_vips(response_under_test, is_valid):
 
 @pytest.mark.parametrize("response_under_test, is_valid", status_responses)
 def test_application_not_saved_to_vips(response_under_test, is_valid):
-    response, args = middleware.application_not_previously_saved_to_vips(vips_data=response_under_test)
+    response, args = middleware.applicant_has_not_applied_previously(vips_data=response_under_test)
     assert response is not is_valid
 
 
@@ -559,10 +559,18 @@ disclosure_data = [
 
 
 def test_is_any_unsent_disclosure_method():
+
+    class MockConfig:
+        DAYS_ELAPSED_TO_RESEND_DISCLOSURE = 3
+
+    tz = pytz.timezone('America/Vancouver')
+    today_unaware = datetime.strptime("2020-09-11 20:59:45", "%Y-%m-%d %H:%M:%S")
+    today_date = tz.localize(today_unaware, is_dst=False)
     vips_data = dict({
         "disclosure": disclosure_data
     })
-    response, args = middleware.is_any_unsent_disclosure(vips_data=vips_data)
+    response, args = middleware.is_any_unsent_disclosure(
+        vips_data=vips_data, today_date=today_date, config=MockConfig)
     assert response is True
     assert len(args.get('disclosures')) == 2
 

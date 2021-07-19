@@ -12,7 +12,7 @@
              :value="getAttributeValue(id)"
              @input="updateFormField">
         <div class="input-group-append" v-if="isPlateJurisdictionBC">
-          <button @click="populateFromICBCPlateLookup" class="btn-sm btn-primary">ICBC Lookup</button>
+          <button @click="populateFromICBCPlateLookup(icbcPayload)" class="btn-sm btn-primary">ICBC Lookup</button>
         </div>
         <div class="small text-danger">{{ errors[0] }}</div>
       </div>
@@ -29,7 +29,13 @@ export default {
   name: "PlateNumber",
   mixins: [FieldCommon],
   computed: {
-    ...mapGetters(["getAttributeValue", "isPlateJurisdictionBC"]),
+    icbcPayload() {
+      return {
+        "plateNumber": this.getAttributeValue(this.id),
+        "formIndex": this.getCurrentlyEditedProhibitionIndex
+      }
+    },
+    ...mapGetters(["getAttributeValue", "isPlateJurisdictionBC", "getCurrentlyEditedProhibitionIndex"]),
     isNumberTheCorrectLength() {
       return this.getAttributeValue(this.id) >= 3
     },

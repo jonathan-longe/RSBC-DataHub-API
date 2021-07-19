@@ -108,20 +108,15 @@ export default {
         Vue.set(root, 'xfdf', xfdf.generate(xml_filename, key_value_pairs))
     },
 
-    populateDriversFromICBC(state, prohibition_index) {
-        // TODO - remove before flight
-        // TODO - populates Driver's information using fictitious data
-        console.log("inside mutations.js populateDriversFromICBC(): " + prohibition_index)
-        populateDriver(state,prohibition_index)
+    populateDriversFromICBC(state, payload) {
+        console.log("inside mutations.js populateDriversFromICBC(): " + payload)
+        populateDriver(state,payload)
     },
 
-    populateFromICBCPlateLookup(state) {
-        // TODO - remove before flight
-        // TODO - populates Driver's information using fictitious data
-        let prohibition_index = state.currently_editing_prohibition_index;
-        console.log("inside mutations.js populateFromICBCPlateLookup(): " + prohibition_index)
-        populateDriver(state,prohibition_index);
-        populateVehicleInfo(state,prohibition_index);
+    populateFromICBCPlateLookup(state, payload) {
+        console.log("inside mutations.js populateFromICBCPlateLookup(): " + payload)
+        // populateDriver(state,prohibition_index);
+        populateVehicleInfo(state, payload);
     },
 
     nextStep(state) {
@@ -150,24 +145,72 @@ function getKeyValuePairs (state, prohibition_index) {
     return key_value_pairs;
 }
 
-function populateVehicleInfo(state, prohibition_index) {
-    Vue.set(state.edited_forms[prohibition_index].data, "plate_year", "2021");
-    Vue.set(state.edited_forms[prohibition_index].data, "plate_val_tag", "1234567");
-    Vue.set(state.edited_forms[prohibition_index].data, "registration_number", "1234567");
-    Vue.set(state.edited_forms[prohibition_index].data, "vehicle_year", "2014");
-    Vue.set(state.edited_forms[prohibition_index].data, "vehicle_make", "Honda");
-    Vue.set(state.edited_forms[prohibition_index].data, "vehicle_model", "Civic");
-    Vue.set(state.edited_forms[prohibition_index].data, "vehicle_color", "Red");
+async function populateVehicleInfo(state, icbcPayload) {
+    console.log("icbcPayload", icbcPayload)
+    let prohibition_index = icbcPayload['formIndex']
+    let plate_number = icbcPayload['plateNumber']
+    const url = "http://localhost:5002/api/v1/icbc/vehicle/" + plate_number
+    fetch(url, {
+        "method": 'GET',
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log("data", data)
+            Vue.set(state.edited_forms[prohibition_index].data, "plate_year", "2021");
+            Vue.set(state.edited_forms[prohibition_index].data, "plate_val_tag", "1234567");
+            Vue.set(state.edited_forms[prohibition_index].data, "registration_number", data['registrationNumber']);
+            Vue.set(state.edited_forms[prohibition_index].data, "vehicle_year", data['vehicleModelYear']);
+            Vue.set(state.edited_forms[prohibition_index].data, "vehicle_make", data['vehicleMake']);
+            Vue.set(state.edited_forms[prohibition_index].data, "vehicle_model", data['vehicleModel']);
+            Vue.set(state.edited_forms[prohibition_index].data, "vehicle_color", data['vehicleColour']);
+            Vue.set(state.edited_forms[prohibition_index].data, "vin_number", data['vehicleIdNumber']);
+
+            const owner = data['vehicleParties'][0]['party']
+            const address = owner['addresses'][0]
+            Vue.set(state.edited_forms[prohibition_index].data, "drivers_number", owner['dlNumber']);
+            Vue.set(state.edited_forms[prohibition_index].data, "last_name", owner['lastName']);
+            Vue.set(state.edited_forms[prohibition_index].data, "first_name", owner['firstName']);
+            Vue.set(state.edited_forms[prohibition_index].data, "address1", address['addressLine1']);
+            Vue.set(state.edited_forms[prohibition_index].data, "city", address['city']);
+            Vue.set(state.edited_forms[prohibition_index].data, "province", address['region']);
+            Vue.set(state.edited_forms[prohibition_index].data, "postal", address['postalCode']);
+            Vue.set(state.edited_forms[prohibition_index].data, "dob", owner['birthDate']);
+
+            Vue.set(state.edited_forms[prohibition_index].data, "owner_is_driver", []);
+            Vue.set(state.edited_forms[prohibition_index].data, "owners_last_name", owner['lastName']);
+            Vue.set(state.edited_forms[prohibition_index].data, "owners_first_name", owner['firstName']);
+            Vue.set(state.edited_forms[prohibition_index].data, "owners_address1", address['addressLine1']);
+            Vue.set(state.edited_forms[prohibition_index].data, "owners_city", address['city']);
+            Vue.set(state.edited_forms[prohibition_index].data, "owners_province", address['region']);
+            Vue.set(state.edited_forms[prohibition_index].data, "owners_postal", address['postalCode']);
+
+        })
+        .catch(function (error) {
+           console.log(error)
+        });
 }
 
 
-function populateDriver(state, prohibition_index) {
-    Vue.set(state.edited_forms[prohibition_index].data, "drivers_number", "1234567");
-    Vue.set(state.edited_forms[prohibition_index].data, "last_name", "Smith");
-    Vue.set(state.edited_forms[prohibition_index].data, "first_name", "Fictitious");
-    Vue.set(state.edited_forms[prohibition_index].data, "address1", "123 Imaginary Street");
-    Vue.set(state.edited_forms[prohibition_index].data, "city", "Vanderhoof");
-    Vue.set(state.edited_forms[prohibition_index].data, "province", "BC");
-    Vue.set(state.edited_forms[prohibition_index].data, "postal", "V8R 5A5");
-    Vue.set(state.edited_forms[prohibition_index].data, "dob", "2002-01-15");
+async function populateDriver(state, icbcPayload) {
+    let prohibition_index = icbcPayload['formIndex']
+    let dlNumber = icbcPayload['dlNumber']
+    const url = "http://localhost:5002/api/v1/icbc/drivers/" + dlNumber
+    fetch(url, {
+        "method": 'GET',
+    })
+        .then(response => response.json())
+        .then(data => {
+            const address = data['party']['addresses'][0]
+            Vue.set(state.edited_forms[prohibition_index].data, "drivers_number", data['dlNumber']);
+            Vue.set(state.edited_forms[prohibition_index].data, "last_name", data['party']['lastName']);
+            Vue.set(state.edited_forms[prohibition_index].data, "first_name", data['party']['firstName']);
+            Vue.set(state.edited_forms[prohibition_index].data, "address1", address['addressLine1']);
+            Vue.set(state.edited_forms[prohibition_index].data, "city", address['city']);
+            Vue.set(state.edited_forms[prohibition_index].data, "province", address['region']);
+            Vue.set(state.edited_forms[prohibition_index].data, "postal", address['postalCode']);
+            Vue.set(state.edited_forms[prohibition_index].data, "dob", data['birthDate']);
+        })
+        .catch(function (error) {
+            console.log(error)
+        });
 }

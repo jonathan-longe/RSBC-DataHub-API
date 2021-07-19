@@ -12,7 +12,7 @@
              :value="getAttributeValue(id)"
              @input="updateFormField">
         <div class="input-group-append" v-if="isLicenceJurisdictionBC">
-          <button :disabled="disabled" @click="populateDriversFromICBC(getCurrentlyEditedProhibitionIndex)"
+          <button :disabled="disabled" @click="populateDriversFromICBC(icbcPayload)"
                   class="btn-sm btn-primary text-white">ICBC Lookup
           </button>
         </div>
@@ -31,6 +31,12 @@ export default {
   name: "DriversLicenceNumber",
   mixins: [FieldCommon],
   computed: {
+    icbcPayload() {
+      return {
+        "dlNumber": this.getAttributeValue(this.id),
+        "formIndex": this.getCurrentlyEditedProhibitionIndex
+      }
+    },
     ...mapGetters(['getCurrentlyEditedProhibitionIndex', "getAttributeValue", "isLicenceJurisdictionBC"]),
     isNumberTheCorrectLength() {
       return this.getAttributeValue(this.id) === 7

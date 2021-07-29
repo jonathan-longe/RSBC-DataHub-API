@@ -1,7 +1,6 @@
 FROM python:3.7.3-stretch
 
 COPY prohibition_web_service/requirements.txt ${APP_ROOT}/src/
-CMD [ "echo" , "requirements copied" ]
 
 RUN source /opt/app-root/etc/scl_enable && \
     set -x && \

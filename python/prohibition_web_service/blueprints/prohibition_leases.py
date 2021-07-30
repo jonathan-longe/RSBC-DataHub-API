@@ -35,7 +35,6 @@ def create(prohibition_type):
     """
     if request.method == 'POST':
         from python.prohibition_web_service import db
-        logging.warning('within if statement')
         results = _get_block_of_prohibition_ids(
             Config.NUMBER_OF_PROHIBITION_IDS_IN_BLOCK,
             prohibition_type, db)

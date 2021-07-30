@@ -21,4 +21,5 @@ def create_app():
     def health():
         return jsonify('healthy')
 
-    return application
+    with application.app_context():
+        return application

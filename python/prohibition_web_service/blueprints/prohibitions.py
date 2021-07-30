@@ -34,7 +34,7 @@ def basic_auth_required(f):
 @basic_auth_required
 def create(prohibition_type):
     """
-    Add prohibition ids to the database
+    Add batch of prohibition ids to the database
     """
     if request.method == 'POST':
         from python.prohibition_web_service import db

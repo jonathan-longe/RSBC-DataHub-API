@@ -11,7 +11,7 @@ def create_app():
     application = FlaskAPI(__name__)
     application.config['SECRET_KEY'] = Config.FLASK_SECRET_KEY
     application.config['SQLALCHEMY_DATABASE_URI'] = Config.DATABASE_URI
-
+    application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(application)
     application.register_blueprint(misc_routes.bp)
     application.register_blueprint(prohibition_leases.bp)

@@ -2,7 +2,7 @@ from flask_api import FlaskAPI
 from flask import jsonify
 from flask_sqlalchemy import SQLAlchemy
 from python.prohibition_web_service.config import Config
-from python.prohibition_web_service.blueprints import misc_routes, prohibition_leases
+from python.prohibition_web_service.blueprints import misc_routes, prohibition_leases, prohibitions
 
 db = SQLAlchemy()
 
@@ -15,6 +15,7 @@ def create_app():
     db.init_app(application)
     application.register_blueprint(misc_routes.bp)
     application.register_blueprint(prohibition_leases.bp)
+    application.register_blueprint(prohibitions.bp)
 
     @application.route('/health')
     def health():

@@ -14,6 +14,9 @@ class Config(BaseConfig):
 
     DATABASE_URI                        = os.getenv('DATABASE_URI', 'sqlite:///:memory:')
 
+    ADMIN_USERNAME                      = os.getenv('ADMIN_USERNAME', 'admin')
+    ADMIN_PASSWORD                      = os.getenv('ADMIN_PASSWORD', 'secret')
+
     NUMBER_OF_PROHIBITION_IDS_IN_BLOCK  = 10
 
 

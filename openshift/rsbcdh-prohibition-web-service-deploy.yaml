@@ -11,6 +11,11 @@ parameters:
 - name: HOST
 - name: FLASK_SECRET_KEY
 - name: DATABASE_URI
+- name: ICBC_API_ROOT
+- name: ICBC_API_USERNAME
+- name: ICBC_API_PASSWORD
+- name: ADMIN_USERNAME
+- name: ADMIN_PASSWORD
 - name: LOG_LEVEL
   value: 'INFO'
 - name: FLASK_ENV
@@ -89,7 +94,37 @@ objects:
               valueFrom:
                 secretKeyRef:
                   name: ${NAME}${SUFFIX}
-                  key: paybc-flask-secret
+                  key: prohibition-flask-secret
+            - name: ICBC_API_ROOT
+              valueFrom:
+                secretKeyRef:
+                  name: ${NAME}${SUFFIX}
+                  key: icbc-api-root
+            - name: ICBC_API_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: ${NAME}${SUFFIX}
+                  key: icbc-api-username
+            - name: ICBC_API_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ${NAME}${SUFFIX}
+                  key: icbc-api-password
+            - name: ADMIN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: ${NAME}${SUFFIX}
+                  key: prohibition-admin-username
+            - name: ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ${NAME}${SUFFIX}
+                  key: prohibition-admin-password
+            - name: DATABASE_URI
+              valueFrom:
+                secretKeyRef:
+                  name: ${NAME}${SUFFIX}
+                  key: prohibition-database-uri
             - name: LOG_LEVEL
               value: ${LOG_LEVEL}
             - name: ENVIRONMENT

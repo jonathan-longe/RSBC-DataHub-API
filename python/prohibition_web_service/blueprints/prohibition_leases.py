@@ -8,11 +8,14 @@ from datetime import datetime, timedelta
 logging.config.dictConfig(Config.LOGGING)
 logging.warning('*** blueprint - prohibition_leases loaded ***')
 
-bp = Blueprint('leases', __name__, url_prefix='/api/v1')
+bp = Blueprint('leases', __name__, url_prefix='/api/v1/prohibitions/leases')
 
 
-@bp.route('/prohibitions/<string:prohibition_type>/leases', methods=['GET'])
-def get_prohibition_ids(prohibition_type):
+@bp.route('/<string:prohibition_type>', methods=['GET'])
+def index(prohibition_type):
+    """
+    Get a list of prohibition leases
+    """
     if request.method == 'GET':
         from python.prohibition_web_service import db
         from python.prohibition_web_service.models import ProhibitionIdLease
@@ -25,33 +28,32 @@ def get_prohibition_ids(prohibition_type):
         return make_response(data, 200)
 
 
-@bp.route('/prohibitions/<string:prohibition_type>/leases/<string:prohibition_id>', methods=['PATCH'])
-def save_a_prohibition(prohibition_type, prohibition_id):
-    if request.method == 'PATCH':
-        from python.prohibition_web_service import db
-        from python.prohibition_web_service.models import ProhibitionIdLease
-        lease = db.session.query(ProhibitionIdLease) \
-            .filter(ProhibitionIdLease.prohibition_type == prohibition_type) \
-            .filter(ProhibitionIdLease.id == prohibition_id) \
-            .first()
-        lease.served = True
-        db.session.commit()
-        logging.warning(json.dumps(request.get_json()))
-        return make_response(ProhibitionIdLease.serialize(lease), 200)
-
-
-@bp.route('/prohibitions/<string:prohibition_type>/leases', methods=['POST'])
-def lease_a_block_of_prohibition_ids(prohibition_type):
+@bp.route('/<string:prohibition_type>', methods=['POST'])
+def create(prohibition_type):
+    """
+    Lease a block of prohibition ids
+    """
     if request.method == 'POST':
+        from python.prohibition_web_service import db
+        logging.warning('within if statement')
+        results = _get_block_of_prohibition_ids(
+            Config.NUMBER_OF_PROHIBITION_IDS_IN_BLOCK,
+            prohibition_type, db)
+        return make_response(results, 200)
+
+
+@bp.route('/<string:prohibition_type>', methods=['PATCH'])
+def update(prohibition_type):
+    """
+    Renew a block of prohibitions by submitting a block of prohibition ids
+    as a payload
+    """
+    if request.method == 'PATCH':
         from python.prohibition_web_service import db
         try:
             prohibition_ids = request.get_json()
         except Exception as e:
-            logging.warning(e)
-            results = _get_block_of_prohibition_ids(
-                Config.NUMBER_OF_PROHIBITION_IDS_IN_BLOCK,
-                prohibition_type, db)
-            return make_response(results, 200)
+            return make_response("bad payload", 400)
         renewals = _renew_prohibition_ids(prohibition_ids, prohibition_type, db)
         if len(renewals) < Config.NUMBER_OF_PROHIBITION_IDS_IN_BLOCK:
             logging.warning('within if statement')

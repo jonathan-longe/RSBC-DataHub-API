@@ -120,11 +120,6 @@ objects:
                 secretKeyRef:
                   name: ${NAME}${SUFFIX}
                   key: prohibition-admin-password
-            - name: DATABASE_URI
-              valueFrom:
-                secretKeyRef:
-                  name: ${NAME}${SUFFIX}
-                  key: prohibition-database-uri
             - name: LOG_LEVEL
               value: ${LOG_LEVEL}
             - name: ENVIRONMENT

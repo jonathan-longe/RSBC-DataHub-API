@@ -122,7 +122,7 @@ services:
             - "5008:5000"
 
 
-    prohibition_web_app:
+    prohibition_web_service:
       build:
         context: python
         dockerfile: prohibition_web_service/Dockerfile-local
@@ -132,7 +132,7 @@ services:
         ICBC_LOGIN_USER_ID: "${ICBC_LOGIN_USER_ID}"
         ICBC_API_USERNAME: "${ICBC_API_USERNAME}"
         ICBC_API_PASSWORD: "${ICBC_API_PASSWORD}"
-        DATABASE_URI: "${DATABASE_URI}"
+
 
       ports:
         - "5007:5000"

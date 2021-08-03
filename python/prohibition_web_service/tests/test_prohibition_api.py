@@ -44,10 +44,10 @@ def prohibition_leases(db):
 
 
 def test_health_endpoint(as_guest):
-    resp = as_guest.get('/health')
+    resp = as_guest.get('/api/v1/health')
     assert resp.status_code == 200
     assert resp.is_json
-    assert resp.json == 'healthy'
+    assert resp.json == {'success': 'healthy'}
 
 
 def test_get_prohibition_ids(as_guest, db, prohibition_leases):

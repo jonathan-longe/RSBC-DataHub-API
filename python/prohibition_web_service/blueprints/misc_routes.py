@@ -21,6 +21,11 @@ def _icbc_api_authorization() -> dict:
     }
 
 
+@bp.route('/health')
+def health():
+    return make_response({'success': 'healthy'}, 200)
+
+
 @bp.route('/configuration/<string:resource>', methods=['GET'])
 def get_impound_lot_operators(resource):
     """

@@ -17,7 +17,7 @@ WORKDIR ${APP_ROOT}/src/
 RUN [ "pwd" ]
 RUN [ "ls", "-R" ]
 
-RUN ["python", "-m", "pytest", "geocodersvc/tests"]
+RUN ["python", "-m", "pytest", "python/geocodersvc/tests"]
 
 #TODO - Add worker processes to gunicorn below
 CMD [ "gunicorn", "--error-logfile", "-", "--bind", "0.0.0.0:5000", "--pythonpath", "python/geocodersvc", "wsgi" ]

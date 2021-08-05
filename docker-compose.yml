@@ -132,6 +132,7 @@ services:
         ICBC_LOGIN_USER_ID: "${ICBC_LOGIN_USER_ID}"
         ICBC_API_USERNAME: "${ICBC_API_USERNAME}"
         ICBC_API_PASSWORD: "${ICBC_API_PASSWORD}"
+        LOG_LEVEL: "INFO"
 
 
       ports:

@@ -1,6 +1,6 @@
 import python.common.helper as helper
 from python.prohibition_web_service.config import Config
-from flask import request, make_response, Blueprint
+from flask import request, make_response, Blueprint, send_from_directory, Response
 import logging
 import logging.config
 import base64
@@ -85,3 +85,14 @@ def create_prohibition():
         #  - save to RabbitMQ
         logging.info(json.dumps(request.data))
         return make_response({"status": "success"}, 201)
+
+
+@bp.route('/test_pdf_download', methods=['GET'])
+def get_assets():
+    # TODO - Remove before flight
+    if request.method == 'GET':
+        logging.info("file requested")
+        return Response(
+            response=send_from_directory("./static", filename="fillable_pdf_example.pdf", as_attachment=True),
+            mimetype="application/vnd.adobe.xfdf",
+            status=200)

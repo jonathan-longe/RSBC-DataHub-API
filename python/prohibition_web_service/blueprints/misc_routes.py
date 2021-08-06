@@ -6,7 +6,6 @@ import logging.config
 import base64
 import json
 import requests
-from urllib.parse import urlparse
 
 logging.config.dictConfig(Config.LOGGING)
 logging.warning('*** blueprint - misc_routes loaded ***')
@@ -87,16 +86,3 @@ def create_prohibition():
         logging.info(json.dumps(request.data))
         return make_response({"status": "success"}, 201)
 
-
-@bp.route('/test_xfdf_download', methods=['GET'])
-def get_assets():
-    # TODO - Remove before flight
-    if request.method == 'GET':
-        logging.info("file requested: " + request.base_url)
-        o = urlparse(request.base_url)
-        with open('python/prohibition_web_service/static/jlonge_fillable_pdf.xfdf', 'r') as file:
-            xml = file.read().replace('<host>', o.hostname)
-        response = make_response(xml, 200)
-        response.mimetype = 'application/vnd.adobe.xfdf'
-        response.headers.set("Content-Disposition", "attachment", filename="test.xfdf")
-        return response

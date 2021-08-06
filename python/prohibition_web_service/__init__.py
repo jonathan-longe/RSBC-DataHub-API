@@ -5,7 +5,7 @@ from python.prohibition_web_service.config import Config
 from python.prohibition_web_service.blueprints import misc_routes, prohibition_leases, prohibitions
 
 
-application = FlaskAPI(__name__, static_url_path='/static')
+application = FlaskAPI(__name__)
 application.config['SECRET_KEY'] = Config.FLASK_SECRET_KEY
 application.config['SQLALCHEMY_DATABASE_URI'] = Config.DATABASE_URI
 application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

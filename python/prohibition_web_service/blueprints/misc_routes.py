@@ -1,11 +1,12 @@
 import python.common.helper as helper
 from python.prohibition_web_service.config import Config
-from flask import request, make_response, Blueprint, send_from_directory, Response
+from flask import request, make_response, Blueprint
 import logging
 import logging.config
 import base64
 import json
 import requests
+from urllib.parse import urlparse
 
 logging.config.dictConfig(Config.LOGGING)
 logging.warning('*** blueprint - misc_routes loaded ***')
@@ -87,12 +88,15 @@ def create_prohibition():
         return make_response({"status": "success"}, 201)
 
 
-@bp.route('/test_pdf_download', methods=['GET'])
+@bp.route('/test_xfdf_download', methods=['GET'])
 def get_assets():
     # TODO - Remove before flight
     if request.method == 'GET':
-        logging.info("file requested")
-        return Response(
-            response=send_from_directory("./static", filename="fillable_pdf_example.pdf", as_attachment=True),
-            mimetype="application/vnd.adobe.xfdf",
-            status=200)
+        logging.info("file requested: " + request.base_url)
+        o = urlparse(request.base_url)
+        with open('python/prohibition_web_service/static/jlonge_fillable_pdf.xfdf', 'r') as file:
+            xml = file.read().replace('<host>', o.hostname)
+        response = make_response(xml, 200)
+        response.mimetype = 'application/vnd.adobe.xfdf'
+        response.headers.set("Content-Disposition", "attachment", filename="test.xfdf")
+        return response

@@ -24,6 +24,8 @@ def as_guest(app):
 def db(app):
     from python.prohibition_web_service import db
     with app.app_context():
+        db.init_app(app)
+        db.create_all()
         yield db
         db.drop_all()
         db.session.commit()

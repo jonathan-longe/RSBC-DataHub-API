@@ -17,8 +17,7 @@ def index(prohibition_type):
     Get a list of prohibition leases
     """
     if request.method == 'GET':
-        from python.prohibition_web_service import db
-        from python.prohibition_web_service.models import ProhibitionIdLease
+        from python.prohibition_web_service import db, ProhibitionIdLease
         leases = db.session.query(ProhibitionIdLease)\
             .filter(ProhibitionIdLease.prohibition_type == prohibition_type).all()
         # TODO - need to paginate or limit records returned
@@ -64,7 +63,7 @@ def update(prohibition_type):
 
 
 def _get_block_of_prohibition_ids(number_ids_required: int, prohibition_type: str, db):
-    from python.prohibition_web_service.models import ProhibitionIdLease
+    from python.prohibition_web_service import ProhibitionIdLease
     leases = db.session.query(ProhibitionIdLease) \
         .filter(ProhibitionIdLease.prohibition_type == prohibition_type) \
         .filter(ProhibitionIdLease.served == False, ProhibitionIdLease.lease_expiry == None) \
@@ -80,7 +79,7 @@ def _get_block_of_prohibition_ids(number_ids_required: int, prohibition_type: st
 
 
 def _renew_prohibition_ids(prohibition_ids: list, prohibition_type: str, db):
-    from python.prohibition_web_service.models import ProhibitionIdLease
+    from python.prohibition_web_service import ProhibitionIdLease
     results = []
     for prohibition_id in prohibition_ids:
         lease = db.session.query(ProhibitionIdLease) \

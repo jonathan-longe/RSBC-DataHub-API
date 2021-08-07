@@ -3,8 +3,7 @@ import json
 import logging
 import base64
 from datetime import datetime, timedelta
-from python.prohibition_web_service import create_app
-from python.prohibition_web_service.models import ProhibitionIdLease
+from python.prohibition_web_service import create_app, ProhibitionIdLease
 from python.prohibition_web_service.config import Config
 
 

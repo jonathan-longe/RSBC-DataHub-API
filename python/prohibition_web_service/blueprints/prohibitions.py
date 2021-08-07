@@ -37,8 +37,7 @@ def create(prohibition_type):
     Add batch of prohibition ids to the database
     """
     if request.method == 'POST':
-        from python.prohibition_web_service import db
-        from python.prohibition_web_service.models import ProhibitionIdLease
+        from python.prohibition_web_service import db, ProhibitionIdLease
         try:
             prohibition_ids = request.get_json()
         except Exception as e:
@@ -64,8 +63,7 @@ def update(prohibition_type, prohibition_id):
     Receive a prohibition form and mark the prohibition as 'served'
     """
     if request.method == 'PATCH':
-        from python.prohibition_web_service import db
-        from python.prohibition_web_service.models import ProhibitionIdLease
+        from python.prohibition_web_service import db, ProhibitionIdLease
         lease = db.session.query(ProhibitionIdLease) \
             .filter(ProhibitionIdLease.prohibition_type == prohibition_type) \
             .filter(ProhibitionIdLease.id == prohibition_id) \

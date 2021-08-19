@@ -18,17 +18,17 @@ extend('required', {
 });
 
 extend('validDt', {
-  validate: value => moment(value, "YYYY-MM-DD", true).isValid(),
+  validate: value => moment(value, "YYYYMMDD", true).isValid(),
   message: "That's not a valid date"
 });
 
 extend('validDtTime', {
-  validate: value => moment(value, "YYYY-MM-DD HH:mm", true).isValid(),
+  validate: value => moment(value, "YYYYMMDD HHmm", true).isValid(),
   message: "That's not a valid date time"
 });
 
 extend('notExpired', {
-  validate: value => moment().diff(moment(value, 'YYYY-MM-DD', true), 'days') < 0,
+  validate: value => moment().diff(moment(value, 'YYYYMMDD', true), 'days') < 0,
   message: "Expired"
 });
 
@@ -39,7 +39,7 @@ extend('dob', {
       valid: moment().diff(moment(value), 'years') > 5,
     };
   },
-  message: "That's not a valid date-of-birth",
+  message: "Driver must be older than 5 years",
   computesRequired: true
 });
 

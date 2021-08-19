@@ -22,7 +22,7 @@ export default {
   },
   methods: {
       viewForm() {
-        this.$store.commit("setNewFormToEdit", this.form)
+        this.$store.dispatch("setNewFormToEdit", this.form)
       }
   },
   computed: {

@@ -1,28 +1,11 @@
-import { ulid } from 'ulid'
 import Vue from 'vue'
 import xfdf from "@/helpers/xfdf_generator";
 
 export default {
 
-    setNewFormToEdit (state, form) {
-        console.log('inside setNewFormToEdit')
-        let new_index = state.edited_forms.push(JSON.parse(JSON.stringify(form))) - 1;
-        let root = state.edited_forms[new_index]
-        console.log("root", root)
-        Vue.set( root, "data", Object())
-        Vue.set( root.data, "current_step", 1);
-        Vue.set( root.data, "served", false);
-        Vue.set( root.data, "submitted", false);
-        Vue.set( root.data, "prohibition_number", ulid().substr(0,12))
-        Vue.set( root.data, "owner_is_driver", ["Driver is the vehicle owner"])
-        state.currently_editing_prohibition_index = new_index;
-        console.log("check edited_forms: " + JSON.stringify(state.edited_forms));
-    },
-
     editExistingForm (state, prohibition_index) {
        console.log("inside editExistingForm: " + prohibition_index)
        state.currently_editing_prohibition_index = prohibition_index;
-
     },
 
     updateFormField (state, payload) {
@@ -78,6 +61,22 @@ export default {
         }
     },
 
+    saveUniqueIdsToLocalStorage (state) {
+         console.log("inside mutations.js saveUniqueIdsToLocalStorage()");
+         localStorage.setItem("uniqueIds", JSON.stringify(state.unique_ids) );
+         let d = localStorage.getItem("uniqueIds")
+         console.log("saved d", d)
+    },
+
+    retrieveUniqueIdsFromLocalStorage (state) {
+        console.log("inside mutations.js retrieveUniqueIdsFromLocalStorage()");
+        let e = localStorage.getItem("uniqueIds")
+        if (e) {
+            state.unique_ids = JSON.parse(e)
+        }
+        console.log(state.unique_ids, "unique_ids")
+    },
+
     deleteForm(state, prohibition_index) {
         console.log("inside mutations.js deleteForm()")
         Vue.delete(state.edited_forms, prohibition_index)
@@ -129,8 +128,19 @@ export default {
         let prohibition_index = state.currently_editing_prohibition_index
         let current_step_number = state.edited_forms[prohibition_index].data.current_step;
         Vue.set(state.edited_forms[prohibition_index].data, "current_step", current_step_number - 1);
-    }
+    },
 
+    updateUniqueIDs(state, payload) {
+        let now = new Date()
+        Vue.set(state.unique_ids, "retrieved_date", now.toISOString());
+        Vue.set(state.unique_ids.ids, payload.schema, payload.data)
+        console.log('data: ', state.unique_ids)
+    },
+
+    deleteUniqueIdFromAvailableList(state, payload) {
+        console.log("inside deleteUniqueIdFromAvailableList()", payload)
+        state.unique_ids.ids[payload.type].shift(payload.idx)
+    }
 }
 
 function getKeyValuePairs (state, prohibition_index) {
@@ -149,7 +159,7 @@ async function populateVehicleInfo(state, icbcPayload) {
     console.log("icbcPayload", icbcPayload)
     let prohibition_index = icbcPayload['formIndex']
     let plate_number = icbcPayload['plateNumber']
-    const url = "http://localhost:5002/api/v1/icbc/vehicle/" + plate_number
+    const url = "http://localhost:5002/api/v1/vehicles/" + plate_number
     fetch(url, {
         "method": 'GET',
     })
@@ -167,14 +177,6 @@ async function populateVehicleInfo(state, icbcPayload) {
 
             const owner = data['vehicleParties'][0]['party']
             const address = owner['addresses'][0]
-            Vue.set(state.edited_forms[prohibition_index].data, "drivers_number", owner['dlNumber']);
-            Vue.set(state.edited_forms[prohibition_index].data, "last_name", owner['lastName']);
-            Vue.set(state.edited_forms[prohibition_index].data, "first_name", owner['firstName']);
-            Vue.set(state.edited_forms[prohibition_index].data, "address1", address['addressLine1']);
-            Vue.set(state.edited_forms[prohibition_index].data, "city", address['city']);
-            Vue.set(state.edited_forms[prohibition_index].data, "province", address['region']);
-            Vue.set(state.edited_forms[prohibition_index].data, "postal", address['postalCode']);
-            Vue.set(state.edited_forms[prohibition_index].data, "dob", owner['birthDate']);
 
             Vue.set(state.edited_forms[prohibition_index].data, "owner_is_driver", []);
             Vue.set(state.edited_forms[prohibition_index].data, "owners_last_name", owner['lastName']);
@@ -194,7 +196,7 @@ async function populateVehicleInfo(state, icbcPayload) {
 async function populateDriver(state, icbcPayload) {
     let prohibition_index = icbcPayload['formIndex']
     let dlNumber = icbcPayload['dlNumber']
-    const url = "http://localhost:5002/api/v1/icbc/drivers/" + dlNumber
+    const url = "http://localhost:5002/api/v1/drivers/" + dlNumber
     fetch(url, {
         "method": 'GET',
     })
@@ -214,3 +216,7 @@ async function populateDriver(state, icbcPayload) {
             console.log(error)
         });
 }
+
+
+
+

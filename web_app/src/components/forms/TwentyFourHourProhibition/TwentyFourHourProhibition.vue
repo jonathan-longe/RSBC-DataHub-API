@@ -97,7 +97,7 @@ export default {
   },
   methods: {
     ...mapActions(["saveDoNotPrint", "deleteSpecificForm"]),
-    ...mapMutations(["markFormStatusAsServed", "saveFormsToLocalStorage", "generateXFDF", "stopEditingCurrentForm"]),
+    ...mapMutations(["saveFormsToLocalStorage", "generateXFDF", "stopEditingCurrentForm"]),
 
     saveAndPrint(pdf_template_filename) {
       console.log("inside saveAndPrint()" + pdf_template_filename)

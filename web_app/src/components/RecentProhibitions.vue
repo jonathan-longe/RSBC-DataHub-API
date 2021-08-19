@@ -9,7 +9,6 @@
             <recent-prohibition-row v-for="(prohibition, index) in getAllEditedProhibitions"
                                     :key="index"
                                     :prohibition="prohibition"
-                                    :prohibition_number="prohibition.data.prohibition_number"
                                     :prohibition_index="index">
             </recent-prohibition-row>
           </tbody>

@@ -18,8 +18,9 @@ export default {
   name: "SupplementaryModal",
   components: {AfterProhibitionWasServed},
   methods: {
-      ...mapMutations(["stopEditingCurrentForm", "markFormStatusAsServed"]),
+      ...mapMutations(["stopEditingCurrentForm", "saveFormsToLocalStorage"]),
       finish() {
+        this.saveFormsToLocalStorage();
         this.stopEditingCurrentForm();
         this.$bvModal.hide('SupplementaryModal')
       },

@@ -1,7 +1,17 @@
+import moment from "moment";
+
 export default {
 
     getAllAvailableForms: state => {
       return state.form_schemas.forms;
+    },
+
+    getUniqueIdsRetrievedDate: state => {
+      return state.unique_ids.retrieved_date;
+    },
+
+    getUniqueIdsByType: state => type => {
+        return  state.unique_ids.ids[type];
     },
 
     getAppVersion: state => {
@@ -174,6 +184,28 @@ export default {
         let prohibition_index = state.currently_editing_prohibition_index;
         let root = state.edited_forms[prohibition_index].data
         return root['xfdf']
+    },
+
+    areNewUniqueIdsRequired: state => {
+        console.log("inside areNewUniqueIdsRequired()")
+        return state.unique_ids.retrieved_date == null ||
+            moment().diff(state.unique_ids.retrieved_date, 'minute') > 24;
+    },
+
+    getNextAvailableUniqueId: state => type => {
+        console.log("inside getNextAvailableUniqueId()")
+        for (let [idx, record] of state.unique_ids.ids[type].entries()) {
+            console.log("record", record)
+            if (moment().diff(record.lease_expiry, "days") < 0) {
+                console.log("inside loop", record, idx)
+                return {
+                    "id": record.id,
+                    "type": type,
+                    "idx": idx
+                }
+            }
+            return {}
+        }
     }
 
 }

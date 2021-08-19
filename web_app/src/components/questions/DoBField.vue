@@ -11,9 +11,9 @@
            :disabled="disabled"
            :id="id"
            class="form-control form-control-sm"
-           placeholder="YYYY-MM-DD"
+           placeholder="YYYYMMDD"
            :value="getAttributeValue(id)"
-            @input="updateFormField">
+            @input="updateDateField">
       <div class="small text-danger">{{ errors[0] }}</div>
     </div>
   </validation-provider>
@@ -30,7 +30,12 @@ export default {
   name: "DoBField",
   mixins: [FieldCommon],
   methods: {
-    ...mapMutations(['updateFormField'])
+    ...mapMutations(['updateFormField']),
+    updateDateField(e) {
+      const isoDate = e.target.value;
+      const payload = {target: {id: this.id, value: isoDate }}
+      this.$store.commit("updateFormField", payload)
+    },
   },
   computed: {
     ...mapGetters(["getAttributeValue"]),

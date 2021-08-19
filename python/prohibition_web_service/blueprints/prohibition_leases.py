@@ -37,33 +37,14 @@ def create(prohibition_type):
         results = _get_block_of_prohibition_ids(
             Config.NUMBER_OF_PROHIBITION_IDS_IN_BLOCK,
             prohibition_type, db)
-        return make_response(results, 200)
-
-
-@bp.route('/<string:prohibition_type>', methods=['PATCH'])
-def update(prohibition_type):
-    """
-    Renew a block of prohibitions by submitting a block of prohibition ids
-    as a payload
-    """
-    if request.method == 'PATCH':
-        from python.prohibition_web_service import db
-        try:
-            prohibition_ids = request.get_json()
-        except Exception as e:
-            return make_response("bad payload", 400)
-        renewals = _renew_prohibition_ids(prohibition_ids, prohibition_type, db)
-        if len(renewals) < Config.NUMBER_OF_PROHIBITION_IDS_IN_BLOCK:
-            logging.warning('within if statement')
-            results = _get_block_of_prohibition_ids(
-                Config.NUMBER_OF_PROHIBITION_IDS_IN_BLOCK - len(renewals),
-                prohibition_type, db)
-            return make_response(results + renewals, 200)
-        return make_response(renewals, 200)
+        resp = make_response(results, 200)
+        resp.headers.add('Access-Control-Allow-Origin', Config.ACCESS_CONTROL_ALLOW_ORIGIN)
+        return resp
 
 
 def _get_block_of_prohibition_ids(number_ids_required: int, prohibition_type: str, db):
     from python.prohibition_web_service import ProhibitionIdLease
+    logging.warning("inside _get_block_of_prohibition_ids()")
     leases = db.session.query(ProhibitionIdLease) \
         .filter(ProhibitionIdLease.prohibition_type == prohibition_type) \
         .filter(ProhibitionIdLease.served == False, ProhibitionIdLease.lease_expiry == None) \
@@ -75,21 +56,5 @@ def _get_block_of_prohibition_ids(number_ids_required: int, prohibition_type: st
         lease.lease_expiry = today + timedelta(days=30)
         results.append(ProhibitionIdLease.serialize(lease))
     db.session.commit()
-    return results
-
-
-def _renew_prohibition_ids(prohibition_ids: list, prohibition_type: str, db):
-    from python.prohibition_web_service import ProhibitionIdLease
-    results = []
-    for prohibition_id in prohibition_ids:
-        lease = db.session.query(ProhibitionIdLease) \
-            .filter(ProhibitionIdLease.prohibition_type == prohibition_type) \
-            .filter(ProhibitionIdLease.served == False) \
-            .filter(ProhibitionIdLease.id == prohibition_id) \
-            .first()
-        if lease is not None:
-            today = datetime.now()
-            lease.lease_expiry = today + timedelta(days=30)
-            db.session.commit()
-            results.append(ProhibitionIdLease.serialize(lease))
+    logging.warning("results ({}): {}".format(prohibition_type, json.dumps(results)))
     return results

@@ -12,6 +12,9 @@ class Config(BaseConfig):
     ICBC_API_USERNAME                   = os.getenv('ICBC_API_USERNAME', 'user1')
     ICBC_API_PASSWORD                   = os.getenv('ICBC_API_PASSWORD', 'secret')
 
+    # URL of requesting resource
+    ACCESS_CONTROL_ALLOW_ORIGIN         = os.getenv('ACCESS_CONTROL_ALLOW_ORIGIN', '*')
+
     DATABASE_URI                        = os.getenv('DATABASE_URI', 'sqlite:///:memory:')
 
     ADMIN_USERNAME                      = os.getenv('ADMIN_USERNAME', 'admin')

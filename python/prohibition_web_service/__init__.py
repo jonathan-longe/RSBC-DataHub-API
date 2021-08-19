@@ -66,6 +66,24 @@ def initialize_app(app):
         if len(tables) == 0:
             logging.warning('Sqlite database does not exist - creating new file')
             db.create_all()
+            _seed_database_for_development(db)
         else:
             logging.info("database already exists - no need to recreate")
 
+
+def _seed_database_for_development(database):
+    # TODO - Remove before flight
+    seed_records = []
+    prefix = ["AA"]
+    # for ind, prohibition_type in enumerate(["12Hour", "24Hour", "IRP"]):
+    for x in range(100000, 100100):
+        unique_id = '{}-{}'.format(prefix[0], str(x))
+        seed_records.append(ProhibitionIdLease(
+            prohibition_id=unique_id,
+            prohibition_type="24Hour",
+            lease_expiry=None,
+            served=False))
+    database.session.bulk_save_objects(seed_records)
+    database.session.commit()
+    logging.warning("database seeded")
+    return

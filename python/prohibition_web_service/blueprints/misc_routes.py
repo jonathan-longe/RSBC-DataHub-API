@@ -59,7 +59,7 @@ def get_driver(dl_number):
         url = "{}/drivers/{}".format(Config.ICBC_API_ROOT, dl_number)
         icbc_response = requests.get(url, headers=_icbc_api_authorization())
         response = make_response(icbc_response.json(), icbc_response.status_code)
-        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers.add('Access-Control-Allow-Origin', Config.ACCESS_CONTROL_ALLOW_ORIGIN)
         return response
 
 
@@ -72,7 +72,7 @@ def get_vehicle(plate_number):
             response = make_response(icbc_response.json()[0], icbc_response.status_code)
         else:
             response = make_response({"error": "service unavailable"}, 500)
-        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers.add('Access-Control-Allow-Origin', Config.ACCESS_CONTROL_ALLOW_ORIGIN)
         return response
 
 

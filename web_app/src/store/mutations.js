@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import xfdf from "@/helpers/xfdf_generator";
+import constants from "@/config/constants";
 
 export default {
 
@@ -159,7 +160,7 @@ async function populateVehicleInfo(state, icbcPayload) {
     console.log("icbcPayload", icbcPayload)
     let prohibition_index = icbcPayload['formIndex']
     let plate_number = icbcPayload['plateNumber']
-    const url = "http://localhost:5002/api/v1/vehicles/" + plate_number
+    const url = constants.URL_ROOT + "/api/v1/vehicles/" + plate_number
     fetch(url, {
         "method": 'GET',
     })
@@ -196,7 +197,7 @@ async function populateVehicleInfo(state, icbcPayload) {
 async function populateDriver(state, icbcPayload) {
     let prohibition_index = icbcPayload['formIndex']
     let dlNumber = icbcPayload['dlNumber']
-    const url = "http://localhost:5002/api/v1/drivers/" + dlNumber
+    const url = constants.URL_ROOT + "/api/v1/drivers/" + dlNumber
     fetch(url, {
         "method": 'GET',
     })

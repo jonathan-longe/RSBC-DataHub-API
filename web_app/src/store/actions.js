@@ -1,3 +1,4 @@
+import constants from "@/config/constants";
 import Vue from "vue";
 
 export default {
@@ -55,7 +56,7 @@ export default {
         commit("retrieveUniqueIdsFromLocalStorage")
         if (getters.areNewUniqueIdsRequired) {
             console.log("new UniqueIDs are required")
-            const url = "http://localhost:5002/api/v1/prohibitions/leases/"
+            const url = constants.URL_ROOT + "/api/v1/prohibitions/leases/"
             for( let schema in state.form_schemas.forms) {
                 fetch(url + schema, {
                 "method": 'POST',

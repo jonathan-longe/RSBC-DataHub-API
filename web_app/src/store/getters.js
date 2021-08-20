@@ -1,4 +1,5 @@
 import moment from "moment";
+import constants from "@/config/constants";
 
 export default {
 
@@ -189,7 +190,7 @@ export default {
     areNewUniqueIdsRequired: state => {
         console.log("inside areNewUniqueIdsRequired()")
         return state.unique_ids.retrieved_date == null ||
-            moment().diff(state.unique_ids.retrieved_date, 'minute') > 24;
+            moment().diff(state.unique_ids.retrieved_date, 'days') > constants.UNIQUE_ID_REFRESH_DAYS;
     },
 
     getNextAvailableUniqueId: state => type => {

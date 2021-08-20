@@ -25,7 +25,7 @@
 <script>
 
 import FieldCommon from "@/components/questions/FieldCommon";
-import {mapGetters, mapMutations} from 'vuex';
+import {mapGetters, mapMutations, mapActions} from 'vuex';
 
 export default {
   name: "DriversLicenceNumber",
@@ -43,7 +43,8 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['populateDriversFromICBC', 'updateFormField']),
+    ...mapMutations(['updateFormField']),
+    ...mapActions(['populateDriversFromICBC']),
   }
 }
 </script>

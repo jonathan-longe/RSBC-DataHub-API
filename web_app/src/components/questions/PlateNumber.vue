@@ -23,7 +23,7 @@
 <script>
 
 import FieldCommon from "@/components/questions/FieldCommon";
-import {mapGetters, mapMutations} from "vuex";
+import {mapGetters, mapMutations, mapActions} from "vuex";
 
 export default {
   name: "PlateNumber",
@@ -38,7 +38,8 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(["populateFromICBCPlateLookup", "updateFormField"])
+    ...mapMutations(["updateFormField"]),
+    ...mapActions(["populateFromICBCPlateLookup"])
   }
 }
 </script>

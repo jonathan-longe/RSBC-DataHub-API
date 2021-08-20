@@ -7,14 +7,6 @@ export default {
       return state.form_schemas.forms;
     },
 
-    getUniqueIdsRetrievedDate: state => {
-      return state.unique_ids.retrieved_date;
-    },
-
-    getUniqueIdsByType: state => type => {
-        return  state.unique_ids.ids[type];
-    },
-
     getAppVersion: state => {
       return state.version;
     },
@@ -187,21 +179,55 @@ export default {
         return root['xfdf']
     },
 
-    areNewUniqueIdsRequired: state => {
+    areNewUniqueIdsRequiredByType: (state, getters) => prohibition_type => {
         console.log("inside areNewUniqueIdsRequired()")
-        return state.unique_ids.retrieved_date == null ||
-            moment().diff(state.unique_ids.retrieved_date, 'days') > constants.UNIQUE_ID_REFRESH_DAYS;
+        if (state.unique_ids === {}) {
+            // Unique ids have never been retrieved before
+            return true;
+        }
+        if (getters.getMinimumUniqueIdsOnHandByType(prohibition_type) < constants.MINIMUM_NUMBER_OF_UNIQUE_IDS_PER_TYPE) {
+            // Number of unique ids is below set minimums
+            return true;
+        }
+        if (getters.getOldestUniqueIdExpiryDateByType(prohibition_type) > constants.UNIQUE_ID_REFRESH_DAYS) {
+            // At least one unique ids is getting close to it's expiry date
+            return true;
+        }
+
+        return false
+
     },
 
-    getNextAvailableUniqueId: state => type => {
+    getMinimumUniqueIdsOnHandByType: state => prohibition_type => {
+        if (prohibition_type in state.unique_ids) {
+            return state.unique_ids[prohibition_type].length
+        }
+        return 0;
+    },
+
+    getOldestUniqueIdExpiryDateByType: state => prohibition_type => {
+        let maximum_days_old = 0;
+        if (prohibition_type in state.unique_ids) {
+            for (let record of state.unique_ids[prohibition_type]) {
+                let days_to_expiry = moment().diff(record.lease_expiry, "days")
+                if (days_to_expiry > maximum_days_old) {
+                    maximum_days_old = days_to_expiry
+                }
+                return maximum_days_old
+            }
+        }
+
+    },
+
+    getNextAvailableUniqueIdByType: state => prohibition_type => {
         console.log("inside getNextAvailableUniqueId()")
-        for (let [idx, record] of state.unique_ids.ids[type].entries()) {
+        for (let [idx, record] of state.unique_ids[prohibition_type].entries()) {
             console.log("record", record)
             if (moment().diff(record.lease_expiry, "days") < 0) {
                 console.log("inside loop", record, idx)
                 return {
                     "id": record.id,
-                    "type": type,
+                    "type": prohibition_type,
                     "idx": idx
                 }
             }

@@ -10,7 +10,8 @@ export default {
     // but this app determines when to refresh the list.  If the app waited until the
     // unique ids had expired the officer could be find themselves offline with no
     // unique ids.
-    UNIQUE_ID_REFRESH_DAYS: 15
+    UNIQUE_ID_REFRESH_DAYS: 15,
 
-    
+    // The minimum number of unique ids per type to have in storage before requesting more.
+    MINIMUM_NUMBER_OF_UNIQUE_IDS_PER_TYPE: 8
 }

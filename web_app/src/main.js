@@ -64,10 +64,7 @@ const store = new Vuex.Store({
         }
       }
     },
-    unique_ids: {
-      retrieved_date: null,
-      ids: {}
-    }
+    unique_ids: {}
   },
   mutations: mutations,
   getters: getters,

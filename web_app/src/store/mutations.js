@@ -1,5 +1,4 @@
 import Vue from 'vue'
-import xfdf from "@/helpers/xfdf_generator";
 
 export default {
 
@@ -100,13 +99,6 @@ export default {
         state.isOnline = false;
     },
 
-    generateXFDF(state, xml_filename) {
-        let prohibition_index = state.currently_editing_prohibition_index
-        let key_value_pairs = getKeyValuePairs(state, prohibition_index);
-        let root = state.edited_forms[prohibition_index].data
-        Vue.set(root, 'xfdf', xfdf.generate(xml_filename, key_value_pairs))
-    },
-
     nextStep(state) {
         let prohibition_index = state.currently_editing_prohibition_index
         let current_step_number = state.edited_forms[prohibition_index].data.current_step;
@@ -145,18 +137,6 @@ export default {
         state.currently_editing_prohibition_index = new_index;
         console.log("check edited_forms: " + JSON.stringify(state.edited_forms));
     }
-}
-
-function getKeyValuePairs (state, prohibition_index) {
-    console.log("getKeyValuePairs(): ", prohibition_index)
-    let form_data = state.edited_forms[prohibition_index].data;
-    console.log("getFormKeyValuePairs()", form_data)
-    let key_value_pairs = Array();
-    for( let object in form_data) {
-        key_value_pairs[object] = form_data[object];
-    }
-    console.log('getKeyValuePairs()', key_value_pairs)
-    return key_value_pairs;
 }
 
 

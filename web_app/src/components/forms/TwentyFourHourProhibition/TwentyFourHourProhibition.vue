@@ -84,7 +84,7 @@ export default {
   mixins: [FormsCommon],
   computed: {
     ...mapGetters(["getAttributeValue", "isPlateJurisdictionBC", "driverIsNotRegisteredOwner",
-      "corporateOwner", "getXdfFileName", "getPDFTemplateFileName", "getXFDF", "getCurrentFormData"]),
+      "corporateOwner", "getXdfFileNameString", "getPDFTemplateFileName", "getXFDF", "getCurrentFormData"]),
     isProhibitionTypeDrugs() {
       return this.getAttributeValue('prohibition_type') === "Drugs 215(3)";
     },
@@ -97,17 +97,16 @@ export default {
   },
   methods: {
     ...mapActions(["saveDoNotPrint", "deleteSpecificForm"]),
-    ...mapMutations(["saveFormsToLocalStorage", "generateXFDF", "stopEditingCurrentForm"]),
+    ...mapMutations(["saveFormsToLocalStorage", "stopEditingCurrentForm"]),
 
-    saveAndPrint(pdf_template_filename) {
-      console.log("inside saveAndPrint()" + pdf_template_filename)
-      this.generateXFDF(pdf_template_filename);
-      const xml_file = this.getXFDF;
+    saveAndPrint(pdf_template_filepath) {
+      console.log("inside saveAndPrint() " + pdf_template_filepath)
+      const xml_file = this.getXFDF(pdf_template_filepath);
       console.log('success generateXFDF()', xml_file)
       const href = window.URL.createObjectURL(xml_file); //create the download url
       const downloadElement = document.createElement("a");
       downloadElement.href = href;
-      downloadElement.download =  pdf_template_filename;
+      downloadElement.download =  this.getXdfFileNameString;
       document.body.appendChild(downloadElement);
       downloadElement.click(); //click to file
       document.body.removeChild(downloadElement); //remove the element

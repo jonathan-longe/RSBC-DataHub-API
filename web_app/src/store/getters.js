@@ -1,5 +1,6 @@
 import moment from "moment";
 import constants from "@/config/constants";
+import xfdf from "@/helpers/xfdf_generator";
 
 export default {
 
@@ -119,9 +120,9 @@ export default {
         return "Not Served"
     },
 
-    getXdfFileName: state => {
+    getXdfFileNameString: state => {
         let prohibition_index = state.currently_editing_prohibition_index
-        let file_extension = ".xdp"
+        let file_extension = ".xfdf"
         let last_name = state.edited_forms[prohibition_index].data.last_name;
         let prohibition_number = state.edited_forms[prohibition_index].data.prohibition_number;
         let file_name = last_name + "_" + prohibition_number + file_extension;
@@ -173,24 +174,23 @@ export default {
         return state.edited_forms[prohibition_index].data;
     },
 
-    getXFDF: state => {
-        let prohibition_index = state.currently_editing_prohibition_index;
-        let root = state.edited_forms[prohibition_index].data
-        return root['xfdf']
+    getXFDF: (state, getters) => pdf_template_filepath => {
+        let key_value_pairs = getters.getKeyValuePairs;
+        return xfdf.generate(pdf_template_filepath, key_value_pairs)
     },
 
     areNewUniqueIdsRequiredByType: (state, getters) => prohibition_type => {
-        console.log("inside areNewUniqueIdsRequired()")
+        console.log("inside areNewUniqueIdsRequiredByType()", prohibition_type)
         if (state.unique_ids === {}) {
-            // Unique ids have never been retrieved before
+            console.log("Unique ids have never been retrieved before")
             return true;
         }
         if (getters.getMinimumUniqueIdsOnHandByType(prohibition_type) < constants.MINIMUM_NUMBER_OF_UNIQUE_IDS_PER_TYPE) {
-            // Number of unique ids is below set minimums
+            console.log("Number of unique ids is below set minimums", getters.getMinimumUniqueIdsOnHandByType(prohibition_type))
             return true;
         }
         if (getters.getOldestUniqueIdExpiryDateByType(prohibition_type) > constants.UNIQUE_ID_REFRESH_DAYS) {
-            // At least one unique ids is getting close to it's expiry date
+            console.log("At least one unique ids is getting close to it's expiry date")
             return true;
         }
 
@@ -233,6 +233,19 @@ export default {
             }
             return {}
         }
+    },
+
+    getKeyValuePairs: state => {
+        let prohibition_index = state.currently_editing_prohibition_index
+        console.log("getKeyValuePairs(): ", prohibition_index)
+        let form_data = state.edited_forms[prohibition_index].data;
+        console.log("getFormKeyValuePairs()", form_data)
+        let key_value_pairs = Array();
+        for( let object in form_data) {
+            key_value_pairs[object] = form_data[object];
+        }
+        console.log('getKeyValuePairs()', key_value_pairs)
+        return key_value_pairs;
     }
 
 }

@@ -29,23 +29,13 @@ export default {
   name: "PlateNumber",
   mixins: [FieldCommon],
   computed: {
+    ...mapGetters(["getAttributeValue", "isPlateJurisdictionBC", "getCurrentlyEditedProhibitionIndex"]),
     icbcPayload() {
       return {
         "plateNumber": this.getAttributeValue(this.id),
         "formIndex": this.getCurrentlyEditedProhibitionIndex
       }
     },
-    ...mapGetters(["getAttributeValue", "isPlateJurisdictionBC", "getCurrentlyEditedProhibitionIndex"]),
-    isNumberTheCorrectLength() {
-      return this.getAttributeValue(this.id) >= 3
-    },
-    icbcLookupButtonClass() {
-      if (this.isNumberTheCorrectLength) {
-        return " btn-primary text-white "
-      } else {
-        return " btn-secondary text-muted "
-      }
-    }
   },
   methods: {
     ...mapMutations(["populateFromICBCPlateLookup", "updateFormField"])

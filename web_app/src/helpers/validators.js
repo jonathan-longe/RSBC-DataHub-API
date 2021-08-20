@@ -32,14 +32,25 @@ extend('notExpired', {
   message: "Expired"
 });
 
+extend('notFutureDt', {
+  validate(value) {
+    return {
+      required: true,
+      valid: moment().diff(moment(value), 'minutes') > 0,
+    };
+  },
+  message: "Cannot be future dated",
+  computesRequired: true
+});
+
 extend('dob', {
   validate(value) {
     return {
       required: true,
-      valid: moment().diff(moment(value), 'years') > 5,
+      valid: moment().diff(moment(value), 'years') > 0,
     };
   },
-  message: "Driver must be older than 5 years",
+  message: "DOB cannot be future dated",
   computesRequired: true
 });
 

@@ -2,7 +2,7 @@
 <div v-if="visible" class="form-group" :class="fg_class">
   <validation-provider :rules="rules" :name="id" v-slot="{ errors, required }">
     <label class="small" :for="id"><slot></slot>
-      <span v-if="required" class="text-danger"> *</span>
+      <span v-if="! required" class="text-muted"> (optional)</span>
       <span class="text-muted" v-if="isValidDate"> ({{ timeAgoString }})</span>
       <span class="text-danger"> </span>
     </label>
@@ -20,8 +20,7 @@
             :value="timeSegment"
             @input="updateTimeSegment">
       </div>
-      <div v-if="! isValidDate" class="small text-danger">(Invalid date or time)</div>
-      <div v-if="isFutureDate" class="small text-danger">(Future dated)</div>
+      <div class="small text-danger ml-1">{{ errors[0] }}</div>
     </div>
   </validation-provider>
 </div>

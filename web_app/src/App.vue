@@ -16,7 +16,6 @@
       <prohibition-search v-if=" ! isFormBeingEdited"></prohibition-search>
       <feedback-welcome v-if=" ! isFormBeingEdited"></feedback-welcome>
       <div class="card-footer bg-transparent border-0 text-muted small">Version: {{ getAppVersion }}</div>
-      <prohibition-unique-ids></prohibition-unique-ids>
     </div>
   </div>
 </template>
@@ -31,7 +30,6 @@ import ImmediateRoadsideProhibition from "@/components/forms/ImmediateRoadsidePr
 import FeedbackWelcome from "@/components/FeedbackWelcome";
 import ProhibitionSearch from "@/components/ProhibitionSearch";
 import RecentProhibitions from "@/components/RecentProhibitions";
-import ProhibitionUniqueIds from "@/components/ProhibitionUniqueIds";
 import { mapGetters, mapMutations } from 'vuex';
 
 export default {
@@ -44,8 +42,7 @@ export default {
     IssueProhibitions,
     TwelveHourProhibition,
     TwentyFourHourProhibition,
-    ImmediateRoadsideProhibition,
-    ProhibitionUniqueIds
+    ImmediateRoadsideProhibition
   },
   computed: {
     ...mapGetters(['getAppVersion', 'isFormBeingEdited',"getSelectedFormComponent","getCurrentlyEditedForm","isRecentProhibitions","isNetworkOnline"]),

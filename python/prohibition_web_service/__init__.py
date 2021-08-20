@@ -74,15 +74,15 @@ def initialize_app(app):
 def _seed_database_for_development(database):
     # TODO - Remove before flight
     seed_records = []
-    prefix = ["AA"]
-    # for ind, prohibition_type in enumerate(["12Hour", "24Hour", "IRP"]):
-    for x in range(100000, 100100):
-        unique_id = '{}-{}'.format(prefix[0], str(x))
-        seed_records.append(ProhibitionIdLease(
-            prohibition_id=unique_id,
-            prohibition_type="24Hour",
-            lease_expiry=None,
-            served=False))
+    prefix = ["J", "AA", "40"]
+    for idx, prohibition_type in enumerate(["12Hour", "24Hour", "IRP"]):
+        for x in range(100000, 100100):
+            unique_id = '{}-{}'.format(prefix[idx], str(x))
+            seed_records.append(ProhibitionIdLease(
+                prohibition_id=unique_id,
+                prohibition_type=prohibition_type,
+                lease_expiry=None,
+                served=False))
     database.session.bulk_save_objects(seed_records)
     database.session.commit()
     logging.warning("database seeded")

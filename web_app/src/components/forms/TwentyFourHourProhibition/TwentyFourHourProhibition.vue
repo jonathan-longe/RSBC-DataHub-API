@@ -1,12 +1,10 @@
 <template>
   <form-container title="Notice of 24 Hour Licence Prohibition">
     <form-step :step_number=1>
-
-      <licence-plate-card></licence-plate-card>
-      <vehicle-information-card></vehicle-information-card>
-      <vehicle-impoundment-card></vehicle-impoundment-card>
       <drivers-information-card></drivers-information-card>
+      <vehicle-information-card></vehicle-information-card>
       <vehicle-owner-card></vehicle-owner-card>
+      <vehicle-impoundment-card></vehicle-impoundment-card>
       <return-of-licence-card></return-of-licence-card>
       <prohibition-information-card></prohibition-information-card>
       <reasonable-grounds-card></reasonable-grounds-card>
@@ -16,11 +14,10 @@
 
     </form-step>
     <form-step :step_number=2>
-      <licence-plate-card :is-read-only=true></licence-plate-card>
-      <vehicle-information-card :is-read-only=true></vehicle-information-card>
-      <vehicle-impoundment-card :is-read-only=true></vehicle-impoundment-card>
       <drivers-information-card :is-read-only=true></drivers-information-card>
+      <vehicle-information-card :is-read-only=true></vehicle-information-card>
       <vehicle-owner-card :is-read-only=true></vehicle-owner-card>
+      <vehicle-impoundment-card :is-read-only=true></vehicle-impoundment-card>
       <return-of-licence-card :is-read-only=true></return-of-licence-card>
       <prohibition-information-card :is-read-only=true></prohibition-information-card>
       <reasonable-grounds-card :is-read-only=true></reasonable-grounds-card>
@@ -61,27 +58,27 @@ import VehicleInformationCard from "@/components/forms/TwentyFourHourProhibition
 import VehicleImpoundmentCard from "@/components/forms/TwentyFourHourProhibition/VehicleImpoundmentCard";
 import DriversInformationCard from "@/components/forms/TwentyFourHourProhibition/DriversInformationCard";
 import ReturnOfLicenceCard from "@/components/forms/TwentyFourHourProhibition/ReturnOfLicenceCard";
-import LicencePlateCard from "@/components/forms/TwentyFourHourProhibition/LicencePlateCard";
 import ProhibitionInformationCard from "@/components/forms/TwentyFourHourProhibition/ProhibitionInformationCard";
 import ReasonableGroundsCard from "@/components/forms/TwentyFourHourProhibition/ReasonableGroundsCard";
 import TestAdministeredAlcoholCard from "@/components/forms/TwentyFourHourProhibition/TestAdministeredAlcoholCard";
 import TestAdministeredDrugsCard from "@/components/forms/TwentyFourHourProhibition/TestAdministeredDrugsCard";
 import SupplementaryModal from "@/components/forms/TwentyFourHourProhibition/SupplementaryModal";
 import OfficerDetailsCard from "@/components/forms/TwentyFourHourProhibition/OfficerDetailsCard";
+import VehicleOwnerCard from "@/components/forms/TwentyFourHourProhibition/VehicleOwnerCard";
 
 
 export default {
   name: "TwentyFourHourProhibition",
   components: {
+    VehicleOwnerCard,
     TestAdministeredAlcoholCard,
     TestAdministeredDrugsCard,
     ReasonableGroundsCard,
     ProhibitionInformationCard,
-    LicencePlateCard,
     SupplementaryModal,
     VehicleImpoundmentCard, VehicleInformationCard,
     DriversInformationCard, ReturnOfLicenceCard,
-    OfficerDetailsCard},
+    OfficerDetailsCard}, VehicleOwnerCard,
   mixins: [FormsCommon],
   computed: {
     ...mapGetters(["getAttributeValue", "isPlateJurisdictionBC", "driverIsNotRegisteredOwner",

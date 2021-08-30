@@ -1,6 +1,8 @@
 <template>
 <form-card title="Vehicle information">
   <div v-if="isReadOnly">
+    <read-only-element id="plate_province">Jurisdiction</read-only-element>
+    <read-only-element id="plate_number">Plate Number</read-only-element>
     <read-only-element id="plate_year">Plate Year</read-only-element>
     <read-only-element id="plate_val_tag">Plate Val Tag</read-only-element>
     <read-only-element id="registration_number">Registration Number</read-only-element>
@@ -12,6 +14,10 @@
     <read-only-element id="puj_code">PUJ Code</read-only-element>
     <read-only-element id="nsc_number">NSC Number</read-only-element>
   </div>
+  <form-row v-if="! isReadOnly">
+    <province-field id="plate_province" fg_class="col-sm-2">Jurisdiction</province-field>
+    <plate-number id="plate_number" fg_class="col-sm-6">Plate Number</plate-number>
+  </form-row>
   <form-row v-if="! isReadOnly">
     <text-field id="plate_year" fg_class="col-sm-4">Plate Year</text-field>
     <text-field id="plate_val_tag" input_type="number" fg_class="col-sm-4">Plate Val Tag</text-field>

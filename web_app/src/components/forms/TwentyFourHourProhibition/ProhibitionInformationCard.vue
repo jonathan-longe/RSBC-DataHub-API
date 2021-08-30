@@ -2,15 +2,15 @@
 <form-card title="Prohibition">
   <div v-if="! isReadOnly">
     <form-row>
-      <radio-field id="prohibition_type" fg_class="col-sm-6"
-                   :options='["Alcohol 215(2)", "Drugs 215(3)"]'>Type of Prohibition</radio-field>
+      <radio-field id="prohibition_type" fg_class="col-sm-6" rules="required"
+                   :options='["Alcohol 215(2)", "Drugs 215(3)"]'>Type of Prohibition (pick one)</radio-field>
     </form-row>
     <form-row>
       <text-field id="offence_address" fg_class="col-sm-8">Intersection or Address of Offence</text-field>
       <type-ahead-field id="offence_city" fg_class="col-sm-4" :suggestions="getArrayOfBCCityNames" rules="required">City</type-ahead-field>
     </form-row>
     <form-row>
-      <text-field id="file_number" fg_class="col-sm-3">File Number</text-field>
+      <text-field id="file_number" fg_class="col-sm-3" rules="required">GO File Number</text-field>
       <date-time id="prohibition_start_time" fg_class="col-sm-9" rules="required|notFutureDt">
         Time of driving, care or control
       </date-time>

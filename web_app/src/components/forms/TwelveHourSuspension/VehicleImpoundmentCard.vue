@@ -1,13 +1,13 @@
 <template>
-  <form-card title="Vehicle Impoundment or Disposition">
+  <form-card title="Vehicle Disposition">
     <div v-if="! isReadOnly">
       <form-row>
-        <radio-field id="vehicle_impounded" fg_class="col-sm-6" :options='["Yes", "No"]'>Vehicle Impounded?</radio-field>
+        <radio-field id="vehicle_towed" fg_class="col-sm-6" :options='["Yes", "No"]'>Vehicle Towed?</radio-field>
       </form-row>
       <form-row>
-        <radio-field id="reason_for_not_impounding" fg_class="col-sm-6"
+        <radio-field id="reason_for_not_towing" fg_class="col-sm-6"
                      :options='["Released to other driver", "Left at roadside", "Private tow", "Seized for investigation"]'
-                     :visible="showVehicleNotImpounded">Reason for not impounding?</radio-field>
+                     :visible="showVehicleNotImpounded">Reason for not towing?</radio-field>
       </form-row>
       <form-row v-if="isReleasedToOtherDriver">
         <text-field id="vehicle_released_to" :visible="showVehicleNotImpounded" fg_class="col-sm-6" >
@@ -30,8 +30,7 @@
       </form-row>
     </div>
     <div v-if="isReadOnly">
-      <read-only-element id="vehicle_impounded">Vehicle Impounded</read-only-element>
-      <read-only-element id="reason_for_not_impounding">Reason for not impounding</read-only-element>
+      <read-only-element id="vehicle_towed">Vehicle Impounded</read-only-element>
       <read-only-element id="vehicle_released_to">Vehicle released to</read-only-element>
       <read-only-element id="datetime_released">Datetime released</read-only-element>
       <read-only-element id="location_of_keys">Location of keys</read-only-element>
@@ -55,10 +54,10 @@ mixins: [CardsCommon],
   computed: {
     ...mapGetters(["getAttributeValue"]),
     showVehicleImpounded() {
-      return this.getAttributeValue('vehicle_impounded') === "Yes";
+      return this.getAttributeValue('vehicle_towed') === "Yes";
     },
     showVehicleNotImpounded() {
-      return this.getAttributeValue('vehicle_impounded') === "No";
+      return this.getAttributeValue('vehicle_towed') === "No";
     },
     isReleasedToOtherDriver() {
       return this.getAttributeValue('reason_for_not_impounding') === "Released to other driver";

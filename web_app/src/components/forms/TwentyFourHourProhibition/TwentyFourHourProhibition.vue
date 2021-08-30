@@ -69,6 +69,7 @@ import TestAdministeredDrugsCard from "@/components/forms/TwentyFourHourProhibit
 import SupplementaryModal from "@/components/forms/TwentyFourHourProhibition/SupplementaryModal";
 import OfficerDetailsCard from "@/components/forms/TwentyFourHourProhibition/OfficerDetailsCard";
 
+
 export default {
   name: "TwentyFourHourProhibition",
   components: {

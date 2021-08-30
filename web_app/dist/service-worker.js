@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/precache-manifest.78fbb35d0d6fa72e2806d3bcfd3a5929.js"
+  "/precache-manifest.e811bc0b3ea004d2e97408b2d7d16e82.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "prohibition_web_app"});

@@ -52,3 +52,33 @@ def test_get_countries(as_guest):
     assert "CAN" in resp.json[0]['objectCd']
     assert "Canada" in resp.json[0]['objectDsc']
     assert resp.headers['Access-Control-Allow-Origin'] == Config.ACCESS_CONTROL_ALLOW_ORIGIN
+
+
+def test_get_cities(as_guest):
+    resp = as_guest.get("/api/v1/configuration/cities",
+                        follow_redirects=True,
+                        content_type="application/json")
+    assert resp.status_code == 200
+    assert "Victoria" in resp.json['bc_cities']
+    assert "100 Mile House" in resp.json['bc_cities']
+    assert resp.headers['Access-Control-Allow-Origin'] == Config.ACCESS_CONTROL_ALLOW_ORIGIN
+
+
+def test_get_car_colors(as_guest):
+    resp = as_guest.get("/api/v1/configuration/colors",
+                        follow_redirects=True,
+                        content_type="application/json")
+    assert resp.status_code == 200
+    assert "Yellow" in resp.json['car_colors']
+    assert resp.headers['Access-Control-Allow-Origin'] == Config.ACCESS_CONTROL_ALLOW_ORIGIN
+
+
+def test_get_vehicles(as_guest):
+    resp = as_guest.get("/api/v1/configuration/vehicles",
+                        follow_redirects=True,
+                        content_type="application/json")
+    assert resp.status_code == 200
+    assert "A.C." == resp.json[0]['make']
+    assert "ACE ROADSTER" == resp.json[0]['model']
+    assert "1961" == resp.json[0]['year']
+    assert resp.headers['Access-Control-Allow-Origin'] == Config.ACCESS_CONTROL_ALLOW_ORIGIN

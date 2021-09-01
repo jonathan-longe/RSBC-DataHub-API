@@ -33,7 +33,7 @@ def get_impound_lot_operators():
     TODO - replace json static file with call to database
     """
     if request.method == 'GET':
-        data = helper.load_json_into_dict('python/prohibition_web_service/impound_lot_operators.json')
+        data = helper.load_json_into_dict('python/prohibition_web_service/data/impound_lot_operators.json')
         response = make_response(data, 200)
         response.headers.add('Access-Control-Allow-Origin', Config.ACCESS_CONTROL_ALLOW_ORIGIN)
         return response
@@ -46,7 +46,7 @@ def get_countries():
     TODO - replace json static file with call to database
     """
     if request.method == 'GET':
-        data = helper.load_json_into_dict('python/prohibition_web_service/countries.json')
+        data = helper.load_json_into_dict('python/prohibition_web_service/data/countries.json')
         response = make_response(data, 200)
         response.headers.add('Access-Control-Allow-Origin', Config.ACCESS_CONTROL_ALLOW_ORIGIN)
         return response
@@ -59,7 +59,7 @@ def get_provinces():
     TODO - replace json static file with call to database
     """
     if request.method == 'GET':
-        data = helper.load_json_into_dict('python/prohibition_web_service/provinces.json')
+        data = helper.load_json_into_dict('python/prohibition_web_service/data/provinces.json')
         response = make_response(data, 200)
         response.headers.add('Access-Control-Allow-Origin', Config.ACCESS_CONTROL_ALLOW_ORIGIN)
         return response
@@ -72,13 +72,39 @@ def get_jurisdictions():
     TODO - replace json static file with call to database
     """
     if request.method == 'GET':
-        data = helper.load_json_into_dict('python/prohibition_web_service/jurisdictions.json')
+        data = helper.load_json_into_dict('python/prohibition_web_service/data/jurisdictions.json')
         response = make_response(data, 200)
         response.headers.add('Access-Control-Allow-Origin', Config.ACCESS_CONTROL_ALLOW_ORIGIN)
         return response
 
 
-@bp.route('/vehicle_make_models', methods=['GET'])
+@bp.route('/configuration/cities', methods=['GET'])
+def get_cities():
+    """
+    This returns a list of BC city names
+    TODO - replace json static file with call to database
+    """
+    if request.method == 'GET':
+        data = helper.load_json_into_dict('python/prohibition_web_service/data/cities.json')
+        response = make_response(data, 200)
+        response.headers.add('Access-Control-Allow-Origin', Config.ACCESS_CONTROL_ALLOW_ORIGIN)
+        return response
+
+
+@bp.route('/configuration/colors', methods=['GET'])
+def get_colors():
+    """
+    This returns a list of common car colors
+    TODO - replace json static file with call to database
+    """
+    if request.method == 'GET':
+        data = helper.load_json_into_dict('python/prohibition_web_service/data/car_colors.json')
+        response = make_response(data, 200)
+        response.headers.add('Access-Control-Allow-Origin', Config.ACCESS_CONTROL_ALLOW_ORIGIN)
+        return response
+
+
+@bp.route('/configuration/vehicles', methods=['GET'])
 def get_vehicle_make_model():
     """
     This returns a list of vehicle make, model and years.
@@ -86,7 +112,7 @@ def get_vehicle_make_model():
     TODO - replace this list with an authoritative list from PrimeCorp
     """
     if request.method == 'GET':
-        data = helper.load_json_into_dict('python/prohibition_web_service/vehicle_make_model.json')
+        data = helper.load_json_into_dict('python/prohibition_web_service/data/vehicle_make_model.json')
         response = make_response(data, 200)
         response.headers.add('Access-Control-Allow-Origin', Config.ACCESS_CONTROL_ALLOW_ORIGIN)
         return response

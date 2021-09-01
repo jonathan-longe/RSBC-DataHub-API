@@ -26,19 +26,48 @@ def health():
     return make_response({'success': 'healthy'}, 200)
 
 
-@bp.route('/configuration/<string:resource>', methods=['GET'])
-def get_impound_lot_operators(resource):
+@bp.route('/configuration/impoundLotOperators', methods=['GET'])
+def get_impound_lot_operators():
     """
     This returns a list of active impound lot operators
-    TODO - replace json static file with call to VIPS configuration API
+    TODO - replace json static file with call to database
     """
-    resources = ['impoundLotOperators', 'jurisdictions', 'countries', 'provinces']
-    if request.method == 'GET' and resource in resources:
-        data = helper.load_json_into_dict('python/prohibition_web_service/vips_configuration.json')
-        operators = data['configuration'][resource]
-        active_operators = [x for x in operators if x['activeYN'] == 'Y']
-        return make_response(active_operators, 200)
-    return make_response({'error': 'unknown resource'}, 404)
+    if request.method == 'GET':
+        data = helper.load_json_into_dict('python/prohibition_web_service/impound_lot_operators.json')
+        return make_response(data, 200)
+
+
+@bp.route('/configuration/countries', methods=['GET'])
+def get_countries():
+    """
+    This returns a list of countries
+    TODO - replace json static file with call to database
+    """
+    if request.method == 'GET':
+        data = helper.load_json_into_dict('python/prohibition_web_service/countries.json')
+        return make_response(data, 200)
+
+
+@bp.route('/configuration/provinces', methods=['GET'])
+def get_provinces():
+    """
+    This returns a list of provinces
+    TODO - replace json static file with call to database
+    """
+    if request.method == 'GET':
+        data = helper.load_json_into_dict('python/prohibition_web_service/provinces.json')
+        return make_response(data, 200)
+
+
+@bp.route('/configuration/jurisdictions', methods=['GET'])
+def get_jurisdictions():
+    """
+    This returns a list of driver's license jurisdictions
+    TODO - replace json static file with call to database
+    """
+    if request.method == 'GET':
+        data = helper.load_json_into_dict('python/prohibition_web_service/jurisdictions.json')
+        return make_response(data, 200)
 
 
 @bp.route('/vehicle_make_models', methods=['GET'])

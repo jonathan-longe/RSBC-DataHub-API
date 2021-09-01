@@ -30,6 +30,7 @@ def test_get_driver(as_guest):
     assert resp.status_code == 200
     assert 'dlNumber' in resp.json
     assert resp.json['dlNumber'] == "5120503"
+    assert resp.headers['Access-Control-Allow-Origin'] == Config.ACCESS_CONTROL_ALLOW_ORIGIN
 
 
 @responses.activate
@@ -46,6 +47,7 @@ def test_get_vehicle(as_guest):
     assert resp.status_code == 200
     assert 'plateNumber' in resp.json
     assert resp.json['plateNumber'] == "LD626J"
+    assert resp.headers['Access-Control-Allow-Origin'] == Config.ACCESS_CONTROL_ALLOW_ORIGIN
 
 
 def _sample_driver_response() -> dict:

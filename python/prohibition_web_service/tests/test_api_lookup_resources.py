@@ -1,5 +1,6 @@
 import pytest
 from python.prohibition_web_service import create_app
+from python.prohibition_web_service.config import Config
 
 
 @pytest.fixture
@@ -20,6 +21,7 @@ def test_get_impound_lot_operators(as_guest):
                         content_type="application/json")
     assert resp.status_code == 200
     assert "Busters Towing" in resp.json[0]['name']
+    assert resp.headers['Access-Control-Allow-Origin'] == Config.ACCESS_CONTROL_ALLOW_ORIGIN
 
 
 def test_get_provinces(as_guest):
@@ -29,6 +31,7 @@ def test_get_provinces(as_guest):
     assert resp.status_code == 200
     assert "AB" in resp.json[2]['objectCd']
     assert "Alberta" in resp.json[2]['objectDsc']
+    assert resp.headers['Access-Control-Allow-Origin'] == Config.ACCESS_CONTROL_ALLOW_ORIGIN
 
 
 def test_get_jurisdictions(as_guest):
@@ -38,6 +41,7 @@ def test_get_jurisdictions(as_guest):
     assert resp.status_code == 200
     assert "AB" in resp.json[2]['objectCd']
     assert "Alberta" in resp.json[2]['objectDsc']
+    assert resp.headers['Access-Control-Allow-Origin'] == Config.ACCESS_CONTROL_ALLOW_ORIGIN
 
 
 def test_get_countries(as_guest):
@@ -47,3 +51,4 @@ def test_get_countries(as_guest):
     assert resp.status_code == 200
     assert "CAN" in resp.json[0]['objectCd']
     assert "Canada" in resp.json[0]['objectDsc']
+    assert resp.headers['Access-Control-Allow-Origin'] == Config.ACCESS_CONTROL_ALLOW_ORIGIN

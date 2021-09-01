@@ -34,7 +34,9 @@ def get_impound_lot_operators():
     """
     if request.method == 'GET':
         data = helper.load_json_into_dict('python/prohibition_web_service/impound_lot_operators.json')
-        return make_response(data, 200)
+        response = make_response(data, 200)
+        response.headers.add('Access-Control-Allow-Origin', Config.ACCESS_CONTROL_ALLOW_ORIGIN)
+        return response
 
 
 @bp.route('/configuration/countries', methods=['GET'])
@@ -45,7 +47,9 @@ def get_countries():
     """
     if request.method == 'GET':
         data = helper.load_json_into_dict('python/prohibition_web_service/countries.json')
-        return make_response(data, 200)
+        response = make_response(data, 200)
+        response.headers.add('Access-Control-Allow-Origin', Config.ACCESS_CONTROL_ALLOW_ORIGIN)
+        return response
 
 
 @bp.route('/configuration/provinces', methods=['GET'])
@@ -56,7 +60,9 @@ def get_provinces():
     """
     if request.method == 'GET':
         data = helper.load_json_into_dict('python/prohibition_web_service/provinces.json')
-        return make_response(data, 200)
+        response = make_response(data, 200)
+        response.headers.add('Access-Control-Allow-Origin', Config.ACCESS_CONTROL_ALLOW_ORIGIN)
+        return response
 
 
 @bp.route('/configuration/jurisdictions', methods=['GET'])
@@ -67,7 +73,9 @@ def get_jurisdictions():
     """
     if request.method == 'GET':
         data = helper.load_json_into_dict('python/prohibition_web_service/jurisdictions.json')
-        return make_response(data, 200)
+        response = make_response(data, 200)
+        response.headers.add('Access-Control-Allow-Origin', Config.ACCESS_CONTROL_ALLOW_ORIGIN)
+        return response
 
 
 @bp.route('/vehicle_make_models', methods=['GET'])
@@ -79,7 +87,9 @@ def get_vehicle_make_model():
     """
     if request.method == 'GET':
         data = helper.load_json_into_dict('python/prohibition_web_service/vehicle_make_model.json')
-        return make_response(data, 200)
+        response = make_response(data, 200)
+        response.headers.add('Access-Control-Allow-Origin', Config.ACCESS_CONTROL_ALLOW_ORIGIN)
+        return response
 
 
 @bp.route('/drivers/<string:dl_number>', methods=['GET'])

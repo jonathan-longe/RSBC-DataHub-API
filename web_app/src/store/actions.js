@@ -65,12 +65,12 @@ export default {
         commit("saveUniqueIdsToLocalStorage")
     },
 
-    populateDriversFromICBC({state}, icbcPayload) {
+    async populateDriversFromICBC({state}, icbcPayload) {
         console.log("inside actions.js populateDriversFromICBC(): " + icbcPayload)
         let prohibition_index = icbcPayload['formIndex']
         let dlNumber = icbcPayload['dlNumber']
         const url = constants.URL_ROOT + "/api/v1/drivers/" + dlNumber
-        fetch(url, {
+        return await fetch(url, {
             "method": 'GET',
         })
             .then(response => response.json())
@@ -90,21 +90,18 @@ export default {
             });
     },
 
-    populateFromICBCPlateLookup({state}, icbcPayload) {
+    async populateFromICBCPlateLookup({state}, icbcPayload) {
         console.log("inside actions.js populateFromICBCPlateLookup(): ")
-        // populateDriver(state,prohibition_index);
         console.log("icbcPayload", icbcPayload)
         let prohibition_index = icbcPayload['formIndex']
         let plate_number = icbcPayload['plateNumber']
         const url = constants.URL_ROOT + "/api/v1/vehicles/" + plate_number
-        fetch(url, {
+        return await fetch(url, {
             "method": 'GET',
         })
             .then(response => response.json())
             .then(data => {
                 console.log("data", data)
-                // Vue.set(state.edited_forms[prohibition_index].data, "plate_year", "2021");
-                // Vue.set(state.edited_forms[prohibition_index].data, "plate_val_tag", "1234567");
                 Vue.set(state.edited_forms[prohibition_index].data, "registration_number", data['registrationNumber']);
                 Vue.set(state.edited_forms[prohibition_index].data, "vehicle_year", data['vehicleModelYear']);
                 Vue.set(state.edited_forms[prohibition_index].data, "vehicle_make", data['vehicleMake']);
@@ -125,7 +122,41 @@ export default {
 
             })
             .catch(function (error) {
+                console.log("catch inside populateFromIcbcPlateLookup()")
                console.log(error)
             });
     },
+
+    fetchStaticLookupTables({commit}, type) {
+        const url = constants.URL_ROOT + "/api/v1/configuration/" + type
+        let networkDataRetrieved = false
+
+        // trigger request for fresh data from API
+        var networkUpdate = fetch(url, {
+            "method": 'GET',
+        })
+            .then( response => {
+                return response.json()
+            })
+            .then( data => {
+                networkDataRetrieved = true
+                commit("populateStaticLookupTables", { "type": type, "data": data })
+            })
+            .catch(function (error) {
+                console.log('network request failed', error)
+            });
+
+        caches.match(url).then( response => {
+            if (!response) throw Error("No cached data");
+            return response.json();
+        }).then ( data => {
+            // don't overwrite newer network data
+            if(!networkDataRetrieved) {
+                return data;
+            }
+        }).catch( function() {
+            // we didn't get cached data, the API is our last hope
+            return networkUpdate;
+        })
+    }
 }

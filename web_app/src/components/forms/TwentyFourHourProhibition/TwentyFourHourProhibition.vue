@@ -94,7 +94,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["saveDoNotPrint", "deleteSpecificForm"]),
+    ...mapActions(["saveDoNotPrint", "deleteSpecificForm", "fetchStaticLookupTables"]),
     ...mapMutations(["saveFormsToLocalStorage", "stopEditingCurrentForm"]),
 
     saveAndPrint(pdf_template_filepath) {

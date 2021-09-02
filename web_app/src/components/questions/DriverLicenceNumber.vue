@@ -12,8 +12,9 @@
              :value="getAttributeValue(id)"
              @input="updateFormField">
         <div class="input-group-append" v-if="isLicenceJurisdictionBC">
-          <button :disabled="disabled" @click="populateDriversFromICBC(icbcPayload)"
-                  class="btn-sm btn-primary text-white">ICBC Lookup
+          <button :disabled="disabled" @click="triggerDriversLookup"
+                  class="btn-sm btn-primary text-white">Driver's Lookup
+            <b-spinner v-if="display_spinner" small label="Loading..."></b-spinner>
           </button>
         </div>
       </div>
@@ -30,6 +31,11 @@ import {mapGetters, mapMutations, mapActions} from 'vuex';
 export default {
   name: "DriversLicenceNumber",
   mixins: [FieldCommon],
+  data() {
+    return {
+      display_spinner: false
+    }
+  },
   computed: {
     icbcPayload() {
       return {
@@ -38,13 +44,23 @@ export default {
       }
     },
     ...mapGetters(['getCurrentlyEditedProhibitionIndex', "getAttributeValue", "isLicenceJurisdictionBC"]),
-    isNumberTheCorrectLength() {
-      return this.getAttributeValue(this.id) === 7
-    }
   },
   methods: {
     ...mapMutations(['updateFormField']),
     ...mapActions(['populateDriversFromICBC']),
+    triggerDriversLookup() {
+      console.log("inside triggerDriversLookup()")
+      this.display_spinner = true;
+      this.populateDriversFromICBC(this.icbcPayload)
+          .then( response => {
+            console.log('response', response)
+            this.display_spinner = false
+          })
+          .catch( error => {
+            console.log("error", error)
+            this.display_spinner = false
+          })
+    }
   }
 }
 </script>

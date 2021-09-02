@@ -30,7 +30,7 @@ import ImmediateRoadsideProhibition from "@/components/forms/ImmediateRoadsidePr
 import FeedbackWelcome from "@/components/FeedbackWelcome";
 import ProhibitionSearch from "@/components/ProhibitionSearch";
 import RecentProhibitions from "@/components/RecentProhibitions";
-import { mapGetters, mapMutations } from 'vuex';
+import {mapActions, mapGetters, mapMutations} from 'vuex';
 
 export default {
   name: 'App',
@@ -49,8 +49,20 @@ export default {
   },
 
   methods: {
+    ...mapActions(["fetchStaticLookupTables"]),
     ...mapMutations(["networkOffline","networkBackOnline"])
   },
+
+  mounted() {
+    this.fetchStaticLookupTables("impoundLotOperators")
+    this.fetchStaticLookupTables("countries")
+    this.fetchStaticLookupTables("jurisdictions")
+    this.fetchStaticLookupTables("provinces")
+    this.fetchStaticLookupTables("cities")
+    this.fetchStaticLookupTables("colors")
+    this.fetchStaticLookupTables("vehicles")
+    this.fetchStaticLookupTables("pickup_locations")
+  }
 
 }
 </script>

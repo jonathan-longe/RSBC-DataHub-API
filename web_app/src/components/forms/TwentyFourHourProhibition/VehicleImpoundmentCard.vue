@@ -21,12 +21,7 @@
       </form-row>
       <form-row>
         <type-ahead-field id="impound_lot_operator" fg_class="col-sm-12" :visible="showVehicleImpounded"
-                          :suggestions="['Busters Towing', 'Roadway Towing - Delta']">Impound Lot Operator</type-ahead-field>
-      </form-row>
-      <form-row>
-        <text-field id="ilo_address" :visible="showVehicleImpounded" fg_class="col-sm-4">Address</text-field>
-        <text-field id="ilo_city" :visible="showVehicleImpounded" fg_class="col-sm-4">City</text-field>
-        <text-field id="ilo_phone" :visible="showVehicleImpounded" fg_class="col-sm-4">Phone</text-field>
+                          :suggestions="getArrayOfImpoundLotOperators">Impound Lot Operator (name, lot address, city & phone)</type-ahead-field>
       </form-row>
     </div>
     <div v-if="isReadOnly">
@@ -36,16 +31,13 @@
       <read-only-element id="datetime_released">Datetime released</read-only-element>
       <read-only-element id="location_of_keys">Location of keys</read-only-element>
       <read-only-element id="impound_lot_operator">Impound lot operator</read-only-element>
-      <read-only-element id="ilo_address">ILO address</read-only-element>
-      <read-only-element id="ilo_city">ILO city</read-only-element>
-      <read-only-element id="ilo_phone">ILO phone number</read-only-element>
     </div>
   </form-card>
 </template>
 
 <script>
 
-import CardsCommon from "@/components/forms/TwentyFourHourProhibition/CardsCommon";
+import CardsCommon from "@/components/forms/CardsCommon";
 import { mapGetters } from 'vuex';
 
 
@@ -53,7 +45,7 @@ export default {
 name: "VehicleImpoundmentCard",
 mixins: [CardsCommon],
   computed: {
-    ...mapGetters(["getAttributeValue"]),
+    ...mapGetters(["getAttributeValue", "getArrayOfImpoundLotOperators"]),
     showVehicleImpounded() {
       return this.getAttributeValue('vehicle_impounded') === "Yes";
     },

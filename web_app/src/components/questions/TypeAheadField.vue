@@ -15,11 +15,8 @@ export default {
   name: "TypeAheadField",
   mixins: [FieldCommon],
   props: {
-    suggestions: null
-  },
-  data() {
-    return {
-      city: '',
+    suggestions: {
+      default: Array
     }
   },
   computed: {
@@ -27,7 +24,6 @@ export default {
   },
   methods: {
     typeAheadUpdate(e) {
-      console.log('inside TypeAheadField typeAheadUpdate(): ' + JSON.stringify(e))
       const payload = {target: {value: e, id: this.id }}
       this.$store.commit("updateFormField", payload)
     }

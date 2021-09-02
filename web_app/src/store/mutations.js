@@ -136,6 +136,10 @@ export default {
         Vue.set( root.data, "prohibition_number", payload.prohibition_number)
         state.currently_editing_prohibition_index = new_index;
         console.log("check edited_forms: " + JSON.stringify(state.edited_forms));
+    },
+
+    populateStaticLookupTables(state, payload) {
+        Vue.set(state, payload.type, payload.data)
     }
 }
 

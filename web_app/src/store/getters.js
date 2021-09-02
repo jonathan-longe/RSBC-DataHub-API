@@ -88,13 +88,39 @@ export default {
         return root[id].includes(value);
     },
 
-
     getArrayOfBCCityNames: state => {
-        return state.bc_city_names.city_names;
+        return state.cities;
     },
 
     getArrayOfCommonCarColors: state => {
-        return state.car_colors.car_colors;
+        return state.colors;
+    },
+
+    getArrayOfVehicleYears: state => {
+        return state.vehicles.map(v => v.year).filter(_onlyUnique);
+    },
+
+    getArrayOfVehicleMakes: state => {
+        let prohibition_index = state.currently_editing_prohibition_index
+        let year = state.edited_forms[prohibition_index].data.vehicle_year
+        let results = state.vehicles.filter(v => v.year === year);
+        if (results.length > 0) {
+            return results.map( v => v.make ).filter(_onlyUnique)
+        } else {
+            return []
+        }
+    },
+
+    getArrayOfVehicleModels: state => {
+        let prohibition_index = state.currently_editing_prohibition_index
+        let year = state.edited_forms[prohibition_index].data.vehicle_year
+        let make = state.edited_forms[prohibition_index].data.vehicle_make
+        let results = state.vehicles.filter( v => v.year === year && v.make === make);
+        if (results.length > 0) {
+            return results.map( v => v.model )
+        } else {
+            return []
+        }
     },
 
     isRecentProhibitions: state => {
@@ -135,20 +161,28 @@ export default {
         return state.edited_forms[prohibition_index].pdf_template;
     },
 
+    getArrayOfJurisdictions: state => {
+        return state.jurisdictions;
+    },
+
     getArrayOfProvinces: state => {
         return state.provinces;
+    },
+
+    getArrayOfImpoundLotOperators: state => {
+        return state.impoundLotOperators.map( o => o.name + " - " + o.lot_address + ", " + o.city + ", " + o.phone);
     },
 
     isPlateJurisdictionBC: state => {
         let prohibition_index = state.currently_editing_prohibition_index
         let root = state.edited_forms[prohibition_index].data;
-        return root['plate_province'] === "BC"
+        return root['plate_province'] === "British Columbia"
     },
 
     isLicenceJurisdictionBC: state => {
         let prohibition_index = state.currently_editing_prohibition_index
         let root = state.edited_forms[prohibition_index].data;
-        return root['drivers_licence_jurisdiction'] === "BC"
+        return root['drivers_licence_jurisdiction'] === "British Columbia"
     },
 
     driverIsNotRegisteredOwner: state => {
@@ -248,5 +282,9 @@ export default {
         return key_value_pairs;
     }
 
+}
+
+function _onlyUnique(value, index, self) {
+  return self.indexOf(value) === index;
 }
 

@@ -12,7 +12,10 @@
              :value="getAttributeValue(id)"
              @input="updateFormField">
         <div class="input-group-append" v-if="isPlateJurisdictionBC">
-          <button @click="populateFromICBCPlateLookup(icbcPayload)" class="btn-sm btn-primary">ICBC Lookup</button>
+          <button @click="triggerPlateLookup" class="btn-sm btn-primary">
+            ICBC Lookup
+            <b-spinner v-if="display_spinner" small label="Loading..."></b-spinner>
+          </button>
         </div>
         <div class="small text-danger">{{ errors[0] }}</div>
       </div>
@@ -28,6 +31,11 @@ import {mapGetters, mapMutations, mapActions} from "vuex";
 export default {
   name: "PlateNumber",
   mixins: [FieldCommon],
+  data() {
+    return {
+      display_spinner: false
+    }
+  },
   computed: {
     ...mapGetters(["getAttributeValue", "isPlateJurisdictionBC", "getCurrentlyEditedProhibitionIndex"]),
     icbcPayload() {
@@ -39,7 +47,20 @@ export default {
   },
   methods: {
     ...mapMutations(["updateFormField"]),
-    ...mapActions(["populateFromICBCPlateLookup"])
+    ...mapActions(["populateFromICBCPlateLookup"]),
+    triggerPlateLookup() {
+      console.log("inside triggerPlateLookup()")
+      this.display_spinner = true;
+      this.populateFromICBCPlateLookup(this.icbcPayload)
+          .then( response => {
+            console.log('response', response)
+            this.display_spinner = false
+          })
+          .catch( error => {
+            console.log("error", error)
+            this.display_spinner = false
+          })
+    }
   }
 }
 </script>

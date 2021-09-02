@@ -2,7 +2,7 @@
 <form-card title="Driver's Information">
   <div v-if="! isReadOnly">
     <form-row>
-      <province-field id="drivers_licence_jurisdiction" fg_class="col-sm-2">Jurisdiction</province-field>
+      <jurisdiction-field id="drivers_licence_jurisdiction" fg_class="col-sm-3">Jurisdiction</jurisdiction-field>
       <driver-licence-number id="drivers_number">Driver's Licence Number</driver-licence-number>
     </form-row>
     <form-row>
@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import CardsCommon from "@/components/forms/TwentyFourHourProhibition/CardsCommon";
+import CardsCommon from "@/components/forms/CardsCommon";
 export default {
   name: "DriversInformationCard",
   mixins: [CardsCommon],

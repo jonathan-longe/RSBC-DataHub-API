@@ -15,7 +15,7 @@
     <read-only-element id="nsc_number">NSC Number</read-only-element>
   </div>
   <form-row v-if="! isReadOnly">
-    <province-field id="plate_province" fg_class="col-sm-2">Jurisdiction</province-field>
+    <jurisdiction-field id="plate_province" fg_class="col-sm-3">Jurisdiction</jurisdiction-field>
     <plate-number id="plate_number" fg_class="col-sm-6">Plate Number</plate-number>
   </form-row>
   <form-row v-if="! isReadOnly">
@@ -24,10 +24,10 @@
     <text-field id="registration_number" fg_class="col-sm-4">Registration Number</text-field>
   </form-row>
   <form-row v-if="! isReadOnly">
-    <text-field id="vehicle_year" fg_class="col-sm-3">Vehicle Year</text-field>
-    <text-field id="vehicle_make" input_type="number" fg_class="col-sm-3">Vehicle Make</text-field>
-    <text-field id="vehicle_model" fg_class="col-sm-3">Vehicle Model</text-field>
-    <text-field id="vehicle_color" fg_class="col-sm-3">Vehicle Colour</text-field>
+    <type-ahead-field :suggestions="getArrayOfVehicleYears" id="vehicle_year" fg_class="col-sm-3">Vehicle Year</type-ahead-field>
+    <type-ahead-field :suggestions="getArrayOfVehicleMakes" id="vehicle_make" input_type="number" fg_class="col-sm-3">Vehicle Make</type-ahead-field>
+    <type-ahead-field :suggestions="getArrayOfVehicleModels" id="vehicle_model" fg_class="col-sm-3">Vehicle Model</type-ahead-field>
+    <type-ahead-field :suggestions="getArrayOfCommonCarColors" id="vehicle_color" fg_class="col-sm-3">Vehicle Colour</type-ahead-field>
   </form-row>
   <form-row v-if="! isReadOnly">
     <text-field id="vin_number" fg_class="col-sm-12">VIN Number</text-field>
@@ -42,11 +42,16 @@
 
 <script>
 
-import CardsCommon from "@/components/forms/TwentyFourHourProhibition/CardsCommon";
+import CardsCommon from "@/components/forms/CardsCommon";
+import {mapGetters} from "vuex";
 
 export default {
   name: "VehicleInformationCard",
-  mixins: [CardsCommon]
+  mixins: [CardsCommon],
+  computed: {
+    ...mapGetters(["getArrayOfCommonCarColors", "getArrayOfVehicleYears",
+      "getArrayOfVehicleMakes", "getArrayOfVehicleModels"])
+  }
 }
 </script>
 

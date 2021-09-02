@@ -9,8 +9,7 @@
           <radio-field id="return_of_licence" fg_class="col-sm-12" :options='["By mail", "Pickup in person"]'>How will licence be returned?</radio-field>
         </form-row>
         <form-row v-if="licencePickupInPerson && isLicenceSurrendered">
-          <text-field id="pickup_address" fg_class="col-sm-6">Pickup Address</text-field>
-          <type-ahead-field id="pickup_city" fg_class="col-sm-4" :suggestions="getArrayOfBCCityNames" rules="required">Pickup City</type-ahead-field>
+          <type-ahead-field id="pickup_address" :suggestions="[]" fg_class="col-sm-6">Pickup Address and City</type-ahead-field>
         </form-row>
       </form-card>
     </div>
@@ -28,7 +27,7 @@
 </template>
 
 <script>
-import CardsCommon from "@/components/forms/TwentyFourHourProhibition/CardsCommon";
+import CardsCommon from "@/components/forms/CardsCommon";
 
 export default {
   name: "ReturnOfLicenceCard",

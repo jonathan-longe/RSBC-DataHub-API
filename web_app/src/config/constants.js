@@ -13,5 +13,5 @@ export default {
     UNIQUE_ID_REFRESH_DAYS: 15,
 
     // The minimum number of unique ids per type to have in storage before requesting more.
-    MINIMUM_NUMBER_OF_UNIQUE_IDS_PER_TYPE: 8
+    MINIMUM_NUMBER_OF_UNIQUE_IDS_PER_TYPE: 1
 }

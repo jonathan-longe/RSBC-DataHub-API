@@ -8,8 +8,6 @@ import "@/config/custom_stylesheet.scss";
 import getters from "@/store/getters.js"
 import mutations from "@/store/mutations";
 import actions from "@/store/actions";
-import bc_city_names from "@/config/cities.json";
-import car_colors from "@/config/car_colors.json"
 import './registerServiceWorker'
 import {version} from "../package"
 
@@ -29,10 +27,7 @@ Vue.config.productionTip = false
 const store = new Vuex.Store({
   state: {
     version: version,
-    provinces: ["BC", "AB"],
     isOnline: null,
-    bc_city_names: bc_city_names,
-    car_colors: car_colors,
     edited_forms: Array(),
     currently_editing_prohibition_index: null,
     form_schemas: {
@@ -62,7 +57,14 @@ const store = new Vuex.Store({
         }
       }
     },
-    unique_ids: {}
+    unique_ids: {},
+    impoundLotOperators: [],
+    provinces: [],
+    jurisdictions: [],
+    countries: [],
+    cities: [],
+    colors: [],
+    vehicles: []
   },
   mutations: mutations,
   getters: getters,
@@ -72,8 +74,8 @@ const store = new Vuex.Store({
 new Vue({
   store: store,
   beforeCreate() {
-    this.$store.dispatch("retrieveAndSaveUniqueIds")
-    this.$store.commit("retrieveFormsFromLocalStorage");
+    store.dispatch("retrieveAndSaveUniqueIds")
+    store.commit("retrieveFormsFromLocalStorage");
   },
   render: h => h(App),
 }).$mount('#app')

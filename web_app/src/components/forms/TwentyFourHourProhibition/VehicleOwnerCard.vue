@@ -56,7 +56,7 @@
 
 <script>
 import {mapGetters, mapMutations} from "vuex";
-import CardsCommon from "@/components/forms/TwentyFourHourProhibition/CardsCommon";
+import CardsCommon from "@/components/forms/CardsCommon";
 
 export default {
   name: "VehicleOwnerCard",

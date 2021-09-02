@@ -118,6 +118,19 @@ def get_vehicle_make_model():
         return response
 
 
+@bp.route('/configuration/pickup_locations', methods=['GET'])
+def get_pickup_locations():
+    """
+    This returns a list of addresses where drivers can pickup their driver's license.
+    TODO - replace json static file with call to database
+    """
+    if request.method == 'GET':
+        data = helper.load_json_into_dict('python/prohibition_web_service/data/pickup_locations.json')
+        response = make_response(data, 200)
+        response.headers.add('Access-Control-Allow-Origin', Config.ACCESS_CONTROL_ALLOW_ORIGIN)
+        return response
+
+
 @bp.route('/drivers/<string:dl_number>', methods=['GET'])
 def get_driver(dl_number):
     if request.method == 'GET':

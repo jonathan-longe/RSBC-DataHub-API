@@ -82,3 +82,13 @@ def test_get_vehicles(as_guest):
     assert "ACE ROADSTER" == resp.json[0]['model']
     assert "1961" == resp.json[0]['year']
     assert resp.headers['Access-Control-Allow-Origin'] == Config.ACCESS_CONTROL_ALLOW_ORIGIN
+
+
+def test_get_pickup_locations(as_guest):
+    resp = as_guest.get("/api/v1/configuration/pickup_locations",
+                        follow_redirects=True,
+                        content_type="application/json")
+    assert resp.status_code == 200
+    assert "2120 Cambie St." == resp.json[0]['address']
+    assert "Vancouver" == resp.json[0]['city']
+    assert resp.headers['Access-Control-Allow-Origin'] == Config.ACCESS_CONTROL_ALLOW_ORIGIN

@@ -146,6 +146,10 @@ export default {
         return "Not Served"
     },
 
+    getRoadSafetyEmailAddress: state => {
+        return state.ROADSAFETY_EMAIL;
+    },
+
     getXdfFileNameString: state => {
         let prohibition_index = state.currently_editing_prohibition_index
         let file_extension = ".xfdf"
@@ -171,6 +175,10 @@ export default {
 
     getArrayOfImpoundLotOperators: state => {
         return state.impoundLotOperators.map( o => o.name + " - " + o.lot_address + ", " + o.city + ", " + o.phone);
+    },
+
+    getArrayOfPickupLocations: state => {
+        return state.pickup_locations.map( o => o.address + ", " + o.city);
     },
 
     isPlateJurisdictionBC: state => {

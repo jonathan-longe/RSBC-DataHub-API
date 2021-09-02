@@ -57,7 +57,7 @@ import { mapMutations, mapGetters, mapActions } from 'vuex';
 import VehicleInformationCard from "@/components/forms/TwentyFourHourProhibition/VehicleInformationCard";
 import VehicleImpoundmentCard from "@/components/forms/TwentyFourHourProhibition/VehicleImpoundmentCard";
 import DriversInformationCard from "@/components/forms/TwentyFourHourProhibition/DriversInformationCard";
-import ReturnOfLicenceCard from "@/components/forms/TwentyFourHourProhibition/ReturnOfLicenceCard";
+import ReturnOfLicenceCard from "@/components/forms/ReturnOfLicenceCard";
 import ProhibitionInformationCard from "@/components/forms/TwentyFourHourProhibition/ProhibitionInformationCard";
 import ReasonableGroundsCard from "@/components/forms/TwentyFourHourProhibition/ReasonableGroundsCard";
 import TestAdministeredAlcoholCard from "@/components/forms/TwentyFourHourProhibition/TestAdministeredAlcoholCard";

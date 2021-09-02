@@ -3,8 +3,8 @@
   <validation-provider :rules="rules" :name="id" v-slot="{ errors, required }">
     <label class="small" :for="id"><slot></slot>
       <span v-if="! required" class="text-muted"> (optional)</span>
-      <span class="text-muted" v-if="isValidDate"> ({{ timeAgoString }})</span>
-      <span class="text-danger"> </span>
+      <span class="text-muted" v-if="displayTimeAgoString"> ({{ timeAgoString }})</span>
+      <span v-if="displayNotValidWarning" class="text-danger"> (date and/or time not valid)</span>
     </label>
     <div class="col-xs-10">
       <div class="input-group mb-3">
@@ -85,7 +85,23 @@ export default {
       return this.getAttributeValue(this.id).split(' ')[0];
     },
     timeSegment() {
-      return this.getAttributeValue(this.id).split(' ')[1];
+      let timeArray = this.getAttributeValue(this.id).split(' ');
+      if (timeArray.length > 1) {
+        return timeArray[1]
+      } else {
+        return ''
+      }
+    },
+    displayNotValidWarning() {
+      let dateTimeArray = this.getAttributeValue(this.id).split(' ');
+      if (this.getAttributeValue(this.id).length === 0) {
+        return false;
+      } else {
+        return ! (dateTimeArray[0].length === 8 && dateTimeArray[1].length === 4)
+      }
+    },
+    displayTimeAgoString() {
+      return this.isValidDate && ! this.displayNotValidWarning;
     }
   }
 

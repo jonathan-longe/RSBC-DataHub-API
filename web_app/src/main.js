@@ -9,7 +9,7 @@ import getters from "@/store/getters.js"
 import mutations from "@/store/mutations";
 import actions from "@/store/actions";
 import './registerServiceWorker'
-import {version} from "../package"
+import {version} from "../package";
 
 Vue.use(Vuex)
 
@@ -64,7 +64,9 @@ const store = new Vuex.Store({
     countries: [],
     cities: [],
     colors: [],
-    vehicles: []
+    vehicles: [],
+    pickup_locations: [],
+    ROADSAFETY_EMAIL: '[to_be_determined@gov.bc.ca]'
   },
   mutations: mutations,
   getters: getters,

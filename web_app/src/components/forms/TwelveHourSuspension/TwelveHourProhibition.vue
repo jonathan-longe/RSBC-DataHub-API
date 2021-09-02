@@ -39,7 +39,7 @@
 import {mapGetters, mapMutations} from "vuex";
 import FormsCommon from "@/components/forms/FormsCommon";
 import DriversInformationCard from "@/components/forms/TwelveHourSuspension/DriversInformationCard";
-import ReturnOfLicenceCard from "@/components/forms/TwelveHourSuspension/ReturnOfLicenceCard";
+import ReturnOfLicenceCard from "@/components/forms/ReturnOfLicenceCard";
 import OfficerDetailsCard from "@/components/forms/TwelveHourSuspension/OfficerDetailsCard";
 import VehicleInformationCard from "@/components/forms/TwelveHourSuspension/VehicleInformationCard";
 import ProhibitionInformationCard from "@/components/forms/TwelveHourSuspension/ProhibitionInformationCard";

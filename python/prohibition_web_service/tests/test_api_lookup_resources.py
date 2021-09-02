@@ -59,8 +59,8 @@ def test_get_cities(as_guest):
                         follow_redirects=True,
                         content_type="application/json")
     assert resp.status_code == 200
-    assert "Victoria" in resp.json['bc_cities']
-    assert "100 Mile House" in resp.json['bc_cities']
+    assert "Victoria" in resp.json
+    assert "100 Mile House" in resp.json
     assert resp.headers['Access-Control-Allow-Origin'] == Config.ACCESS_CONTROL_ALLOW_ORIGIN
 
 
@@ -69,7 +69,7 @@ def test_get_car_colors(as_guest):
                         follow_redirects=True,
                         content_type="application/json")
     assert resp.status_code == 200
-    assert "Yellow" in resp.json['car_colors']
+    assert "Yellow" in resp.json
     assert resp.headers['Access-Control-Allow-Origin'] == Config.ACCESS_CONTROL_ALLOW_ORIGIN
 
 

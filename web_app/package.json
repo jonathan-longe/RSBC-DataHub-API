@@ -1,6 +1,6 @@
 {
   "name": "prohibition_web_app",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",

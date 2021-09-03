@@ -1,30 +1,23 @@
-/**
- * Welcome to your Workbox-powered service worker!
- *
- * You'll need to register this file in your web app and you should
- * disable HTTP caching for this file too.
- * See https://goo.gl/nhQhGp
- *
- * The rest of the code is auto-generated. Please don't update this file
- * directly; instead, make changes to your Workbox build configuration
- * and re-run your build process.
- * See https://goo.gl/2aRDsh
- */
+importScripts("/precache-manifest.c5a8485a399704313d54a0ba28bbf2e1.js", "https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
-importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
-
-importScripts(
-  "/precache-manifest.4765e73f18c2ad79ea4c7b16fbe6363d.js"
-);
-
-workbox.core.setCacheNameDetails({prefix: "prohibition_web_app"});
-
-workbox.core.skipWaiting();
-
-/**
- * The workboxSW.precacheAndRoute() method efficiently caches and responds to
- * requests for URLs in the manifest.
- * See https://goo.gl/S9QRab
- */
 self.__precacheManifest = [].concat(self.__precacheManifest || []);
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
+
+self.addEventListener("message", msg => {
+    if (msg.data.action === 'SKIP_WAITING') self.skipWaiting();
+})
+
+const CACHE_NAME = 'roadsafety-digital-forms';
+
+self.addEventListener('fetch',event=> {
+    console.log('caching: ' + event.request.url )
+    event.respondWith(
+      caches.open(CACHE_NAME).then(function(cache) {
+        return fetch(event.request).then(function(response) {
+          cache.put(event.request, response.clone());
+          return response;
+        });
+      })
+    );
+});
+

@@ -63,7 +63,6 @@ export default {
     this.fetchStaticLookupTables("vehicles")
     this.fetchStaticLookupTables("pickup_locations")
   }
-
 }
 </script>
 

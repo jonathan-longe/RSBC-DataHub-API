@@ -47,11 +47,11 @@ export default {
   },
   methods: {
     ...mapMutations(['updateFormField']),
-    ...mapActions(['populateDriversFromICBC']),
+    ...mapActions(['lookupDriverFromICBC']),
     triggerDriversLookup() {
       console.log("inside triggerDriversLookup()")
       this.display_spinner = true;
-      this.populateDriversFromICBC(this.icbcPayload)
+      this.lookupDriverFromICBC(this.icbcPayload)
           .then( response => {
             console.log('response', response)
             this.display_spinner = false

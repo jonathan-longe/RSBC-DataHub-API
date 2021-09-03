@@ -193,15 +193,6 @@ export default {
         return root['drivers_licence_jurisdiction'] === "British Columbia"
     },
 
-    driverIsNotRegisteredOwner: state => {
-        let prohibition_index = state.currently_editing_prohibition_index
-        let root = state.edited_forms[prohibition_index].data;
-        if( ! root['owner_is_driver']) {
-            return false;
-        }
-        return ! root['owner_is_driver'].includes("Driver is the vehicle owner")
-    },
-
     corporateOwner: state => {
         let prohibition_index = state.currently_editing_prohibition_index
         let root = state.edited_forms[prohibition_index].data;
@@ -258,7 +249,6 @@ export default {
                 return maximum_days_old
             }
         }
-
     },
 
     getNextAvailableUniqueIdByType: state => prohibition_type => {

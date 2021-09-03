@@ -81,7 +81,7 @@ export default {
     OfficerDetailsCard}, VehicleOwnerCard,
   mixins: [FormsCommon],
   computed: {
-    ...mapGetters(["getAttributeValue", "isPlateJurisdictionBC", "driverIsNotRegisteredOwner",
+    ...mapGetters(["getAttributeValue", "isPlateJurisdictionBC",
       "corporateOwner", "getXdfFileNameString", "getPDFTemplateFileName", "getXFDF", "getCurrentFormData"]),
     isProhibitionTypeDrugs() {
       return this.getAttributeValue('prohibition_type') === "Drugs 215(3)";

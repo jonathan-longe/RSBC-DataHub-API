@@ -1,5 +1,4 @@
 import constants from "@/config/constants";
-import Vue from "vue";
 
 export default {
     initializeStore (context) {
@@ -65,9 +64,8 @@ export default {
         commit("saveUniqueIdsToLocalStorage")
     },
 
-    async populateDriversFromICBC({state}, icbcPayload) {
-        console.log("inside actions.js populateDriversFromICBC(): " + icbcPayload)
-        let prohibition_index = icbcPayload['formIndex']
+    async lookupDriverFromICBC({commit}, icbcPayload) {
+        console.log("inside actions.js lookupDriverFromICBC(): " + icbcPayload)
         let dlNumber = icbcPayload['dlNumber']
         const url = constants.URL_ROOT + "/api/v1/drivers/" + dlNumber
         return await fetch(url, {
@@ -75,25 +73,17 @@ export default {
         })
             .then(response => response.json())
             .then(data => {
-                const address = data['party']['addresses'][0]
-                Vue.set(state.edited_forms[prohibition_index].data, "drivers_number", data['dlNumber']);
-                Vue.set(state.edited_forms[prohibition_index].data, "last_name", data['party']['lastName']);
-                Vue.set(state.edited_forms[prohibition_index].data, "first_name", data['party']['firstName']);
-                Vue.set(state.edited_forms[prohibition_index].data, "address1", address['addressLine1']);
-                Vue.set(state.edited_forms[prohibition_index].data, "city", address['city']);
-                Vue.set(state.edited_forms[prohibition_index].data, "province", address['region']);
-                Vue.set(state.edited_forms[prohibition_index].data, "postal", address['postalCode']);
-                Vue.set(state.edited_forms[prohibition_index].data, "dob", data['birthDate']);
+                console.log("data", data)
+                commit("populateDriverFromICBC", data )
             })
             .catch(function (error) {
                 console.log(error)
             });
     },
 
-    async populateFromICBCPlateLookup({state}, icbcPayload) {
+    async lookupPlateFromICBC({commit}, icbcPayload) {
         console.log("inside actions.js populateFromICBCPlateLookup(): ")
         console.log("icbcPayload", icbcPayload)
-        let prohibition_index = icbcPayload['formIndex']
         let plate_number = icbcPayload['plateNumber']
         const url = constants.URL_ROOT + "/api/v1/vehicles/" + plate_number
         return await fetch(url, {
@@ -102,24 +92,7 @@ export default {
             .then(response => response.json())
             .then(data => {
                 console.log("data", data)
-                Vue.set(state.edited_forms[prohibition_index].data, "registration_number", data['registrationNumber']);
-                Vue.set(state.edited_forms[prohibition_index].data, "vehicle_year", data['vehicleModelYear']);
-                Vue.set(state.edited_forms[prohibition_index].data, "vehicle_make", data['vehicleMake']);
-                Vue.set(state.edited_forms[prohibition_index].data, "vehicle_model", data['vehicleModel']);
-                Vue.set(state.edited_forms[prohibition_index].data, "vehicle_color", data['vehicleColour']);
-                Vue.set(state.edited_forms[prohibition_index].data, "vin_number", data['vehicleIdNumber']);
-
-                const owner = data['vehicleParties'][0]['party']
-                const address = owner['addresses'][0]
-
-                Vue.set(state.edited_forms[prohibition_index].data, "owner_is_driver", []);
-                Vue.set(state.edited_forms[prohibition_index].data, "owners_last_name", owner['lastName']);
-                Vue.set(state.edited_forms[prohibition_index].data, "owners_first_name", owner['firstName']);
-                Vue.set(state.edited_forms[prohibition_index].data, "owners_address1", address['addressLine1']);
-                Vue.set(state.edited_forms[prohibition_index].data, "owners_city", address['city']);
-                Vue.set(state.edited_forms[prohibition_index].data, "owners_province", address['region']);
-                Vue.set(state.edited_forms[prohibition_index].data, "owners_postal", address['postalCode']);
-
+                commit("populateVehicleFromICBC", data)
             })
             .catch(function (error) {
                 console.log("catch inside populateFromIcbcPlateLookup()")
@@ -127,7 +100,7 @@ export default {
             });
     },
 
-    fetchStaticLookupTables({commit}, type) {
+    fetchDynamicLookupTables({commit}, type) {
         const url = constants.URL_ROOT + "/api/v1/configuration/" + type
         let networkDataRetrieved = false
 
@@ -152,11 +125,36 @@ export default {
         }).then ( data => {
             // don't overwrite newer network data
             if(!networkDataRetrieved) {
+                commit("populateStaticLookupTables", { "type": type, "data": data })
                 return data;
             }
         }).catch( function() {
             // we didn't get cached data, the API is our last hope
             return networkUpdate;
+        })
+    },
+
+    fetchStaticLookupTables({commit}, type) {
+        const url = constants.URL_ROOT + "/api/v1/configuration/" + type
+
+        caches.match(url).then( response => {
+            if (!response) throw Error("No cached data");
+            return response.json();
+        }).then ( data => {
+            commit("populateStaticLookupTables", { "type": type, "data": data })
+        }).catch( function() {
+            // we didn't get cached data, the API is our last hope
+            return fetch(url, {
+            "method": 'GET',
+        }).then( response => {
+                return response.json()
+            })
+            .then( data => {
+                commit("populateStaticLookupTables", { "type": type, "data": data })
+            })
+            .catch(function (error) {
+                console.log('network request failed', error)
+            });
         })
     }
 }

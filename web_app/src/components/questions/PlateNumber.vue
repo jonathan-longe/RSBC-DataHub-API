@@ -47,11 +47,11 @@ export default {
   },
   methods: {
     ...mapMutations(["updateFormField"]),
-    ...mapActions(["populateFromICBCPlateLookup"]),
+    ...mapActions(["lookupPlateFromICBC"]),
     triggerPlateLookup() {
       console.log("inside triggerPlateLookup()")
       this.display_spinner = true;
-      this.populateFromICBCPlateLookup(this.icbcPayload)
+      this.lookupPlateFromICBC(this.icbcPayload)
           .then( response => {
             console.log('response', response)
             this.display_spinner = false

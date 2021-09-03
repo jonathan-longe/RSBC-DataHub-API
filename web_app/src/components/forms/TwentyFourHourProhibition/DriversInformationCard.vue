@@ -44,7 +44,3 @@ export default {
   mixins: [CardsCommon],
 }
 </script>
-
-<style scoped>
-
-</style>

@@ -132,7 +132,6 @@ export default {
         Vue.set( root.data, "current_step", 1);
         Vue.set( root.data, "served", false);
         Vue.set( root.data, "submitted", false);
-        Vue.set( root.data, "owner_is_driver", ["Driver is the vehicle owner"])
         Vue.set( root.data, "prohibition_number", payload.prohibition_number)
         state.currently_editing_prohibition_index = new_index;
         console.log("check edited_forms: " + JSON.stringify(state.edited_forms));
@@ -140,6 +139,51 @@ export default {
 
     populateStaticLookupTables(state, payload) {
         Vue.set(state, payload.type, payload.data)
+    },
+
+    populateDriverFromICBC(state, data) {
+        let prohibition_index = state.currently_editing_prohibition_index
+        const address = data['party']['addresses'][0]
+        Vue.set(state.edited_forms[prohibition_index].data, "drivers_number", data['dlNumber']);
+        Vue.set(state.edited_forms[prohibition_index].data, "last_name", data['party']['lastName']);
+        Vue.set(state.edited_forms[prohibition_index].data, "first_name", data['party']['firstName']);
+        Vue.set(state.edited_forms[prohibition_index].data, "address1", address['addressLine1']);
+        Vue.set(state.edited_forms[prohibition_index].data, "city", address['city']);
+        Vue.set(state.edited_forms[prohibition_index].data, "province", address['region']);
+        Vue.set(state.edited_forms[prohibition_index].data, "postal", address['postalCode']);
+        Vue.set(state.edited_forms[prohibition_index].data, "dob", data['birthDate']);
+    },
+
+    populateVehicleFromICBC(state, data) {
+        let prohibition_index = state.currently_editing_prohibition_index
+        Vue.set(state.edited_forms[prohibition_index].data, "registration_number", data['registrationNumber']);
+        Vue.set(state.edited_forms[prohibition_index].data, "vehicle_year", data['vehicleModelYear']);
+        Vue.set(state.edited_forms[prohibition_index].data, "vehicle_make", data['vehicleMake']);
+        Vue.set(state.edited_forms[prohibition_index].data, "vehicle_model", data['vehicleModel']);
+        Vue.set(state.edited_forms[prohibition_index].data, "vehicle_color", data['vehicleColour']);
+        Vue.set(state.edited_forms[prohibition_index].data, "vin_number", data['vehicleIdNumber']);
+
+        const owner = data['vehicleParties'][0]['party']
+        const address = owner['addresses'][0]
+
+        Vue.set(state.edited_forms[prohibition_index].data, "owner_is_driver", []);
+        Vue.set(state.edited_forms[prohibition_index].data, "owners_last_name", owner['lastName']);
+        Vue.set(state.edited_forms[prohibition_index].data, "owners_first_name", owner['firstName']);
+        Vue.set(state.edited_forms[prohibition_index].data, "owners_address1", address['addressLine1']);
+        Vue.set(state.edited_forms[prohibition_index].data, "owners_city", address['city']);
+        Vue.set(state.edited_forms[prohibition_index].data, "owners_province", address['region']);
+        Vue.set(state.edited_forms[prohibition_index].data, "owners_postal", address['postalCode']);
+    },
+
+    populateOwnerFromDriver(state) {
+        let prohibition_index = state.currently_editing_prohibition_index
+        let root = state.edited_forms[prohibition_index].data
+        Vue.set(state.edited_forms[prohibition_index].data, "owners_last_name", root.last_name);
+        Vue.set(state.edited_forms[prohibition_index].data, "owners_first_name", root.first_name);
+        Vue.set(state.edited_forms[prohibition_index].data, "owners_address1", root.address1);
+        Vue.set(state.edited_forms[prohibition_index].data, "owners_city", root.city);
+        Vue.set(state.edited_forms[prohibition_index].data, "owners_province", root.province);
+        Vue.set(state.edited_forms[prohibition_index].data, "owners_postal", root.postal);
     }
 }
 

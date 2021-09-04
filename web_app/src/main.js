@@ -77,7 +77,7 @@ new Vue({
   store: store,
   beforeCreate() {
     store.dispatch("retrieveAndSaveUniqueIds")
-    store.commit("retrieveFormsFromLocalStorage");
+    store.dispatch("initializeStore");
   },
   render: h => h(App),
 }).$mount('#app')

@@ -269,14 +269,11 @@ export default {
 
     getKeyValuePairs: state => {
         let prohibition_index = state.currently_editing_prohibition_index
-        console.log("getKeyValuePairs(): ", prohibition_index)
         let form_data = state.edited_forms[prohibition_index].data;
-        console.log("getFormKeyValuePairs()", form_data)
         let key_value_pairs = Array();
         for( let object in form_data) {
             key_value_pairs[object] = form_data[object];
         }
-        console.log('getKeyValuePairs()', key_value_pairs)
         return key_value_pairs;
     }
 

@@ -25,10 +25,10 @@ import {mapMutations} from 'vuex';
 export default {
   name: "PrintConfirmationModal",
   methods: {
-      ...mapMutations(["stopEditingCurrentForm", "markFormStatusAsServed", "saveFormsToLocalStorage"]),
+      ...mapMutations(["stopEditingCurrentForm", "markFormStatusAsServed"]),
       confirmServedToDriver() {
         this.markFormStatusAsServed()
-        this.saveFormsToLocalStorage()
+        this.$store.dispatch("saveCurrentFormToDB")
         this.$bvModal.hide('printConfirmationModal')
         this.$bvModal.show('SupplementaryModal')
       },

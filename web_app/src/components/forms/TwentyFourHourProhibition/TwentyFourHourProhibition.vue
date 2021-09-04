@@ -95,7 +95,7 @@ export default {
   },
   methods: {
     ...mapActions(["saveDoNotPrint", "deleteSpecificForm", "fetchStaticLookupTables"]),
-    ...mapMutations(["saveFormsToLocalStorage", "stopEditingCurrentForm"]),
+    ...mapMutations(["stopEditingCurrentForm"]),
 
     saveAndPrint(pdf_template_filepath) {
       console.log("inside saveAndPrint() " + pdf_template_filepath)
@@ -109,7 +109,7 @@ export default {
       downloadElement.click(); //click to file
       document.body.removeChild(downloadElement); //remove the element
       window.URL.revokeObjectURL(href); //release the object  of the blob
-      this.saveFormsToLocalStorage();
+      this.$store.dispatch("saveCurrentFormToDB")
       this.$bvModal.show('printConfirmationModal')
     }
   }

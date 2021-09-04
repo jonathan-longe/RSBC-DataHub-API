@@ -1,21 +1,22 @@
 import constants from "@/config/constants";
+import persistence from "@/helpers/persistence";
 
 export default {
     initializeStore (context) {
-        console.log("inside actions.js initializeStore()")
-        context.commit('retrieveFormsFromLocalStorage')
+        console.log("inside actions.js initializeStore()", context)
+        context.dispatch('getFormsFromDB')
     },
 
     saveDoNotPrint (context) {
         console.log("inside actions.js saveDoNotPrint()");
         context.commit('stopEditingCurrentForm');
-        context.commit('saveFormsToLocalStorage');
+        context.dispatch('saveCurrentFormToDB');
     },
 
-    deleteSpecificForm({ commit }, prohibition_index) {
-        commit('deleteForm', prohibition_index)
-        commit('saveFormsToLocalStorage');
-        commit('stopEditingCurrentForm');
+    deleteSpecificForm({ context }, prohibition ) {
+        context.dispatch('deleteFormFromDB', prohibition)
+        context.dispatch('saveCurrentFormToDB');
+        context.commit('stopEditingCurrentForm');
     },
 
     pluckNextUniqueIdFromListByType ({commit, getters}, prohibition_type) {
@@ -156,5 +157,29 @@ export default {
                 console.log('network request failed', error)
             });
         })
-    }
+    },
+
+    async deleteFormFromDB(context, form) {
+        await persistence.deleteForm(form);
+    },
+
+    async getFormsFromDB(context) {
+        context.state.edited_forms = [];
+        let forms = await persistence.getForms();
+        forms.forEach( form => {
+            context.state.edited_forms.push(form);
+        });
+    },
+
+    async saveCurrentFormToDB(context) {
+        let indx = context.state.currently_editing_prohibition_index;
+        let form = context.state.edited_forms[indx];
+        await persistence.deleteForm(form);
+        await persistence.saveForm(form);
+    },
+
+
+
+
+
 }

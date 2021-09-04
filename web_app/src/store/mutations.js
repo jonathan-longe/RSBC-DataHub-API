@@ -42,24 +42,6 @@ export default {
         }
     },
 
-    saveFormsToLocalStorage (state) {
-         console.log("inside mutations.js saveFormsToLocalStorage()");
-         localStorage.setItem("digitalProhibitions", JSON.stringify(state.edited_forms) );
-    },
-
-    retrieveFormsFromLocalStorage (state) {
-        let digitalProhibitions = localStorage.getItem("digitalProhibitions");
-        if (digitalProhibitions) {
-            let local_data = JSON.parse(digitalProhibitions);
-            console.log("localStorage.digitalProhibitions does exists");
-            local_data.forEach( form => {
-                state.edited_forms.push(form);
-            })
-        } else {
-            console.log("localStorage.digitalProhibitions does not exist")
-        }
-    },
-
     saveUniqueIdsToLocalStorage (state) {
          console.log("inside mutations.js saveUniqueIdsToLocalStorage()");
          localStorage.setItem("uniqueIds", JSON.stringify(state.unique_ids) );

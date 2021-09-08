@@ -3,38 +3,46 @@ from datetime import datetime, timedelta
 import logging
 from flask_sqlalchemy import SQLAlchemy
 from python.prohibition_web_service.config import Config
-from python.prohibition_web_service.blueprints import misc_routes, prohibition_leases, prohibitions
+from python.prohibition_web_service.blueprints import impound_lot_operators, jurisdictions, forms
+from python.prohibition_web_service.blueprints import provinces, countries, cities, colors, vehicles, icbc
 
 
 application = FlaskAPI(__name__)
 application.config['SECRET_KEY'] = Config.FLASK_SECRET_KEY
 application.config['SQLALCHEMY_DATABASE_URI'] = Config.DATABASE_URI
 application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-application.register_blueprint(misc_routes.bp)
-application.register_blueprint(prohibition_leases.bp)
-application.register_blueprint(prohibitions.bp)
+application.register_blueprint(forms.bp)
+application.register_blueprint(impound_lot_operators.bp)
+application.register_blueprint(provinces.bp)
+application.register_blueprint(jurisdictions.bp)
+application.register_blueprint(countries.bp)
+application.register_blueprint(cities.bp)
+application.register_blueprint(colors.bp)
+application.register_blueprint(vehicles.bp)
+application.register_blueprint(icbc.bp)
+
 
 db = SQLAlchemy(application)
 
 
-class ProhibitionIdLease(db.Model):
+class Form(db.Model):
     id = db.Column('id', db.String(20), primary_key=True)
-    prohibition_type = db.Column(db.String(20), nullable=False)
+    form_type = db.Column(db.String(20), nullable=False)
     lease_expiry = db.Column(db.Date, nullable=True)
-    served = db.Column(db.Boolean, default=False)
+    served_timestamp = db.Column(db.DateTime, nullable=True)
 
-    def __init__(self, prohibition_id, prohibition_type, lease_expiry, served):
-        self.id = prohibition_id
-        self.prohibition_type = prohibition_type
+    def __init__(self, form_id, form_type, lease_expiry, served_datetime):
+        self.id = form_id
+        self.prohibition_type = form_type
         self.lease_expiry = lease_expiry
-        self.served = served
+        self.served_timestamp = served_datetime
 
     def serialize(self):
         return {
             "id": self.id,
-            "prohibition_type": self.prohibition_type,
+            "form_type": self.form_type,
             "lease_expiry": self._format_lease_expiry(self.lease_expiry),
-            "served": self.served
+            "served_timestamp": self.served_timestamp
         }
 
     def lease(self):
@@ -75,14 +83,14 @@ def _seed_database_for_development(database):
     # TODO - Remove before flight
     seed_records = []
     prefix = ["J", "AA", "40"]
-    for idx, prohibition_type in enumerate(["12Hour", "24Hour", "IRP"]):
+    for idx, form_type in enumerate(["12Hour", "24Hour", "IRP"]):
         for x in range(100000, 100100):
             unique_id = '{}-{}'.format(prefix[idx], str(x))
-            seed_records.append(ProhibitionIdLease(
-                prohibition_id=unique_id,
-                prohibition_type=prohibition_type,
+            seed_records.append(Form(
+                form_id=unique_id,
+                form_type=form_type,
                 lease_expiry=None,
-                served=False))
+                served_datetime=None))
     database.session.bulk_save_objects(seed_records)
     database.session.commit()
     logging.warning("database seeded")

@@ -15,7 +15,7 @@
 
 
         <span v-if=" ! isFormEditable(prohibition_index)" class="text-muted text-secondary">
-          <b-icon-clock variant="primary" @click="deleteSpecificForm(prohibition)"></b-icon-clock>
+          <b-icon-clock variant="primary" @click="deleteSpecificForm(prohibition_index)"></b-icon-clock>
           <span class="small"> Sending ...</span>
         </span>
       </h6>

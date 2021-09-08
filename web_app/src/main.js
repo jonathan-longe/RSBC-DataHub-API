@@ -28,6 +28,7 @@ const store = new Vuex.Store({
   state: {
     version: version,
     isOnline: null,
+    forms: Array(),
     edited_forms: Array(),
     currently_editing_prohibition_index: null,
     form_schemas: {

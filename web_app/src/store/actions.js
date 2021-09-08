@@ -4,18 +4,17 @@ import persistence from "@/helpers/persistence";
 export default {
     initializeStore (context) {
         console.log("inside actions.js initializeStore()", context)
-        context.dispatch('getFormsFromDB')
+        // context.dispatch('getAllFormsFromDB')
     },
 
     saveDoNotPrint (context) {
         console.log("inside actions.js saveDoNotPrint()");
         context.commit('stopEditingCurrentForm');
-        context.dispatch('saveCurrentFormToDB');
+        context.dispatch('saveCurrentFormToDB', context.state.currently_editing_prohibition_index);
     },
 
-    deleteSpecificForm({ context }, prohibition ) {
-        context.dispatch('deleteFormFromDB', prohibition)
-        context.dispatch('saveCurrentFormToDB');
+    deleteSpecificForm({ context }, indx ) {
+        context.dispatch('deleteFormFromDB', indx)
         context.commit('stopEditingCurrentForm');
     },
 
@@ -40,29 +39,30 @@ export default {
 
     },
 
-    retrieveAndSaveUniqueIds ({commit, getters, state}) {
+    retrieveAndSaveUniqueIds (context) {
         console.log("inside retrieveAndSaveUniqueIds()")
-        commit("retrieveUniqueIdsFromLocalStorage")
-        for( let schema in state.form_schemas.forms) {
-            if (getters.areNewUniqueIdsRequiredByType(schema)) {
-                console.log("new UniqueIDs are required for " + schema)
+        context.commit("retrieveUniqueIdsFromLocalStorage")
+        for( let form_type in context.state.form_schemas.forms) {
+            if (context.getters.areNewUniqueIdsRequiredByType(form_type)) {
+                console.log("new UniqueIDs are required for " + form_type)
                 const url = constants.URL_ROOT + "/api/v1/prohibitions/leases/"
-                fetch(url + schema, {
+                fetch(url + form_type, {
                     "method": 'POST',
                 })
                     .then(response => response.json())
                     .then(data => {
-                        commit("updateUniqueIDs", {"schema": schema, "data": data})
+                        context.dispatch("saveUniqueIdsToDB", {"schema": form_type, "data": data})
+                        context.commit("updateUniqueIDs", {"schema": form_type, "data": data})
                     })
                     .catch(function (error) {
                         console.log(error)
                     });
 
             } else {
-                console.log("new UniqueIDs are NOT required", schema)
+                console.log("new UniqueIDs are NOT required", form_type)
             }
         }
-        commit("saveUniqueIdsToLocalStorage")
+        context.commit("saveUniqueIdsToLocalStorage")
     },
 
     async lookupDriverFromICBC({commit}, icbcPayload) {
@@ -159,24 +159,32 @@ export default {
         })
     },
 
-    async deleteFormFromDB(context, form) {
-        await persistence.deleteForm(form);
+    async deleteFormFromDB(context, indx) {
+        await persistence.del(indx);
     },
 
-    async getFormsFromDB(context) {
+    async getAllFormsFromDB(context) {
         context.state.edited_forms = [];
-        let forms = await persistence.getForms();
+
+        let forms = await persistence.all()
         forms.forEach( form => {
+            console.log(form)
             context.state.edited_forms.push(form);
         });
     },
 
-    async saveCurrentFormToDB(context) {
-        let indx = context.state.currently_editing_prohibition_index;
-        let form = context.state.edited_forms[indx];
-        await persistence.deleteForm(form);
-        await persistence.saveForm(form);
+    async saveCurrentFormToDB(context, indx) {
+        // await persistence.del(indx);
+        await persistence.set(context.state.edited_forms[indx]);
     },
+
+
+    async saveUniqueIdsToDB(context, payload) {
+        payload.data.forEach( row => {
+            persistence.updateOrCreate(row, row.id)
+        })
+
+    }
 
 
 

@@ -24,7 +24,7 @@ def test_get_driver(as_guest):
                   json=_sample_driver_response(),
                   status=200)
 
-    resp = as_guest.get("/api/v1/drivers/5120503",
+    resp = as_guest.get("/api/v1/icbc/drivers/5120503",
                         follow_redirects=True,
                         content_type="application/json")
     assert resp.status_code == 200
@@ -41,7 +41,7 @@ def test_get_vehicle(as_guest):
                   json=_sample_vehicle_response(),
                   status=200)
 
-    resp = as_guest.get("/api/v1/vehicles/LD626J",
+    resp = as_guest.get("/api/v1/icbc/vehicles/LD626J",
                         follow_redirects=True,
                         content_type="application/json")
     assert resp.status_code == 200

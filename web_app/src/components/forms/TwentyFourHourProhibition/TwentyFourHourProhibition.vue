@@ -94,7 +94,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["saveDoNotPrint", "deleteSpecificForm", "fetchStaticLookupTables"]),
+    ...mapActions(["saveDoNotPrint", "fetchStaticLookupTables"]),
     ...mapMutations(["stopEditingCurrentForm"]),
 
     saveAndPrint(pdf_template_filepath) {
@@ -109,7 +109,7 @@ export default {
       downloadElement.click(); //click to file
       document.body.removeChild(downloadElement); //remove the element
       window.URL.revokeObjectURL(href); //release the object  of the blob
-      this.$store.dispatch("saveCurrentFormToDB")
+      this.$store.dispatch("saveCurrentFormToDB", this.$store.state.currently_editing_prohibition_index)
       this.$bvModal.show('printConfirmationModal')
     }
   }

@@ -1,40 +1,45 @@
 from python.prohibition_web_service.config import Config
 import python.common.helper as helper
 from flask import request, make_response, Blueprint, jsonify
+from python.prohibition_web_service.blueprints.common import basic_auth_required
 import logging.config
 import json
 from functools import wraps
 
 
 logging.config.dictConfig(Config.LOGGING)
-logging.warning('*** blueprint - prohibitions loaded ***')
+logging.warning('*** forms blueprint loaded ***')
 
-bp = Blueprint('prohibitions', __name__, url_prefix='/api/v1/prohibitions')
-
-
-def basic_auth_required(f):
-    """
-    Decorator that implements basic auth when added to a route
-    """
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        auth = request.authorization
-        if not auth or not helper.check_credentials(
-                Config.ADMIN_USERNAME, Config.ADMIN_PASSWORD, auth.username, auth.password):
-            logging.warning("Request denied - unauthorized - IP Address: {}".format(request.remote_addr))
-            message = {'error': 'Unauthorized'}
-            resp = jsonify(message)
-            resp.status_code = 401
-            return resp
-        return f(*args, **kwargs)
-    return decorated
+bp = Blueprint('prohibitions', __name__, url_prefix='/api/v1/forms')
 
 
-@bp.route('/<string:prohibition_type>', methods=['POST'])
+@bp.route('/<string:form_type>', methods=['GET'])
 @basic_auth_required
-def create(prohibition_type):
+def index(form_type):
     """
-    Add batch of prohibition ids to the database
+    List all forms for a user
+    """
+    if request.method == 'GET':
+        # TODO - implement index() method
+        pass
+
+
+@bp.route('/<string:form_type>/<string:form_id>', methods=['GET'])
+@basic_auth_required
+def get(form_type, form_id):
+    """
+    Get a specific form
+    """
+    if request.method == 'GET':
+        # TODO - implement get() method
+        pass
+
+
+@bp.route('/<string:form_type>', methods=['POST'])
+@basic_auth_required
+def create(form_type):
+    """
+    Save a new form
     """
     if request.method == 'POST':
         from python.prohibition_web_service import db, ProhibitionIdLease
@@ -48,7 +53,7 @@ def create(prohibition_type):
                 prohibitions.append(
                     ProhibitionIdLease(
                         prohibition_id=prohibition,
-                        prohibition_type=prohibition_type,
+                        form_type=form_type,
                         lease_expiry=None,
                         served=False
                     ),)
@@ -57,15 +62,15 @@ def create(prohibition_type):
             return make_response("ok", 200)
 
 
-@bp.route('/<string:prohibition_type>/<string:prohibition_id>', methods=['PATCH'])
-def update(prohibition_type, prohibition_id):
+@bp.route('/<string:form_type>/<string:form_id>', methods=['PATCH'])
+def update(form_type, form_id):
     """
-    Receive a prohibition form and mark the prohibition as 'served'
+    Update an existing form
     """
     if request.method == 'PATCH':
         from python.prohibition_web_service import db, ProhibitionIdLease
         lease = db.session.query(ProhibitionIdLease) \
-            .filter(ProhibitionIdLease.prohibition_type == prohibition_type) \
+            .filter(ProhibitionIdLease.form_type == form_type) \
             .filter(ProhibitionIdLease.id == prohibition_id) \
             .first()
         lease.served = True

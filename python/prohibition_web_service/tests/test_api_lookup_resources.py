@@ -16,7 +16,7 @@ def as_guest(application):
 
 
 def test_get_impound_lot_operators(as_guest):
-    resp = as_guest.get("/api/v1/impound_lot_operators",
+    resp = as_guest.get("/api/v1/configuration/impoundLotOperators",
                         follow_redirects=True,
                         content_type="application/json")
     assert resp.status_code == 200
@@ -25,7 +25,7 @@ def test_get_impound_lot_operators(as_guest):
 
 
 def test_get_provinces(as_guest):
-    resp = as_guest.get("/api/v1/provinces",
+    resp = as_guest.get("/api/v1/configuration/provinces",
                         follow_redirects=True,
                         content_type="application/json")
     assert resp.status_code == 200
@@ -35,7 +35,7 @@ def test_get_provinces(as_guest):
 
 
 def test_get_jurisdictions(as_guest):
-    resp = as_guest.get("/api/v1/jurisdictions",
+    resp = as_guest.get("/api/v1/configuration/jurisdictions",
                         follow_redirects=True,
                         content_type="application/json")
     assert resp.status_code == 200
@@ -45,7 +45,7 @@ def test_get_jurisdictions(as_guest):
 
 
 def test_get_countries(as_guest):
-    resp = as_guest.get("/api/v1/countries",
+    resp = as_guest.get("/api/v1/configuration/countries",
                         follow_redirects=True,
                         content_type="application/json")
     assert resp.status_code == 200
@@ -55,7 +55,7 @@ def test_get_countries(as_guest):
 
 
 def test_get_cities(as_guest):
-    resp = as_guest.get("/api/v1/cities",
+    resp = as_guest.get("/api/v1/configuration/cities",
                         follow_redirects=True,
                         content_type="application/json")
     assert resp.status_code == 200
@@ -65,7 +65,7 @@ def test_get_cities(as_guest):
 
 
 def test_get_car_colors(as_guest):
-    resp = as_guest.get("/api/v1/colors",
+    resp = as_guest.get("/api/v1/configuration/colors",
                         follow_redirects=True,
                         content_type="application/json")
     assert resp.status_code == 200
@@ -74,7 +74,7 @@ def test_get_car_colors(as_guest):
 
 
 def test_get_vehicles(as_guest):
-    resp = as_guest.get("/api/v1/vehicles",
+    resp = as_guest.get("/api/v1/configuration/vehicles",
                         follow_redirects=True,
                         content_type="application/json")
     assert resp.status_code == 200
@@ -83,3 +83,12 @@ def test_get_vehicles(as_guest):
     assert "1961" == resp.json[0]['year']
     assert resp.headers['Access-Control-Allow-Origin'] == Config.ACCESS_CONTROL_ALLOW_ORIGIN
 
+
+def test_get_pickup_locations(as_guest):
+    resp = as_guest.get("/api/v1/configuration/pickup_locations",
+                        follow_redirects=True,
+                        content_type="application/json")
+    assert resp.status_code == 200
+    assert "2120 Cambie St." == resp.json[0]['address']
+    assert "Vancouver" == resp.json[0]['city']
+    assert resp.headers['Access-Control-Allow-Origin'] == Config.ACCESS_CONTROL_ALLOW_ORIGIN

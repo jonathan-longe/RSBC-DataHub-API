@@ -120,3 +120,21 @@ services:
 
         ports:
             - "5008:5000"
+
+
+    prohibition_web_service:
+      build:
+        context: python
+        dockerfile: prohibition_web_service/Dockerfile-local
+      environment:
+        FLASK_SECRET_KEY: "${FLASK_SECRET_KEY}"
+        ICBC_API_ROOT: "${ICBC_API_ROOT}"
+        ICBC_LOGIN_USER_ID: "${ICBC_LOGIN_USER_ID}"
+        ICBC_API_USERNAME: "${ICBC_API_USERNAME}"
+        ICBC_API_PASSWORD: "${ICBC_API_PASSWORD}"
+        ACCESS_CONTROL_ALLOW_ORIGIN: "${ACCESS_CONTROL_ALLOW_ORIGIN}"
+        LOG_LEVEL: "INFO"
+
+
+      ports:
+        - "5002:5000"

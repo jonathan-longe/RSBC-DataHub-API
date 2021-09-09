@@ -17,9 +17,6 @@ import PrintConfirmationModal from "@/components/forms/TwentyFourHourProhibition
 import RadioField from "@/components/questions/RadioField";
 import CheckField from "@/components/questions/CheckField";
 import ShadowBox from "@/components/forms/ShadowBox";
-import VehicleOwnerCard from "@/components/forms/TwentyFourHourProhibition/VehicleOwnerCard";
-import VehicleInformationCard from "@/components/forms/TwentyFourHourProhibition/VehicleInformationCard";
-import VehicleImpoundmentCard from "@/components/forms/TwentyFourHourProhibition/VehicleImpoundmentCard";
 import { mapGetters } from "vuex";
 
 
@@ -55,11 +52,7 @@ export default {
     RadioField,
     CheckField,
     DateField,
-    ShadowBox,
-    VehicleOwnerCard,
-    VehicleInformationCard,
-    VehicleImpoundmentCard
-
+    ShadowBox
   }
 }
 </script>

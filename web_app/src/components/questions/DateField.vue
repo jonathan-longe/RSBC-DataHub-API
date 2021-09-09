@@ -9,10 +9,10 @@
       <div class="input-group mb-1">
         <input type="text"
            class="form-control form-control-sm " :disabled="disabled"
-           placeholder="YYYY-MM-DD"
+           placeholder="YYYYMMDD"
            :id="id"
            :value="getAttributeValue(id)"
-           @input="updateFormField">
+           @input="setDateTime">
       </div>
       <div class="small text-danger ml-1">{{ errors[0] }}</div>
     </div>
@@ -32,21 +32,17 @@ export default {
 
   methods: {
     ...mapMutations(["updateFormField"]),
-    setCurrentDateTime() {
-      const payload = {id: this.id, value: this.getCurrentTime() }
-      console.log('inside DateField setCurrentDateTime()')
+    setDateTime(e) {
+      const isoDate = e.target.value;
+      const payload = {target: {id: this.id, value: isoDate }}
       this.$store.commit("updateFormField", payload)
-    },
-
-    getCurrentTime() {
-      return moment().format("YYYY-MM-DD")
     },
   },
 
   computed: {
     ...mapGetters(["getAttributeValue"]),
     dateObject() {
-      return moment(this.getAttributeValue(this.id), 'YYYY-MM-DD', true);
+      return moment(this.getAttributeValue(this.id), 'YYYYMMDD', true);
     },
     isValidDate() {
       return this.dateObject.isValid()

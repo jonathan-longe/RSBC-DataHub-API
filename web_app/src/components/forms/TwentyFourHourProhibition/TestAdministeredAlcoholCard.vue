@@ -6,8 +6,13 @@
         <check-field :show_label="false"  id="test_administered_asd" fg_class="col-sm-6"
                      :options='["Alco-Sensor FST (ASD)"]'>Test Administered</check-field>
         <date-field v-if="isTestAdministeredASD" id="asd_expiry_date" fg_class="col-sm-6" rules="notExpired">ASD expiry date</date-field>
-        <radio-field v-if="isTestAdministeredASD" id="result_alcohol" fg_class="col-sm-12"
+      </form-row>
+      <form-row>
+        <radio-field v-if="isTestAdministeredASD" id="result_alcohol" fg_class="col-sm-6"
                      :options='["51-99 mg%", "Over 99 mg%"]'>Result</radio-field>
+        <date-time id="time_asd_test"
+                   rules="required|notFutureDt"
+                   fg_class="col-sm-6">Time of test</date-time>
       </form-row>
     </shadow-box>
     <shadow-box>
@@ -16,9 +21,14 @@
                      :options='["Approved Instrument"]'></check-field>
       </form-row>
       <form-row>
-        <check-field v-if="isTestAdministeredApprovedInstrument" id="result_alcohol_approved_instrument" fg_class="col-sm-2"
+        <check-field v-if="isTestAdministeredApprovedInstrument" id="result_alcohol_approved_instrument" fg_class="col-sm-6"
                      :options='["BAC"]'>Result</check-field>
-        <text-field v-if="isTestAdministeredApprovedInstrument" id="test_result_bac" fg_class="col-sm-10"></text-field>
+        <date-time id="time_bac_test"
+                   rules="required|notFutureDt"
+                   fg_class="col-sm-6">Time of test</date-time>
+      </form-row>
+      <form-row>
+        <text-field v-if="isTestAdministeredApprovedInstrument" id="test_result_bac" fg_class="col-sm-12"></text-field>
       </form-row>
     </shadow-box>
   </div>
@@ -35,7 +45,7 @@
 </template>
 
 <script>
-import CardsCommon from "@/components/forms/TwentyFourHourProhibition/CardsCommon";
+import CardsCommon from "@/components/forms/CardsCommon";
 
 export default {
   name: "OfficersReport",

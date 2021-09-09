@@ -12,6 +12,7 @@ if (process.env.NODE_ENV === 'production') {
     },
     registered () {
       console.log('Service worker has been registered.')
+
     },
     cached () {
       console.log('Content has been cached for offline use.')
@@ -19,9 +20,24 @@ if (process.env.NODE_ENV === 'production') {
     updatefound () {
       console.log('New content is downloading.')
     },
-    updated () {
-      console.log('New content is available; refreshing automatically')
-      window.location.reload(true)
+    updated (registration) {
+      // console.log('New version of app is available - delete old caches')
+      // caches.keys().then(function(cacheNames) {
+      //   return Promise.all(
+      //     cacheNames.filter(function(cacheName) {
+      //       console.log('  - deleting: ' + cacheName)
+      //     }).map(function(cacheName) {
+      //       return caches.delete(cacheName);
+      //     })
+      //   );
+      // })
+      console.log('New version of app is available - reloading app automatically')
+      document.dispatchEvent(
+          new CustomEvent('swUpdated', { detail: registration })
+      )
+      // setTimeout(() => {
+      //   window.location.reload(true)
+      // }, 1000)
     },
     offline () {
       console.log('No internet connection found. App is running in offline mode.')

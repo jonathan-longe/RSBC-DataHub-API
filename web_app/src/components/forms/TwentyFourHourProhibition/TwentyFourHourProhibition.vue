@@ -1,12 +1,10 @@
 <template>
   <form-container title="Notice of 24 Hour Licence Prohibition">
     <form-step :step_number=1>
-
-      <licence-plate-card></licence-plate-card>
-      <vehicle-information-card></vehicle-information-card>
-      <vehicle-impoundment-card></vehicle-impoundment-card>
       <drivers-information-card></drivers-information-card>
+      <vehicle-information-card></vehicle-information-card>
       <vehicle-owner-card></vehicle-owner-card>
+      <vehicle-impoundment-card></vehicle-impoundment-card>
       <return-of-licence-card></return-of-licence-card>
       <prohibition-information-card></prohibition-information-card>
       <reasonable-grounds-card></reasonable-grounds-card>
@@ -16,11 +14,10 @@
 
     </form-step>
     <form-step :step_number=2>
-      <licence-plate-card :is-read-only=true></licence-plate-card>
-      <vehicle-information-card :is-read-only=true></vehicle-information-card>
-      <vehicle-impoundment-card :is-read-only=true></vehicle-impoundment-card>
       <drivers-information-card :is-read-only=true></drivers-information-card>
+      <vehicle-information-card :is-read-only=true></vehicle-information-card>
       <vehicle-owner-card :is-read-only=true></vehicle-owner-card>
+      <vehicle-impoundment-card :is-read-only=true></vehicle-impoundment-card>
       <return-of-licence-card :is-read-only=true></return-of-licence-card>
       <prohibition-information-card :is-read-only=true></prohibition-information-card>
       <reasonable-grounds-card :is-read-only=true></reasonable-grounds-card>
@@ -60,31 +57,32 @@ import { mapMutations, mapGetters, mapActions } from 'vuex';
 import VehicleInformationCard from "@/components/forms/TwentyFourHourProhibition/VehicleInformationCard";
 import VehicleImpoundmentCard from "@/components/forms/TwentyFourHourProhibition/VehicleImpoundmentCard";
 import DriversInformationCard from "@/components/forms/TwentyFourHourProhibition/DriversInformationCard";
-import ReturnOfLicenceCard from "@/components/forms/TwentyFourHourProhibition/ReturnOfLicenceCard";
-import LicencePlateCard from "@/components/forms/TwentyFourHourProhibition/LicencePlateCard";
+import ReturnOfLicenceCard from "@/components/forms/ReturnOfLicenceCard";
 import ProhibitionInformationCard from "@/components/forms/TwentyFourHourProhibition/ProhibitionInformationCard";
 import ReasonableGroundsCard from "@/components/forms/TwentyFourHourProhibition/ReasonableGroundsCard";
 import TestAdministeredAlcoholCard from "@/components/forms/TwentyFourHourProhibition/TestAdministeredAlcoholCard";
 import TestAdministeredDrugsCard from "@/components/forms/TwentyFourHourProhibition/TestAdministeredDrugsCard";
 import SupplementaryModal from "@/components/forms/TwentyFourHourProhibition/SupplementaryModal";
 import OfficerDetailsCard from "@/components/forms/TwentyFourHourProhibition/OfficerDetailsCard";
+import VehicleOwnerCard from "@/components/forms/TwentyFourHourProhibition/VehicleOwnerCard";
+
 
 export default {
   name: "TwentyFourHourProhibition",
   components: {
+    VehicleOwnerCard,
     TestAdministeredAlcoholCard,
     TestAdministeredDrugsCard,
     ReasonableGroundsCard,
     ProhibitionInformationCard,
-    LicencePlateCard,
     SupplementaryModal,
     VehicleImpoundmentCard, VehicleInformationCard,
     DriversInformationCard, ReturnOfLicenceCard,
-    OfficerDetailsCard},
+    OfficerDetailsCard}, VehicleOwnerCard,
   mixins: [FormsCommon],
   computed: {
-    ...mapGetters(["getAttributeValue", "isPlateJurisdictionBC", "driverIsNotRegisteredOwner",
-      "corporateOwner", "getXdfFileName", "getPDFTemplateFileName", "getXFDF", "getCurrentFormData"]),
+    ...mapGetters(["getAttributeValue", "isPlateJurisdictionBC",
+      "corporateOwner", "getXdfFileNameString", "getPDFTemplateFileName", "getXFDF", "getCurrentFormData"]),
     isProhibitionTypeDrugs() {
       return this.getAttributeValue('prohibition_type') === "Drugs 215(3)";
     },
@@ -96,23 +94,22 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["saveDoNotPrint", "deleteSpecificForm"]),
-    ...mapMutations(["markFormStatusAsServed", "saveFormsToLocalStorage", "generateXFDF", "stopEditingCurrentForm"]),
+    ...mapActions(["saveDoNotPrint", "fetchStaticLookupTables"]),
+    ...mapMutations(["stopEditingCurrentForm"]),
 
-    saveAndPrint(pdf_template_filename) {
-      console.log("inside saveAndPrint()" + pdf_template_filename)
-      this.generateXFDF(pdf_template_filename);
-      const xml_file = this.getXFDF;
+    saveAndPrint(pdf_template_filepath) {
+      console.log("inside saveAndPrint() " + pdf_template_filepath)
+      const xml_file = this.getXFDF(pdf_template_filepath);
       console.log('success generateXFDF()', xml_file)
       const href = window.URL.createObjectURL(xml_file); //create the download url
       const downloadElement = document.createElement("a");
       downloadElement.href = href;
-      downloadElement.download =  pdf_template_filename;
+      downloadElement.download =  this.getXdfFileNameString;
       document.body.appendChild(downloadElement);
       downloadElement.click(); //click to file
       document.body.removeChild(downloadElement); //remove the element
       window.URL.revokeObjectURL(href); //release the object  of the blob
-      this.saveFormsToLocalStorage();
+      this.$store.dispatch("saveCurrentFormToDB", this.$store.state.currently_editing_prohibition_index)
       this.$bvModal.show('printConfirmationModal')
     }
   }

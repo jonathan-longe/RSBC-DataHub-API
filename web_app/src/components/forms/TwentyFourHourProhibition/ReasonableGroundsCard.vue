@@ -3,11 +3,16 @@
   <div v-if="! isReadOnly">
     <div v-if="isProhibitionTypeSelected">
       <form-row>
-        <radio-field id="operating_grounds" fg_class="col-sm-12"
-                     :options='["Witnessed by officer", "Admission by driver", "Independent witness", "Other"]'>
+        <check-field id="operating_grounds" fg_class="col-sm-12" rules="required"
+                     :options='[
+                         "Witnessed by officer",
+                         "Admission by driver",
+                         "Independent witness",
+                         "Video surveillance",
+                         "Other"]'>
           The driver was operating a motor vehicle or had care and
-          control of a motor vehicle for the purposes of MVA section 215(1) based on:
-        </radio-field>
+          control of a motor vehicle for the purposes of MVA section 215(1) based on (select at least one):
+        </check-field>
       </form-row>
       <form-row v-if="isOperatingGroundsOther">
         <text-field id="operating_ground_other" fg_class="col-sm-12">Other</text-field>
@@ -30,7 +35,7 @@
 </template>
 
 <script>
-import CardsCommon from "@/components/forms/TwentyFourHourProhibition/CardsCommon";
+import CardsCommon from "@/components/forms/CardsCommon";
 
 export default {
   name: "ReasonableGroundsCard",

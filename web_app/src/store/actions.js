@@ -1,20 +1,193 @@
+import constants from "@/config/constants";
+import persistence from "@/helpers/persistence";
+
 export default {
     initializeStore (context) {
-        console.log("inside actions.js initializeStore()")
-        context.commit('retrieveFormsFromLocalStorage')
+        console.log("inside actions.js initializeStore()", context)
+        // context.dispatch('getAllFormsFromDB')
     },
 
     saveDoNotPrint (context) {
         console.log("inside actions.js saveDoNotPrint()");
         context.commit('stopEditingCurrentForm');
-        context.commit('saveFormsToLocalStorage');
+        context.dispatch('saveCurrentFormToDB', context.state.currently_editing_prohibition_index);
     },
 
-    deleteSpecificForm({ commit }, prohibition_index) {
-        commit('deleteForm', prohibition_index)
-        commit('saveFormsToLocalStorage');
-        commit('stopEditingCurrentForm');
+    deleteSpecificForm({ context }, indx ) {
+        context.dispatch('deleteFormFromDB', indx)
+        context.commit('stopEditingCurrentForm');
     },
+
+    pluckNextUniqueIdFromListByType ({commit, getters}, prohibition_type) {
+        console.log("inside pluckNextUniqueIdFromListByType()", prohibition_type)
+        let payload = getters.getNextAvailableUniqueIdByType(prohibition_type)
+        console.log("payload", payload)
+        if (payload) {
+            commit("deleteUniqueIdFromAvailableList", {"type": prohibition_type, "idx": payload.idx})
+            commit("saveUniqueIdsToLocalStorage")
+            return payload.id;
+        }
+
+    },
+
+    setNewFormToEdit ({dispatch, commit}, form_short_name) {
+        console.log('inside setNewFormToEdit')
+        dispatch("pluckNextUniqueIdFromListByType", form_short_name).then( prohibition_number => {
+            commit("editNewForm", {"prohibition_number": prohibition_number, "form_short_name": form_short_name})
+            commit("saveUniqueIdsToLocalStorage")
+        })
+
+    },
+
+    retrieveAndSaveUniqueIds (context) {
+        console.log("inside retrieveAndSaveUniqueIds()")
+        context.commit("retrieveUniqueIdsFromLocalStorage")
+        for( let form_type in context.state.form_schemas.forms) {
+            if (context.getters.areNewUniqueIdsRequiredByType(form_type)) {
+                console.log("new UniqueIDs are required for " + form_type)
+                const url = constants.URL_ROOT + "/api/v1/prohibitions/leases/"
+                fetch(url + form_type, {
+                    "method": 'POST',
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        context.dispatch("saveUniqueIdsToDB", {"schema": form_type, "data": data})
+                        context.commit("updateUniqueIDs", {"schema": form_type, "data": data})
+                    })
+                    .catch(function (error) {
+                        console.log(error)
+                    });
+
+            } else {
+                console.log("new UniqueIDs are NOT required", form_type)
+            }
+        }
+        context.commit("saveUniqueIdsToLocalStorage")
+    },
+
+    async lookupDriverFromICBC({commit}, icbcPayload) {
+        console.log("inside actions.js lookupDriverFromICBC(): " + icbcPayload)
+        let dlNumber = icbcPayload['dlNumber']
+        const url = constants.URL_ROOT + "/api/v1/drivers/" + dlNumber
+        return await fetch(url, {
+            "method": 'GET',
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log("data", data)
+                commit("populateDriverFromICBC", data )
+            })
+            .catch(function (error) {
+                console.log(error)
+            });
+    },
+
+    async lookupPlateFromICBC({commit}, icbcPayload) {
+        console.log("inside actions.js populateFromICBCPlateLookup(): ")
+        console.log("icbcPayload", icbcPayload)
+        let plate_number = icbcPayload['plateNumber']
+        const url = constants.URL_ROOT + "/api/v1/vehicles/" + plate_number
+        return await fetch(url, {
+            "method": 'GET',
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log("data", data)
+                commit("populateVehicleFromICBC", data)
+            })
+            .catch(function (error) {
+                console.log("catch inside populateFromIcbcPlateLookup()")
+               console.log(error)
+            });
+    },
+
+    fetchDynamicLookupTables({commit}, type) {
+        const url = constants.URL_ROOT + "/api/v1/configuration/" + type
+        let networkDataRetrieved = false
+
+        // trigger request for fresh data from API
+        var networkUpdate = fetch(url, {
+            "method": 'GET',
+        })
+            .then( response => {
+                return response.json()
+            })
+            .then( data => {
+                networkDataRetrieved = true
+                commit("populateStaticLookupTables", { "type": type, "data": data })
+            })
+            .catch(function (error) {
+                console.log('network request failed', error)
+            });
+
+        caches.match(url).then( response => {
+            if (!response) throw Error("No cached data");
+            return response.json();
+        }).then ( data => {
+            // don't overwrite newer network data
+            if(!networkDataRetrieved) {
+                commit("populateStaticLookupTables", { "type": type, "data": data })
+                return data;
+            }
+        }).catch( function() {
+            // we didn't get cached data, the API is our last hope
+            return networkUpdate;
+        })
+    },
+
+    fetchStaticLookupTables({commit}, type) {
+        const url = constants.URL_ROOT + "/api/v1/configuration/" + type
+
+        caches.match(url).then( response => {
+            if (!response) throw Error("No cached data");
+            return response.json();
+        }).then ( data => {
+            commit("populateStaticLookupTables", { "type": type, "data": data })
+        }).catch( function() {
+            // we didn't get cached data, the API is our last hope
+            return fetch(url, {
+            "method": 'GET',
+        }).then( response => {
+                return response.json()
+            })
+            .then( data => {
+                commit("populateStaticLookupTables", { "type": type, "data": data })
+            })
+            .catch(function (error) {
+                console.log('network request failed', error)
+            });
+        })
+    },
+
+    async deleteFormFromDB(context, indx) {
+        await persistence.del(indx);
+    },
+
+    async getAllFormsFromDB(context) {
+        context.state.edited_forms = [];
+
+        let forms = await persistence.all()
+        forms.forEach( form => {
+            console.log(form)
+            context.state.edited_forms.push(form);
+        });
+    },
+
+    async saveCurrentFormToDB(context, indx) {
+        // await persistence.del(indx);
+        await persistence.set(context.state.edited_forms[indx]);
+    },
+
+
+    async saveUniqueIdsToDB(context, payload) {
+        payload.data.forEach( row => {
+            persistence.updateOrCreate(row, row.id)
+        })
+
+    }
+
+
+
 
 
 }

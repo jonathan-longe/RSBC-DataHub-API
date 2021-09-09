@@ -28,6 +28,7 @@ export default {
       ...mapMutations(["stopEditingCurrentForm", "markFormStatusAsServed"]),
       confirmServedToDriver() {
         this.markFormStatusAsServed()
+        this.$store.dispatch("saveCurrentFormToDB", this.$store.state.currently_editing_prohibition_index)
         this.$bvModal.hide('printConfirmationModal')
         this.$bvModal.show('SupplementaryModal')
       },

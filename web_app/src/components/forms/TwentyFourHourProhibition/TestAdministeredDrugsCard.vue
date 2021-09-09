@@ -10,7 +10,10 @@
       <form-row>
         <check-field v-if="isTestAdministeredADSE" id="positive_adse" fg_class="col-sm-6"
                      :options='["THC", "Cocaine"]'>Test result</check-field>
-        <date-time v-if="isTestAdministeredADSE" id="time_of_physical_test_adse" fg_class="col-sm-6">Time of test</date-time>
+        <date-time v-if="isTestAdministeredADSE"
+                   id="time_of_physical_test_adse"
+                   rules="required|notFutureDt"
+                   fg_class="col-sm-6">Time of test</date-time>
       </form-row>
     </shadow-box>
     <shadow-box>
@@ -18,7 +21,10 @@
         <check-field :show_label="false" id="test_administered_sfst" fg_class="col-sm-6"
                      :options='["Prescribed Physical Coordination Test (SFST)"]'>&nbsp;
         </check-field>
-        <date-time v-if="isTestAdministeredSFST" id="time_of_physical_test_sfst" fg_class="col-sm-6">Time of test</date-time>
+        <date-time v-if="isTestAdministeredSFST"
+                   id="time_of_physical_test_sfst"
+                   rules="required|notFutureDt"
+                   fg_class="col-sm-6">Time of test</date-time>
       </form-row>
     </shadow-box>
     <shadow-box>
@@ -28,7 +34,9 @@
         </check-field>
       </form-row>
       <form-row v-if="isTestAdministeredDRE">
-        <date-time id="start_time_of_physical_test_dre" fg_class="col-sm-6">Time of opinion</date-time>
+        <date-time id="start_time_of_physical_test_dre"
+                   rules="required|notFutureDt"
+                   fg_class="col-sm-6">Time of opinion</date-time>
         <text-field id="positive_dre" fg_class="col-sm-12">Notes (expand to 3 lines)</text-field>
 
       </form-row>
@@ -57,7 +65,7 @@
 </template>
 
 <script>
-import CardsCommon from "@/components/forms/TwentyFourHourProhibition/CardsCommon";
+import CardsCommon from "@/components/forms/CardsCommon";
 
 export default {
   name: "OfficersReport",

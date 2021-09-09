@@ -5,15 +5,21 @@
       </div>
       <div class="card-body bg-light">
       <p class="card-text text-dark">{{ form.description }}</p>
-      <p class="card-text"><small class="text-muted">Last updated: {{ lastUpdatedFriendly }}</small></p>
-        <button @click="viewForm" type="submit" class="btn btn-primary">View {{ form.short_name }} Form</button>
+      <p class="card-text">
+        <small class="text-muted">
+          Prohibition IDs available: {{ getMinimumUniqueIdsOnHandByType(form.short_name) }}
+        </small>
+      </p>
+        <button @click="viewForm" type="submit" class="btn btn-primary" :disabled="! isFormAvailable">
+          View {{ form.short_name }} Form
+        </button>
     </div>
     </div>
 </template>
 
 <script>
 
-import moment from 'moment';
+import {mapGetters} from "vuex";
 
 export default {
   name: "IssueProhibitions",
@@ -22,17 +28,14 @@ export default {
   },
   methods: {
       viewForm() {
-        this.$store.commit("setNewFormToEdit", this.form)
+        this.$store.dispatch("setNewFormToEdit", this.form.short_name)
       }
   },
   computed: {
-     allForms() {
-       return this.$store.getters.getAllAvailableForms;
-     },
-     lastUpdatedFriendly() {
-       return moment(this.form.last_updated).fromNow()
-     }
-
+    ...mapGetters(["getMinimumUniqueIdsOnHandByType"]),
+    isFormAvailable() {
+      return this.getMinimumUniqueIdsOnHandByType(this.form.short_name) > 0
+    }
   }
 }
 </script>

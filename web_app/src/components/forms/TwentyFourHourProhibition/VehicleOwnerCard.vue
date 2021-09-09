@@ -6,15 +6,13 @@
           <div class="col-6 pt-1 pl-0">Registered Owner</div>
           <div class="col-6 text-right" v-if="! isReadOnly">
             <div class="custom-control custom-switch">
-              <input type="checkbox" class="custom-control-input" :id="owner_id"
-              @input="updateCheckBox" :checked="checkBoxStatus(owner_id,owner_option)" :value="owner_option">
-              <label class="custom-control-label small" :for="owner_id">Driver is the vehicle owner</label>
+              <button @click="populateOwnerFromDriver" class="btn btn-outline-primary btn-sm small">Fill from driver</button>
            </div>
           </div>
       </div>
     </div>
     <div class="card-body lightgray" v-if="! isReadOnly">
-      <div v-if="driverIsNotRegisteredOwner">
+      <div>
           <form-row>
             <check-field fg_class="col-sm-12" :show_label="false" id="corporate_owner" :options="['Owned by corporate entity']" >Corporation</check-field>
           </form-row>
@@ -56,7 +54,7 @@
 
 <script>
 import {mapGetters, mapMutations} from "vuex";
-import CardsCommon from "@/components/forms/TwentyFourHourProhibition/CardsCommon";
+import CardsCommon from "@/components/forms/CardsCommon";
 
 export default {
   name: "VehicleOwnerCard",
@@ -71,10 +69,10 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(["updateCheckBox"])
+    ...mapMutations(["populateOwnerFromDriver"])
   },
   computed: {
-    ...mapGetters(["checkBoxStatus", "driverIsNotRegisteredOwner", "corporateOwner"])
+    ...mapGetters(["checkBoxStatus", "corporateOwner"])
   }
 }
 </script>

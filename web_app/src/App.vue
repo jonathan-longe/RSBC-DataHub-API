@@ -15,8 +15,8 @@
       <issue-prohibitions v-if=" ! isFormBeingEdited"></issue-prohibitions>
       <prohibition-search v-if=" ! isFormBeingEdited"></prohibition-search>
       <feedback-welcome v-if=" ! isFormBeingEdited"></feedback-welcome>
+      <div class="card-footer bg-transparent border-0 text-muted small">Version: {{ getAppVersion }}</div>
     </div>
-    <div class="card-footer bg-transparent border-0 text-muted small">Version: {{ getAppVersion }}</div>
   </div>
 </template>
 
@@ -24,13 +24,13 @@
 
 import OfflineBanner from "./components/OffineBanner.vue"
 import IssueProhibitions from "@/components/IssueProhibitions";
-import TwelveHourProhibition from "@/components/forms/TwelveHourProhibition";
+import TwelveHourProhibition from "@/components/forms/TwelveHourSuspension/TwelveHourProhibition";
 import TwentyFourHourProhibition from "@/components/forms/TwentyFourHourProhibition/TwentyFourHourProhibition";
 import ImmediateRoadsideProhibition from "@/components/forms/ImmediateRoadsideProhibition";
 import FeedbackWelcome from "@/components/FeedbackWelcome";
 import ProhibitionSearch from "@/components/ProhibitionSearch";
 import RecentProhibitions from "@/components/RecentProhibitions";
-import { mapGetters, mapMutations } from 'vuex';
+import {mapActions, mapGetters, mapMutations} from 'vuex';
 
 export default {
   name: 'App',
@@ -49,9 +49,20 @@ export default {
   },
 
   methods: {
+    ...mapActions(["fetchStaticLookupTables"]),
     ...mapMutations(["networkOffline","networkBackOnline"])
   },
 
+  mounted() {
+    this.fetchStaticLookupTables("impoundLotOperators")
+    this.fetchStaticLookupTables("countries")
+    this.fetchStaticLookupTables("jurisdictions")
+    this.fetchStaticLookupTables("provinces")
+    this.fetchStaticLookupTables("cities")
+    this.fetchStaticLookupTables("colors")
+    this.fetchStaticLookupTables("vehicles")
+    this.fetchStaticLookupTables("pickup_locations")
+  }
 }
 </script>
 

@@ -6,7 +6,7 @@ import python.common.helper as helper
 
 
 logging.config.dictConfig(Config.LOGGING)
-logging.warning('*** impound lot operators blueprint loaded ***')
+logging.info('*** impound lot operators blueprint loaded ***')
 
 bp = Blueprint('impound_lot_operators', __name__, url_prefix='/api/v1/impound_lot_operators')
 

@@ -5,7 +5,7 @@ import base64
 import requests
 
 logging.config.dictConfig(Config.LOGGING)
-logging.warning('*** icbc blueprint loaded ***')
+logging.info('*** icbc blueprint loaded ***')
 
 bp = Blueprint('icbc', __name__, url_prefix='/api/v1/icbc')
 

@@ -6,7 +6,7 @@ import python.common.helper as helper
 
 
 logging.config.dictConfig(Config.LOGGING)
-logging.warning('*** colors blueprint loaded ***')
+logging.info('*** colors blueprint loaded ***')
 
 bp = Blueprint('colors', __name__, url_prefix='/api/v1/colors')
 

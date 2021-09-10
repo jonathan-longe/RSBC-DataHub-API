@@ -1,0 +1,32 @@
+{% extends "base_template.html" %}
+
+{% block title %}Forms{% endblock %}
+
+{% block body %}
+    <h1>Forms</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Form Type</th>
+                <th>Received</th>
+                <th>Lease Expiry</th>
+                <th>Username</th>
+            </tr>
+        </thead>
+
+        {% for row in forms %}
+            <tr>
+                <td>{{ row.id }}</td>
+                <td>{{ row.form_type }}</td>
+                <td>{{ row.served_timestamp }}</td>
+                <td>{{ row.lease_expiry }}</td>
+                <td>{{ row.username }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+
+
+{% endblock %}

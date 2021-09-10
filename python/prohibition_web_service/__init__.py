@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import logging
 from flask_sqlalchemy import SQLAlchemy
 from python.prohibition_web_service.config import Config
-from python.prohibition_web_service.blueprints import impound_lot_operators, jurisdictions, forms
+from python.prohibition_web_service.blueprints import impound_lot_operators, jurisdictions, forms, admin_forms
 from python.prohibition_web_service.blueprints import provinces, countries, cities, colors, vehicles, icbc
 
 
@@ -20,6 +20,7 @@ application.register_blueprint(cities.bp)
 application.register_blueprint(colors.bp)
 application.register_blueprint(vehicles.bp)
 application.register_blueprint(icbc.bp)
+application.register_blueprint(admin_forms.bp)
 
 
 db = SQLAlchemy(application)

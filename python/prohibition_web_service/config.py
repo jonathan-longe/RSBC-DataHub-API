@@ -19,6 +19,6 @@ class Config(BaseConfig):
     ADMIN_USERNAME                      = os.getenv('ADMIN_USERNAME', 'admin')
     ADMIN_PASSWORD                      = os.getenv('ADMIN_PASSWORD', 'secret')
 
-    NUMBER_OF_PROHIBITION_IDS_IN_BLOCK  = 10
+    MAX_RECORDS_RETURNED                = 200
 
 

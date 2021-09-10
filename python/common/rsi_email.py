@@ -444,8 +444,8 @@ def admin_unknown_event_type(**args) -> tuple:
     return send_email_to_admin(config=config, title=title, body=body_text), args
 
 
-def get_jinja2_env():
-    template_loader = FileSystemLoader(searchpath="./python/common/templates")
+def get_jinja2_env(path="./python/common/templates"):
+    template_loader = FileSystemLoader(searchpath=path)
     return Environment(
         loader=template_loader,
         autoescape=select_autoescape(['html', 'xml'])

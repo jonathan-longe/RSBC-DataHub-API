@@ -7,7 +7,7 @@ import python.prohibition_web_service.business as rules
 
 
 logging.config.dictConfig(Config.LOGGING)
-logging.warning('*** forms blueprint loaded ***')
+logging.info('*** forms blueprint loaded ***')
 
 bp = Blueprint('forms', __name__, url_prefix='/api/v1/forms')
 

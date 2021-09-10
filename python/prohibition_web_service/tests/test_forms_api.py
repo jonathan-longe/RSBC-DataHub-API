@@ -144,6 +144,25 @@ def test_form_delete_method_not_implemented(as_guest):
     assert resp.json == {"error": "method not implemented"}
 
 
+def test_administrator_can_view_all_forms(as_guest, forms):
+    resp = as_guest.get("/admin/forms",
+                        headers=_get_basic_authentication_header(Config),
+                        follow_redirects=True)
+    assert resp.status_code == 200
+    assert b"Forms" in resp.data
+    assert b"AA-123332" in resp.data
+
+
+def test_administrator_can_filter_all_forms_by_form_type(as_guest, forms):
+    resp = as_guest.get("/admin/forms{}".format('?form_type=12Hour'),
+                        headers=_get_basic_authentication_header(Config),
+                        follow_redirects=True)
+    assert resp.status_code == 200
+    assert b"Forms" in resp.data
+    assert b"AA-123334" in resp.data
+    assert b"AA-123332" not in resp.data
+
+
 def _get_basic_authentication_header(config) -> dict:
     username = config.ADMIN_USERNAME
     password = config.ADMIN_PASSWORD

@@ -30,25 +30,29 @@ class Form(db.Model):
     form_type = db.Column(db.String(20), nullable=False)
     lease_expiry = db.Column(db.Date, nullable=True)
     served_timestamp = db.Column(db.DateTime, nullable=True)
+    username = db.Column(db.String(25), nullable=True)
 
-    def __init__(self, form_id, form_type, lease_expiry, served_datetime):
+    def __init__(self, form_id, form_type, served=None, lease_expiry=None, username=None):
         self.id = form_id
-        self.prohibition_type = form_type
+        self.form_type = form_type
+        self.served_timestamp = served
         self.lease_expiry = lease_expiry
-        self.served_timestamp = served_datetime
+        self.username = username
 
-    def serialize(self):
+    @staticmethod
+    def serialize(form):
         return {
-            "id": self.id,
-            "form_type": self.form_type,
-            "lease_expiry": self._format_lease_expiry(self.lease_expiry),
-            "served_timestamp": self.served_timestamp
+            "id": form.id,
+            "form_type": form.form_type,
+            "lease_expiry": Form._format_lease_expiry(form.lease_expiry),
+            "served_timestamp": form.served_timestamp
         }
 
-    def lease(self):
+    def lease(self, username):
         today = datetime.now()
         lease_expiry = today + timedelta(days=30)
         self.lease_expiry = lease_expiry
+        self.username = username
 
     @staticmethod
     def _format_lease_expiry(lease_expiry):
@@ -56,6 +60,13 @@ class Form(db.Model):
             return ''
         else:
             return datetime.strftime(lease_expiry, "%Y-%m-%d")
+
+    @staticmethod
+    def collection_to_dict(all_rows):
+        result_list = []
+        for row in all_rows:
+            result_list.append(Form.serialize(row))
+        return result_list
 
 
 def create_app():
@@ -88,9 +99,7 @@ def _seed_database_for_development(database):
             unique_id = '{}-{}'.format(prefix[idx], str(x))
             seed_records.append(Form(
                 form_id=unique_id,
-                form_type=form_type,
-                lease_expiry=None,
-                served_datetime=None))
+                form_type=form_type))
     database.session.bulk_save_objects(seed_records)
     database.session.commit()
     logging.warning("database seeded")

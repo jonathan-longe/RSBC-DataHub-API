@@ -31,6 +31,7 @@ def test_get_driver(as_guest):
     assert 'dlNumber' in resp.json
     assert resp.json['dlNumber'] == "5120503"
     assert resp.headers['Access-Control-Allow-Origin'] == Config.ACCESS_CONTROL_ALLOW_ORIGIN
+    assert responses.calls[0].request.headers['loginUserId'] == 'usr'
 
 
 @responses.activate
@@ -48,6 +49,7 @@ def test_get_vehicle(as_guest):
     assert 'plateNumber' in resp.json
     assert resp.json['plateNumber'] == "LD626J"
     assert resp.headers['Access-Control-Allow-Origin'] == Config.ACCESS_CONTROL_ALLOW_ORIGIN
+    assert responses.calls[0].request.headers['loginUserId'] == 'usr'
 
 
 def _sample_driver_response() -> dict:

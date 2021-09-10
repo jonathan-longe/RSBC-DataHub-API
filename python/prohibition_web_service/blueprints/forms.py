@@ -1,16 +1,15 @@
 from python.prohibition_web_service.config import Config
 import python.common.helper as helper
-from flask import request, make_response, Blueprint, jsonify
+from flask import request, Blueprint, make_response, jsonify
 from python.prohibition_web_service.blueprints.common import basic_auth_required
 import logging.config
-import json
-from functools import wraps
+import python.prohibition_web_service.business as rules
 
 
 logging.config.dictConfig(Config.LOGGING)
 logging.warning('*** forms blueprint loaded ***')
 
-bp = Blueprint('prohibitions', __name__, url_prefix='/api/v1/forms')
+bp = Blueprint('forms', __name__, url_prefix='/api/v1/forms')
 
 
 @bp.route('/<string:form_type>', methods=['GET'])
@@ -20,8 +19,13 @@ def index(form_type):
     List all forms for a user
     """
     if request.method == 'GET':
-        # TODO - implement index() method
-        pass
+        from python.prohibition_web_service import db, Form
+        username = 'usr'
+        all_forms = db.session.query(Form) \
+            .filter(Form.form_type == form_type) \
+            .filter(Form.username == username) \
+            .all()
+        return jsonify(Form.collection_to_dict(all_forms))
 
 
 @bp.route('/<string:form_type>/<string:form_id>', methods=['GET'])
@@ -31,53 +35,64 @@ def get(form_type, form_id):
     Get a specific form
     """
     if request.method == 'GET':
-        # TODO - implement get() method
-        pass
+        from python.prohibition_web_service import db, Form
+        username = 'usr'
+        form = db.session.query(Form) \
+            .filter(Form.form_type == form_type) \
+            .filter(Form.id == form_id) \
+            .filter(Form.username == username) \
+            .first()
+        return make_response(form, 200)
 
 
 @bp.route('/<string:form_type>', methods=['POST'])
 @basic_auth_required
 def create(form_type):
     """
-    Save a new form
+    Save a new form.  The web_app uses this endpoint to lease a unique form_id
+    for 30 days and save the user's name in the form table. This endpoint is not
+    used to submit a new form.  All payloads to this endpoint are ignored.
     """
     if request.method == 'POST':
-        from python.prohibition_web_service import db, ProhibitionIdLease
-        try:
-            prohibition_ids = request.get_json()
-        except Exception as e:
-            return make_response("bad payload", 400)
-        prohibitions = []
-        if isinstance(prohibition_ids, list):
-            for prohibition in prohibition_ids:
-                prohibitions.append(
-                    ProhibitionIdLease(
-                        prohibition_id=prohibition,
-                        form_type=form_type,
-                        lease_expiry=None,
-                        served=False
-                    ),)
-            db.session.bulk_save_objects(prohibitions)
-            db.session.commit()
-            return make_response("ok", 200)
+        logging.info("created() invoked: {} | {}".format(request.remote_addr, request.get_data()))
+        username = 'usr'  # TODO - remove before flight
+        # invoke business logic
+        kwargs = helper.middle_logic(rules.create_a_form(),
+                                     request=request,
+                                     form_type=form_type,
+                                     username=username,
+                                     config=Config)
+        return kwargs.get('response')
 
 
 @bp.route('/<string:form_type>/<string:form_id>', methods=['PATCH'])
+@basic_auth_required
 def update(form_type, form_id):
     """
-    Update an existing form
+    Update an existing form is used when either a) submitting a form using an previously
+    leased form_id; or, b) renewing the lease of a form_id.  If a patch request is
+    received without a payload, this endpoint assumes the form lease should be renewed;
+    otherwise, the payload is received as a form submission.
     """
     if request.method == 'PATCH':
-        from python.prohibition_web_service import db, ProhibitionIdLease
-        lease = db.session.query(ProhibitionIdLease) \
-            .filter(ProhibitionIdLease.form_type == form_type) \
-            .filter(ProhibitionIdLease.id == prohibition_id) \
-            .first()
-        lease.served = True
-        db.session.commit()
-        # TODO - save the prohibition data to a RabbitMQ
-        logging.warning(json.dumps(request.get_json()))
-        return make_response(ProhibitionIdLease.serialize(lease), 200)
+        logging.info("updated() invoked: {} | {}".format(request.remote_addr, request.get_data()))
+        username = 'usr'  # TODO - remove before flight
+        # invoke business logic
+        kwargs = helper.middle_logic(rules.update_a_form(),
+                                     form_type=form_type,
+                                     form_id=form_id,
+                                     request=request,
+                                     username=username,
+                                     config=Config)
+        return kwargs.get('response')
 
 
+@bp.route('/<string:form_type>/<string:form_id>', methods=['DELETE'])
+@basic_auth_required
+def delete(form_type, form_id):
+    """
+    Delete a specific form
+    """
+    if request.method == 'DELETE':
+        return make_response({'error': 'method not implemented'}, 405)
 

@@ -23,7 +23,7 @@ def css(name):
         return send_from_directory('templates/assets/bootstrap-4.6.0-dist/css', name, as_attachment=True)
 
 
-@bp.route('/admin/forms/', methods=['GET'])
+@bp.route('/admin/forms', methods=['GET'])
 def index():
     """
     List all forms
@@ -38,7 +38,7 @@ def index():
         return render_template(template, forms=all_forms)
 
 
-@bp.route('/<string:form_id>', methods=['GET'])
+@bp.route('/admin/forms/<string:form_id>', methods=['GET'])
 def get(form_id):
     """
     Get a specific form
@@ -47,7 +47,7 @@ def get(form_id):
         return make_response('method not implemented', 405)
 
 
-@bp.route('/', methods=['POST'])
+@bp.route('/admin/forms', methods=['POST'])
 def create():
     """
     Create a new form
@@ -56,7 +56,7 @@ def create():
         return make_response('method not implemented', 405)
 
 
-@bp.route('/<string:form_id>', methods=['PATCH'])
+@bp.route('/admin/forms/<string:form_id>', methods=['PATCH'])
 def update(form_id):
     """
     Update a specific form
@@ -65,7 +65,7 @@ def update(form_id):
         return make_response('method not implemented', 405)
 
 
-@bp.route('/<string:form_id>', methods=['DELETE'])
+@bp.route('/admin/forms/<string:form_id>', methods=['DELETE'])
 def delete(form_id):
     """
     Delete a specific form

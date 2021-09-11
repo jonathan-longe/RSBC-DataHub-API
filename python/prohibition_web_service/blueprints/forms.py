@@ -1,6 +1,7 @@
 from python.prohibition_web_service.config import Config
 import python.common.helper as helper
 from flask import request, Blueprint, make_response, jsonify
+from flask_cors import CORS
 from python.prohibition_web_service.blueprints.common import basic_auth_required
 import logging.config
 import python.prohibition_web_service.business as rules
@@ -9,11 +10,13 @@ import python.prohibition_web_service.business as rules
 logging.config.dictConfig(Config.LOGGING)
 logging.info('*** forms blueprint loaded ***')
 
-bp = Blueprint('forms', __name__, url_prefix='/api/v1/forms')
+bp = Blueprint('forms', __name__, url_prefix='/api/v1')
+CORS(bp, resources={r"/api/v1/forms/*": {
+    "origins": Config.ACCESS_CONTROL_ALLOW_ORIGIN
+}})
 
 
-@bp.route('/<string:form_type>', methods=['GET'])
-@basic_auth_required
+@bp.route('/forms/<string:form_type>', methods=['GET'])
 def index(form_type):
     """
     List all forms for a user
@@ -28,8 +31,7 @@ def index(form_type):
         return jsonify(Form.collection_to_dict(all_forms))
 
 
-@bp.route('/<string:form_type>/<string:form_id>', methods=['GET'])
-@basic_auth_required
+@bp.route('/forms/<string:form_type>/<string:form_id>', methods=['GET'])
 def get(form_type, form_id):
     """
     Get a specific form
@@ -42,11 +44,10 @@ def get(form_type, form_id):
             .filter(Form.id == form_id) \
             .filter(Form.username == username) \
             .first()
-        return make_response(form, 200)
+        return make_response(jsonify(form), 200)
 
 
-@bp.route('/<string:form_type>', methods=['POST'])
-@basic_auth_required
+@bp.route('/forms/<string:form_type>', methods=['POST'])
 def create(form_type):
     """
     Save a new form.  The web_app uses this endpoint to lease a unique form_id
@@ -65,8 +66,7 @@ def create(form_type):
         return kwargs.get('response')
 
 
-@bp.route('/<string:form_type>/<string:form_id>', methods=['PATCH'])
-@basic_auth_required
+@bp.route('/forms/<string:form_type>/<string:form_id>', methods=['PATCH'])
 def update(form_type, form_id):
     """
     Update an existing form is used when either a) submitting a form using an previously
@@ -87,8 +87,7 @@ def update(form_type, form_id):
         return kwargs.get('response')
 
 
-@bp.route('/<string:form_type>/<string:form_id>', methods=['DELETE'])
-@basic_auth_required
+@bp.route('/forms/<string:form_type>/<string:form_id>', methods=['DELETE'])
 def delete(form_type, form_id):
     """
     Delete a specific form

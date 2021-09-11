@@ -1,5 +1,6 @@
 from python.prohibition_web_service.config import Config
 from flask import request, make_response, Blueprint
+from flask_cors import CORS
 from python.prohibition_web_service.blueprints.common import basic_auth_required
 import logging.config
 import python.common.helper as helper
@@ -8,22 +9,21 @@ import python.common.helper as helper
 logging.config.dictConfig(Config.LOGGING)
 logging.info('*** cities blueprint loaded ***')
 
-bp = Blueprint('cities', __name__, url_prefix='/api/v1/cities')
+bp = Blueprint('cities', __name__, url_prefix='/api/v1')
+CORS(bp, resources={r"/api/v1/cities": {"origins": Config.ACCESS_CONTROL_ALLOW_ORIGIN}})
 
 
-@bp.route('/', methods=['GET'])
+@bp.route('/cities', methods=['GET'])
 def index():
     """
     List all cities
     """
     if request.method == 'GET':
         data = helper.load_json_into_dict('python/prohibition_web_service/data/cities.json')
-        response = make_response(data, 200)
-        response.headers.add('Access-Control-Allow-Origin', Config.ACCESS_CONTROL_ALLOW_ORIGIN)
-        return response
+        return make_response(data, 200)
 
 
-@bp.route('/<string:city_id>', methods=['GET'])
+@bp.route('/cities/<string:city_id>', methods=['GET'])
 @basic_auth_required
 def get(city_id):
     """
@@ -33,7 +33,7 @@ def get(city_id):
         return make_response({"error: method not implemented"}, 405)
 
 
-@bp.route('/', methods=['POST'])
+@bp.route('/cities', methods=['POST'])
 @basic_auth_required
 def create():
     """
@@ -43,7 +43,8 @@ def create():
         return make_response({"error: method not implemented"}, 405)
 
 
-@bp.route('/<string:city_id>', methods=['PATCH'])
+@bp.route('/cities/<string:city_id>', methods=['PATCH'])
+@basic_auth_required
 def update(city_id):
     """
     Update a city

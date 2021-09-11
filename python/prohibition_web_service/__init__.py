@@ -54,6 +54,7 @@ class Form(db.Model):
         lease_expiry = today + timedelta(days=30)
         self.lease_expiry = lease_expiry
         self.username = username
+        logging.info("{} leased until {}".format(self.id, self.lease_expiry.strftime("%Y-%m-%d")))
 
     @staticmethod
     def _format_lease_expiry(lease_expiry):

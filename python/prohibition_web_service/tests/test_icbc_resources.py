@@ -2,6 +2,8 @@ import pytest
 import responses
 from python.prohibition_web_service import create_app
 from python.prohibition_web_service.config import Config
+import logging
+import json
 
 
 @pytest.fixture
@@ -35,6 +37,45 @@ def test_get_driver(as_guest):
 
 
 @responses.activate
+def test_get_driver_not_found(as_guest):
+
+    responses.add(responses.GET,
+                   '{}/drivers/{}'.format(Config.ICBC_API_ROOT, "1234"),
+                  json=_driver_not_found(),
+                  status=400)
+
+    resp = as_guest.get("/api/v1/icbc/drivers/1234",
+                        follow_redirects=True,
+                        content_type="application/json")
+    assert resp.status_code == 400
+    assert 'error' in resp.json
+    assert resp.json['error']['message'] == "Not Found"
+    assert resp.json['error']['description'] == "The resource specified in the request was not found"
+    assert resp.headers['Access-Control-Allow-Origin'] == Config.ACCESS_CONTROL_ALLOW_ORIGIN
+    assert responses.calls[0].request.headers['loginUserId'] == 'usr'
+
+
+@responses.activate
+def test_get_vehicle_not_found(as_guest):
+
+    responses.add(responses.GET,
+                  '{}/vehicles?plateNumber={}'.format(Config.ICBC_API_ROOT, "AAAAA"),
+                  json=_vehicle_not_found(),
+                  status=400)
+
+    resp = as_guest.get("/api/v1/icbc/vehicles/AAAAA",
+                        follow_redirects=True,
+                        content_type="application/json")
+    logging.warning(json.dumps(resp.json))
+    assert resp.status_code == 400
+    assert 'error' in resp.json
+    assert resp.json['error']['message'] == "Not Found"
+    assert resp.json['error']['description'] == "vehicle not found"
+    assert resp.headers['Access-Control-Allow-Origin'] == Config.ACCESS_CONTROL_ALLOW_ORIGIN
+    assert responses.calls[0].request.headers['loginUserId'] == 'usr'
+
+
+@responses.activate
 def test_get_vehicle(as_guest):
 
     responses.add(responses.GET,
@@ -46,8 +87,8 @@ def test_get_vehicle(as_guest):
                         follow_redirects=True,
                         content_type="application/json")
     assert resp.status_code == 200
-    assert 'plateNumber' in resp.json
-    assert resp.json['plateNumber'] == "LD626J"
+    assert 'plateNumber' in resp.json[0]
+    assert resp.json[0]['plateNumber'] == "LD626J"
     assert resp.headers['Access-Control-Allow-Origin'] == Config.ACCESS_CONTROL_ALLOW_ORIGIN
     assert responses.calls[0].request.headers['loginUserId'] == 'usr'
 
@@ -155,4 +196,27 @@ def _sample_vehicle_response() -> list:
       }
     ]
 
+
+def _vehicle_not_found() -> dict:
+    return {
+      "error": {
+        "code": 404,
+        "message": "Not Found",
+        "description": "vehicle not found",
+        "request_uri": "/vehicles?plateNumber=LD626J",
+        "request_id": "716243aa-ca18-441d-aa3e-e6e8776ca825"
+      }
+    }
+
+
+def _driver_not_found() -> dict:
+    return {
+      "error": {
+        "code": 404,
+        "message": "Not Found",
+        "description": "The resource specified in the request was not found",
+        "request_uri": "/drivers/1234",
+        "request_id": "091d5895-2942-4d48-848d-e6e8776c9600"
+      }
+    }
 

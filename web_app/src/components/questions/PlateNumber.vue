@@ -37,7 +37,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["getAttributeValue", "isPlateJurisdictionBC", "getCurrentlyEditedProhibitionIndex"]),
+    ...mapGetters(["getAttributeValue", "isPlateJurisdictionBC", "getCurrentlyEditedFormId"]),
     icbcPayload() {
       return {
         "plateNumber": this.getAttributeValue(this.id),
@@ -52,8 +52,7 @@ export default {
       console.log("inside triggerPlateLookup()")
       this.display_spinner = true;
       this.lookupPlateFromICBC(this.icbcPayload)
-          .then( response => {
-            console.log('response', response)
+          .then( () => {
             this.display_spinner = false
           })
           .catch( error => {

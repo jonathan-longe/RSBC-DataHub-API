@@ -1,74 +1,78 @@
 import constants from "@/config/constants";
 import persistence from "@/helpers/persistence";
 
-export default {
-    initializeStore (context) {
-        console.log("inside actions.js initializeStore()", context)
-        // context.dispatch('getAllFormsFromDB')
-    },
+
+export const actions = {
 
     saveDoNotPrint (context) {
         console.log("inside actions.js saveDoNotPrint()");
+        let form_object = context.getters.getCurrentlyEditedFormObject;
         context.commit('stopEditingCurrentForm');
-        context.dispatch('saveCurrentFormToDB', context.state.currently_editing_prohibition_index);
+        context.dispatch('saveCurrentFormToDB', context.state.forms[form_object.form_type][form_object.form_id]);
     },
 
-    deleteSpecificForm({ context }, indx ) {
-        context.dispatch('deleteFormFromDB', indx)
+    deleteSpecificForm(context, form_object ) {
+        context.dispatch('deleteFormFromDB', form_object.form_id)
+        context.commit('deleteForm', form_object)
         context.commit('stopEditingCurrentForm');
     },
 
-    pluckNextUniqueIdFromListByType ({commit, getters}, prohibition_type) {
-        console.log("inside pluckNextUniqueIdFromListByType()", prohibition_type)
-        let payload = getters.getNextAvailableUniqueIdByType(prohibition_type)
-        console.log("payload", payload)
-        if (payload) {
-            commit("deleteUniqueIdFromAvailableList", {"type": prohibition_type, "idx": payload.idx})
-            commit("saveUniqueIdsToLocalStorage")
-            return payload.id;
-        }
 
+    setNewFormToEdit (context, form_type) {
+        console.log('inside setNewFormToEdit()')
+        let form_object = context.getters.getNextAvailableUniqueIdByType(form_type)
+
+        // copy form boilerplate to form
+        context.commit("setNewFormDefaults", form_object)
+        context.commit("editExistingForm", form_object)
+        context.dispatch("saveCurrentFormToDB", context.state.forms[form_object.form_type][form_object.form_id])
     },
 
-    setNewFormToEdit ({dispatch, commit}, form_short_name) {
-        console.log('inside setNewFormToEdit')
-        dispatch("pluckNextUniqueIdFromListByType", form_short_name).then( prohibition_number => {
-            commit("editNewForm", {"prohibition_number": prohibition_number, "form_short_name": form_short_name})
-            commit("saveUniqueIdsToLocalStorage")
-        })
-
-    },
-
-    retrieveAndSaveUniqueIds (context) {
-        console.log("inside retrieveAndSaveUniqueIds()")
-        context.commit("retrieveUniqueIdsFromLocalStorage")
+    async getMoreFormsFromApiIfNecessary (context) {
+        console.log("inside getMoreFormsFromApiIfNecessary()")
         for( let form_type in context.state.form_schemas.forms) {
-            if (context.getters.areNewUniqueIdsRequiredByType(form_type)) {
-                console.log("new UniqueIDs are required for " + form_type)
-                const url = constants.URL_ROOT + "/api/v1/prohibitions/leases/"
-                fetch(url + form_type, {
-                    "method": 'POST',
-                })
-                    .then(response => response.json())
+            let number_of_attempts = 0
+            while (context.getters.areNewUniqueIdsRequiredByType(form_type)
+            && number_of_attempts < constants.MAX_NUMBER_UNIQUE_ID_FETCH_ATTEMPTS) {
+                number_of_attempts++;
+                await context.dispatch("getFormIdsFromApiByType", form_type)
                     .then(data => {
-                        context.dispatch("saveUniqueIdsToDB", {"schema": form_type, "data": data})
-                        context.commit("updateUniqueIDs", {"schema": form_type, "data": data})
+                        context.commit("pushFormToStore", data)
+                        context.dispatch("saveCurrentFormToDB", data)
                     })
                     .catch(function (error) {
+                        console.log('Unable to retrieve UniqueIDs for ' + form_type)
                         console.log(error)
-                    });
-
-            } else {
-                console.log("new UniqueIDs are NOT required", form_type)
-            }
+                    })
+           }
         }
-        context.commit("saveUniqueIdsToLocalStorage")
+    },
+
+    async getFormIdsFromApiByType (context, form_type) {
+        const headers = new Headers();
+        const url = constants.URL_ROOT + "/api/v1/forms/" + form_type
+        // TODO - remove before flight
+        headers.set('Content-Type', 'application/json')
+        headers.set('Authorization', 'Basic ' + btoa(constants.USERNAME + ":" + constants.PASSWORD));
+        return await fetch(url, {"method": 'POST', headers: headers, credentials: "same-origin"})
+            .then(response => response.json())
+            .then(data => {
+                return {
+                    form_id: data.id,
+                    form_type: data.form_type,
+                    lease_expiry: data.lease_expiry,
+                    served_timestamp: data.served_timestamp
+                }
+            })
+            .catch(function (error) {
+                console.log(error)
+            });
     },
 
     async lookupDriverFromICBC({commit}, icbcPayload) {
         console.log("inside actions.js lookupDriverFromICBC(): " + icbcPayload)
         let dlNumber = icbcPayload['dlNumber']
-        const url = constants.URL_ROOT + "/api/v1/drivers/" + dlNumber
+        const url = constants.URL_ROOT + "/api/v1/icbc/drivers/" + dlNumber
         return await fetch(url, {
             "method": 'GET',
         })
@@ -86,23 +90,22 @@ export default {
         console.log("inside actions.js populateFromICBCPlateLookup(): ")
         console.log("icbcPayload", icbcPayload)
         let plate_number = icbcPayload['plateNumber']
-        const url = constants.URL_ROOT + "/api/v1/vehicles/" + plate_number
+        const url = constants.URL_ROOT + "/api/v1/icbc/vehicles/" + plate_number
         return await fetch(url, {
             "method": 'GET',
         })
             .then(response => response.json())
             .then(data => {
                 console.log("data", data)
-                commit("populateVehicleFromICBC", data)
+                commit("saveICBCVehicleToStore", data)
             })
             .catch(function (error) {
-                console.log("catch inside populateFromIcbcPlateLookup()")
                console.log(error)
             });
     },
 
     fetchDynamicLookupTables({commit}, type) {
-        const url = constants.URL_ROOT + "/api/v1/configuration/" + type
+        const url = constants.URL_ROOT + "/api/v1/" + type
         let networkDataRetrieved = false
 
         // trigger request for fresh data from API
@@ -135,17 +138,17 @@ export default {
         })
     },
 
-    fetchStaticLookupTables({commit}, type) {
-        const url = constants.URL_ROOT + "/api/v1/configuration/" + type
+    async fetchStaticLookupTables({commit}, type) {
+        const url = constants.URL_ROOT + "/api/v1/" + type
 
         caches.match(url).then( response => {
             if (!response) throw Error("No cached data");
             return response.json();
         }).then ( data => {
             commit("populateStaticLookupTables", { "type": type, "data": data })
-        }).catch( function() {
-            // we didn't get cached data, the API is our last hope
-            return fetch(url, {
+        }).catch( async function() {
+            // we didn't get cached data, get the data from the network
+            return await fetch(url, {
             "method": 'GET',
         }).then( response => {
                 return response.json()
@@ -159,35 +162,30 @@ export default {
         })
     },
 
-    async deleteFormFromDB(context, indx) {
-        await persistence.del(indx);
+    async deleteFormFromDB(context, form_id) {
+        await persistence.del(form_id);
     },
 
     async getAllFormsFromDB(context) {
-        context.state.edited_forms = [];
+        context.state.forms = {
+            "IRP": {},
+            "12Hour": {},
+            "24Hour": {}
+        };
+        await persistence.all()
+            .then( forms => {
+                console.log("inside getAllFormsFromDB()", forms)
+                forms.forEach( form => {
+                    context.commit("pushFormToStore", form)
+                });
+            })
 
-        let forms = await persistence.all()
-        forms.forEach( form => {
-            console.log(form)
-            context.state.edited_forms.push(form);
-        });
     },
 
-    async saveCurrentFormToDB(context, indx) {
-        // await persistence.del(indx);
-        await persistence.set(context.state.edited_forms[indx]);
-    },
-
-
-    async saveUniqueIdsToDB(context, payload) {
-        payload.data.forEach( row => {
-            persistence.updateOrCreate(row, row.id)
-        })
-
+    async saveCurrentFormToDB(context, form_object) {
+        let form_object_to_save = context.state.forms[form_object.form_type][form_object.form_id]
+        await persistence.updateOrCreate(form_object.form_id, form_object_to_save)
     }
-
-
-
 
 
 }

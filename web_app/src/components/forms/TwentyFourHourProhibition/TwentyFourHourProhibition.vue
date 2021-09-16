@@ -65,6 +65,8 @@ import TestAdministeredDrugsCard from "@/components/forms/TwentyFourHourProhibit
 import SupplementaryModal from "@/components/forms/TwentyFourHourProhibition/SupplementaryModal";
 import OfficerDetailsCard from "@/components/forms/TwentyFourHourProhibition/OfficerDetailsCard";
 import VehicleOwnerCard from "@/components/forms/TwentyFourHourProhibition/VehicleOwnerCard";
+import PrintConfirmationModal from "@/components/forms/TwentyFourHourProhibition/PrintConfirmationModal";
+import {store} from "@/store/store";
 
 
 export default {
@@ -78,10 +80,11 @@ export default {
     SupplementaryModal,
     VehicleImpoundmentCard, VehicleInformationCard,
     DriversInformationCard, ReturnOfLicenceCard,
-    OfficerDetailsCard}, VehicleOwnerCard,
+    OfficerDetailsCard, PrintConfirmationModal
+  },
   mixins: [FormsCommon],
   computed: {
-    ...mapGetters(["getAttributeValue", "isPlateJurisdictionBC",
+    ...mapGetters(["getAttributeValue", "isPlateJurisdictionBC", "getCurrentlyEditedFormObject",
       "corporateOwner", "getXdfFileNameString", "getPDFTemplateFileName", "getXFDF", "getCurrentFormData"]),
     isProhibitionTypeDrugs() {
       return this.getAttributeValue('prohibition_type') === "Drugs 215(3)";
@@ -92,24 +95,26 @@ export default {
     isPrescribedTestUsed() {
       return this.getAttributeValue('prescribed_device').substr(0,3) === "Yes";
     },
+
   },
   methods: {
-    ...mapActions(["saveDoNotPrint", "fetchStaticLookupTables"]),
+    ...mapActions(["saveDoNotPrint", "fetchStaticLookupTables", "saveCurrentFormToDB"]),
     ...mapMutations(["stopEditingCurrentForm"]),
 
     saveAndPrint(pdf_template_filepath) {
       console.log("inside saveAndPrint() " + pdf_template_filepath)
+      let form_object = this.getCurrentlyEditedFormObject
+      store.dispatch("saveCurrentFormToDB", form_object)
       const xml_file = this.getXFDF(pdf_template_filepath);
-      console.log('success generateXFDF()', xml_file)
+      console.log('success generateXFDF()', xml_file, form_object)
       const href = window.URL.createObjectURL(xml_file); //create the download url
       const downloadElement = document.createElement("a");
       downloadElement.href = href;
-      downloadElement.download =  this.getXdfFileNameString;
+      downloadElement.download =  this.getXdfFileNameString(form_object);
       document.body.appendChild(downloadElement);
       downloadElement.click(); //click to file
       document.body.removeChild(downloadElement); //remove the element
       window.URL.revokeObjectURL(href); //release the object  of the blob
-      this.$store.dispatch("saveCurrentFormToDB", this.$store.state.currently_editing_prohibition_index)
       this.$bvModal.show('printConfirmationModal')
     }
   }

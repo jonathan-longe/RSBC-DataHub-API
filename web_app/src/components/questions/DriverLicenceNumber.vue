@@ -40,10 +40,10 @@ export default {
     icbcPayload() {
       return {
         "dlNumber": this.getAttributeValue(this.id),
-        "formIndex": this.getCurrentlyEditedProhibitionIndex
+        "form_object": this.getCurrentlyEditedFormObject
       }
     },
-    ...mapGetters(['getCurrentlyEditedProhibitionIndex', "getAttributeValue", "isLicenceJurisdictionBC"]),
+    ...mapGetters(['getCurrentlyEditedFormObject', "getAttributeValue", "isLicenceJurisdictionBC"]),
   },
   methods: {
     ...mapMutations(['updateFormField']),
@@ -52,8 +52,7 @@ export default {
       console.log("inside triggerDriversLookup()")
       this.display_spinner = true;
       this.lookupDriverFromICBC(this.icbcPayload)
-          .then( response => {
-            console.log('response', response)
+          .then(() => {
             this.display_spinner = false
           })
           .catch( error => {

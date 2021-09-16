@@ -1,8 +1,8 @@
 import moment from "moment";
-import constants from "@/config/constants";
-import xfdf from "@/helpers/xfdf_generator";
+import constants from "../config/constants";
+import xfdf from "../helpers/xfdf_generator";
 
-export default {
+export const getters = {
 
     getAllAvailableForms: state => {
       return state.form_schemas.forms;
@@ -12,67 +12,71 @@ export default {
       return state.version;
     },
 
-    getAllEditedProhibitions: state => {
-        return state.edited_forms;
+    getAllEditedForms: state => {
+        let edited_forms = Array();
+        for (let form_type in state.forms) {
+            for (let form_id in state.forms[form_type]) {
+                if ("data" in state.forms[form_type][form_id]) {
+                    edited_forms.push(state.forms[form_type][form_id])
+                }
+            }
+        }
+        return edited_forms;
     },
 
     isFormBeingEdited: state => {
-        return state.currently_editing_prohibition_index !== null
+        return state.currently_editing_form_object.form_id !== null
     },
 
-    getCurrentlyEditedProhibitionIndex: state => {
-        return state.currently_editing_prohibition_index;
+    getCurrentlyEditedFormObject: state => {
+        return state.currently_editing_form_object;
     },
 
-    getCurrentlyEditedProhibitionNumber: state => {
-        return state.edited_forms[state.currently_editing_prohibition_index].data.prohibition_number;
+    getCurrentlyEditedFormId: state => {
+        return state.currently_editing_form_object.form_id;
     },
 
     getSelectedFormComponent: state => {
-        let prohibition_index = state.currently_editing_prohibition_index;
-        if (prohibition_index == null) {
+        let form_object = state.currently_editing_form_object;
+        if (form_object.form_id == null) {
             return null;
         }
-        return state.edited_forms[prohibition_index].component;
+        return state.forms[form_object.form_type][form_object.form_id].component;
     },
 
-    getCurrentlyEditedForm: state => {
-        console.log('inside getCurrentlyEditedForm')
-        let prohibition_index = state.currently_editing_prohibition_index;
-        if (prohibition_index == null) {
-            return null;
-        }
-        return state.edited_forms[prohibition_index];
+    getCurrentlyEditedFormData: state => {
+        let form_object = state.currently_editing_form_object;
+        return state.forms[form_object.form_type][form_object.form_id].data;
     },
 
     getFormSteps: state => {
-        let prohibition_index = state.currently_editing_prohibition_index
-        return state.edited_forms[prohibition_index].steps;
+        let form_object = state.currently_editing_form_object;
+        return state.forms[form_object.form_type][form_object.form_id].steps;
     },
 
     getFormCurrentStep: state => {
-        let prohibition_index = state.currently_editing_prohibition_index
-        return state.edited_forms[prohibition_index].data.current_step;
+        let form_object = state.currently_editing_form_object;
+        return state.forms[form_object.form_type][form_object.form_id].data.current_step;
     },
 
     isPreviousButtonDisabled: state => {
-        let prohibition_index = state.currently_editing_prohibition_index
-        if (state.edited_forms[prohibition_index].data.current_step === 1) {
+        let form_object = state.currently_editing_form_object;
+        if (state.forms[form_object.form_type][form_object.form_id].data.current_step === 1) {
             return true
         }
     },
 
     isNextButtonDisabled: state => {
-        let prohibition_index = state.currently_editing_prohibition_index
-        let max_steps = state.edited_forms[prohibition_index].steps.length
-        if (state.edited_forms[prohibition_index].data.current_step === max_steps) {
+        let form_object = state.currently_editing_form_object;
+        let max_steps = state.forms[form_object.form_type][form_object.form_id].steps.length
+        if (state.forms[form_object.form_type][form_object.form_id].data.current_step === max_steps) {
             return true
         }
     },
 
     getAttributeValue: state => id => {
-        let prohibition_index = state.currently_editing_prohibition_index
-        let root = state.edited_forms[prohibition_index].data;
+        let form_object = state.currently_editing_form_object;
+        let root = state.forms[form_object.form_type][form_object.form_id].data;
         if (!(id in root)) {
             return '';
         }
@@ -80,8 +84,8 @@ export default {
     },
 
     checkBoxStatus: state => (id, value) => {
-        let prohibition_index = state.currently_editing_prohibition_index
-        let root = state.edited_forms[prohibition_index].data;
+        let form_object = state.currently_editing_form_object;
+        let root = state.forms[form_object.form_type][form_object.form_id].data;
         if (!(id in root)) {
             return false;
         }
@@ -101,8 +105,8 @@ export default {
     },
 
     getArrayOfVehicleMakes: state => {
-        let prohibition_index = state.currently_editing_prohibition_index
-        let year = state.edited_forms[prohibition_index].data.vehicle_year
+        let form_object = state.currently_editing_form_object;
+        let year = state.forms[form_object.form_type][form_object.form_id].data.vehicle_year
         let results = state.vehicles.filter(v => v.year === year);
         if (results.length > 0) {
             return results.map( v => v.make ).filter(_onlyUnique)
@@ -112,9 +116,9 @@ export default {
     },
 
     getArrayOfVehicleModels: state => {
-        let prohibition_index = state.currently_editing_prohibition_index
-        let year = state.edited_forms[prohibition_index].data.vehicle_year
-        let make = state.edited_forms[prohibition_index].data.vehicle_make
+        let form_object = state.currently_editing_form_object;
+        let year = state.forms[form_object.form_type][form_object.form_id].data.vehicle_year
+        let make = state.forms[form_object.form_type][form_object.form_id].data.vehicle_make
         let results = state.vehicles.filter( v => v.year === year && v.make === make);
         if (results.length > 0) {
             return results.map( v => v.model )
@@ -124,23 +128,28 @@ export default {
     },
 
     isRecentProhibitions: state => {
-        return state.edited_forms.length > 0;
-    },
-
-    getSpecificForm: state => prohibition_index => {
-        return state.edited_forms[prohibition_index];
+        for (let form_type in state.forms) {
+            // console.log('form_type', form_type)
+            for (let form_object in state.forms[form_type]) {
+                if("data" in state.forms[form_type][form_object]) {
+                    // the 'data' attribute is added when the form is first edited
+                    return true
+                }
+            }
+        }
+        return false
     },
 
     isNetworkOnline: state => {
         return state.isOnline;
     },
 
-    isFormEditable: state => prohibition_index => {
-        return state.edited_forms[prohibition_index].data.served === false;
+    isFormEditable: state => form_object => {
+        return state.forms[form_object.form_type][form_object.form_id].served_timestamp == null;
     },
 
-    getServedStatus: state => prohibition_index => {
-        if (state.edited_forms[prohibition_index].data.served) {
+    getServedStatus: state => form_object => {
+        if (state.forms[form_object.form_type][form_object.form_id].served_timestamp) {
             return "Served";
         }
         return "Not Served"
@@ -150,19 +159,18 @@ export default {
         return state.ROADSAFETY_EMAIL;
     },
 
-    getXdfFileNameString: state => {
-        let prohibition_index = state.currently_editing_prohibition_index
+    getXdfFileNameString: state => form_object => {
         let file_extension = ".xfdf"
-        let last_name = state.edited_forms[prohibition_index].data.last_name;
-        let prohibition_number = state.edited_forms[prohibition_index].data.prohibition_number;
-        let file_name = last_name + "_" + prohibition_number + file_extension;
+        let last_name = state.forms[form_object.form_type][form_object.form_id].data.last_name;
+        let form_id = state.forms[form_object.form_type][form_object.form_id].form_id;
+        let file_name = last_name + "_" + form_id + file_extension;
         console.log('filename', file_name)
         return file_name
     },
 
     getPDFTemplateFileName: state => {
-        let prohibition_index = state.currently_editing_prohibition_index
-        return state.edited_forms[prohibition_index].pdf_template;
+        let form_object = state.currently_editing_form_object;
+        return state.forms[form_object.form_type][form_object.form_id].pdf_template;
     },
 
     getArrayOfJurisdictions: state => {
@@ -174,7 +182,7 @@ export default {
     },
 
     getArrayOfImpoundLotOperators: state => {
-        return state.impoundLotOperators.map( o => o.name + " - " + o.lot_address + ", " + o.city + ", " + o.phone);
+        return state.impound_lot_operators.map( o => o.name + " - " + o.lot_address + ", " + o.city + ", " + o.phone);
     },
 
     getArrayOfPickupLocations: state => {
@@ -182,20 +190,20 @@ export default {
     },
 
     isPlateJurisdictionBC: state => {
-        let prohibition_index = state.currently_editing_prohibition_index
-        let root = state.edited_forms[prohibition_index].data;
+        let form_object = state.currently_editing_form_object;
+        let root = state.forms[form_object.form_type][form_object.form_id].data;
         return root['plate_province'] === "British Columbia"
     },
 
     isLicenceJurisdictionBC: state => {
-        let prohibition_index = state.currently_editing_prohibition_index
-        let root = state.edited_forms[prohibition_index].data;
+        let form_object = state.currently_editing_form_object;
+        let root = state.forms[form_object.form_type][form_object.form_id].data;
         return root['drivers_licence_jurisdiction'] === "British Columbia"
     },
 
     corporateOwner: state => {
-        let prohibition_index = state.currently_editing_prohibition_index
-        let root = state.edited_forms[prohibition_index].data;
+        let form_object = state.currently_editing_form_object;
+        let root = state.forms[form_object.form_type][form_object.form_id].data;
         if( ! root['corporate_owner']) {
             return false;
         }
@@ -203,8 +211,8 @@ export default {
     },
 
     getCurrentFormData: state => {
-        let prohibition_index = state.currently_editing_prohibition_index
-        return state.edited_forms[prohibition_index].data;
+        let form_object = state.currently_editing_form_object;
+        return state.forms[form_object.form_type][form_object.form_id].data;
     },
 
     getXFDF: (state, getters) => pdf_template_filepath => {
@@ -212,70 +220,59 @@ export default {
         return xfdf.generate(pdf_template_filepath, key_value_pairs)
     },
 
-    areNewUniqueIdsRequiredByType: (state, getters) => prohibition_type => {
-        console.log("inside areNewUniqueIdsRequiredByType()", prohibition_type)
-        if (state.unique_ids === {}) {
-            console.log("Unique ids have never been retrieved before")
+    areNewUniqueIdsRequiredByType: (state, getters) => form_type => {
+        // Business rules state that X number of forms must be available to use offline
+        if (getters.getFormTypeCount[form_type] < constants.MINIMUM_NUMBER_OF_UNIQUE_IDS_PER_TYPE) {
+            console.log("inside areNewUniqueIdsRequiredByType", getters.getFormTypeCount, form_type)
             return true;
         }
-        if (getters.getMinimumUniqueIdsOnHandByType(prohibition_type) < constants.MINIMUM_NUMBER_OF_UNIQUE_IDS_PER_TYPE) {
-            console.log("Number of unique ids is below set minimums", getters.getMinimumUniqueIdsOnHandByType(prohibition_type))
-            return true;
-        }
-        if (getters.getOldestUniqueIdExpiryDateByType(prohibition_type) > constants.UNIQUE_ID_REFRESH_DAYS) {
-            console.log("At least one unique ids is getting close to it's expiry date")
-            return true;
-        }
-
         return false
-
     },
 
-    getMinimumUniqueIdsOnHandByType: state => prohibition_type => {
-        if (prohibition_type in state.unique_ids) {
-            return state.unique_ids[prohibition_type].length
+    getFormTypeCount: state => {
+        let FormTypeCount = {}
+        for (let form_type in state.forms) {
+            FormTypeCount[form_type] = Object.keys(state.forms[form_type]).length
         }
-        return 0;
+        return FormTypeCount;
     },
 
-    getOldestUniqueIdExpiryDateByType: state => prohibition_type => {
-        let maximum_days_old = 0;
-        if (prohibition_type in state.unique_ids) {
-            for (let record of state.unique_ids[prohibition_type]) {
-                let days_to_expiry = moment().diff(record.lease_expiry, "days")
-                if (days_to_expiry > maximum_days_old) {
-                    maximum_days_old = days_to_expiry
-                }
-                return maximum_days_old
-            }
-        }
-    },
-
-    getNextAvailableUniqueIdByType: state => prohibition_type => {
-        console.log("inside getNextAvailableUniqueId()")
-        for (let [idx, record] of state.unique_ids[prohibition_type].entries()) {
-            console.log("record", record)
-            if (moment().diff(record.lease_expiry, "days") < 0) {
-                console.log("inside loop", record, idx)
+    getNextAvailableUniqueIdByType: state => form_type => {
+        console.log("inside getNextAvailableUniqueIdByType()", form_type)
+        for (let form_id in state.forms[form_type]) {
+            if( ! ("data" in state.forms[form_type][form_id])) {
                 return {
-                    "id": record.id,
-                    "type": prohibition_type,
-                    "idx": idx
+                    "form_id": form_id,
+                    "form_type": form_type
                 }
             }
-            return {}
+
         }
     },
 
     getKeyValuePairs: state => {
-        let prohibition_index = state.currently_editing_prohibition_index
-        let form_data = state.edited_forms[prohibition_index].data;
+        let form_object = state.currently_editing_form_object;
+        let form_data = state.forms[form_object.form_type][form_object.form_id].data;
         let key_value_pairs = Array();
         for( let object in form_data) {
             key_value_pairs[object] = form_data[object];
         }
         return key_value_pairs;
-    }
+    },
+
+    arrayOfFormsRequiringRenewal: state => {
+        let forms = Array();
+        for (let form_type in state.forms) {
+            for (let form_id in state.forms[form_type]) {
+                let form_object = state.forms[form_type][form_id]
+                let days_to_expiry = moment(form_object.lease_expiry).diff(moment(), 'days')
+                if (! form_object.served_timestamp && days_to_expiry < constants.UNIQUE_ID_REFRESH_DAYS) {
+                    forms.push(form_object)
+                }
+            }
+        }
+        return forms
+    },
 
 }
 

@@ -8,8 +8,8 @@
     </div>
     <div class="card-body">
       <offline-banner v-if="isNetworkOnline"></offline-banner>
-      <component v-if="isFormBeingEdited" :data="getCurrentlyEditedForm.data"
-                 :is="getSelectedFormComponent" :name="getCurrentlyEditedForm.short_name">
+      <component v-if="isFormBeingEdited" :data="getCurrentlyEditedFormData"
+                 :is="getSelectedFormComponent" :name="getCurrentlyEditedFormObject.form_type">
       </component>
       <recent-prohibitions v-if="isRecentProhibitions && ! isFormBeingEdited"></recent-prohibitions>
       <issue-prohibitions v-if=" ! isFormBeingEdited"></issue-prohibitions>
@@ -30,7 +30,7 @@ import ImmediateRoadsideProhibition from "@/components/forms/ImmediateRoadsidePr
 import FeedbackWelcome from "@/components/FeedbackWelcome";
 import ProhibitionSearch from "@/components/ProhibitionSearch";
 import RecentProhibitions from "@/components/RecentProhibitions";
-import {mapActions, mapGetters, mapMutations} from 'vuex';
+import {mapGetters, mapMutations} from 'vuex';
 
 export default {
   name: 'App',
@@ -45,24 +45,15 @@ export default {
     ImmediateRoadsideProhibition
   },
   computed: {
-    ...mapGetters(['getAppVersion', 'isFormBeingEdited',"getSelectedFormComponent","getCurrentlyEditedForm","isRecentProhibitions","isNetworkOnline"]),
+    ...mapGetters(['getAppVersion', 'isFormBeingEdited',"getSelectedFormComponent",
+      "getCurrentlyEditedFormObject","isRecentProhibitions","isNetworkOnline",
+      "getCurrentlyEditedFormData"]),
   },
 
   methods: {
-    ...mapActions(["fetchStaticLookupTables"]),
     ...mapMutations(["networkOffline","networkBackOnline"])
   },
 
-  mounted() {
-    this.fetchStaticLookupTables("impoundLotOperators")
-    this.fetchStaticLookupTables("countries")
-    this.fetchStaticLookupTables("jurisdictions")
-    this.fetchStaticLookupTables("provinces")
-    this.fetchStaticLookupTables("cities")
-    this.fetchStaticLookupTables("colors")
-    this.fetchStaticLookupTables("vehicles")
-    this.fetchStaticLookupTables("pickup_locations")
-  }
 }
 </script>
 

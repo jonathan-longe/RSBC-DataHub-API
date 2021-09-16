@@ -19,8 +19,8 @@ async function get(key) {
 	return (await dbPromise).get(FORMS_OBJECT_STORE, key);
 }
 
-async function createOrUpdate(val, key) {
-  return (await dbPromise).put(FORMS_OBJECT_STORE, val, key);
+async function updateOrCreate(key, value) {
+  return (await dbPromise).put(FORMS_OBJECT_STORE, value, key);
 }
 
 async function del(key) {
@@ -35,4 +35,4 @@ async function keys() {
   return (await dbPromise).getAllKeys(FORMS_OBJECT_STORE);
 }
 
-export default { get, updateOrCreate: createOrUpdate, del, clear, keys, all}
+export default { get, updateOrCreate, del, clear, keys, all}

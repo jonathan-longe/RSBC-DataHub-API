@@ -7,11 +7,11 @@
       <p class="card-text text-dark">{{ form.description }}</p>
       <p class="card-text">
         <small class="text-muted">
-          Prohibition IDs available: {{ getMinimumUniqueIdsOnHandByType(form.short_name) }}
+          Prohibition IDs available: {{ getFormTypeCount[form.form_type] }}
         </small>
       </p>
-        <button @click="viewForm" type="submit" class="btn btn-primary" :disabled="! isFormAvailable">
-          View {{ form.short_name }} Form
+        <button @click="setNewFormToEdit(form.form_type)" type="submit" class="btn btn-primary" :disabled="! isFormAvailable">
+          New {{ form.form_type }} Form
         </button>
     </div>
     </div>
@@ -19,7 +19,7 @@
 
 <script>
 
-import {mapGetters} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 
 export default {
   name: "IssueProhibitions",
@@ -27,14 +27,12 @@ export default {
       form: {}
   },
   methods: {
-      viewForm() {
-        this.$store.dispatch("setNewFormToEdit", this.form.short_name)
-      }
+    ...mapActions(["setNewFormToEdit"])
   },
   computed: {
-    ...mapGetters(["getMinimumUniqueIdsOnHandByType"]),
+    ...mapGetters(["getFormTypeCount"]),
     isFormAvailable() {
-      return this.getMinimumUniqueIdsOnHandByType(this.form.short_name) > 0
+      return this.getFormTypeCount[this.form.form_type] > 0
     }
   }
 }

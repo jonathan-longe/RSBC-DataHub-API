@@ -31,7 +31,7 @@ export default {
         this.markFormStatusAsServed(moment.now())
         this.$store.dispatch("saveCurrentFormToDB", this.$store.state.currently_editing_form_object)
         this.$bvModal.hide('printConfirmationModal')
-        this.$bvModal.show('SupplementaryModal')
+        this.stopEditingCurrentForm();
       },
       confirmNotServedToDriver() {
         this.$bvModal.hide('printConfirmationModal')

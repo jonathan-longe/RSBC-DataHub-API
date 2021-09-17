@@ -232,7 +232,13 @@ export const getters = {
     getFormTypeCount: state => {
         let FormTypeCount = {}
         for (let form_type in state.forms) {
-            FormTypeCount[form_type] = Object.keys(state.forms[form_type]).length
+            FormTypeCount[form_type] = 0;
+            for (let form_id in state.forms[form_type]) {
+                if ( ! ("data" in state.forms[form_type][form_id])) {
+                    FormTypeCount[form_type]++
+                }
+
+            }
         }
         return FormTypeCount;
     },

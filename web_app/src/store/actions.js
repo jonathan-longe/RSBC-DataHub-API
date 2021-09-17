@@ -28,6 +28,27 @@ export const actions = {
         context.dispatch("saveCurrentFormToDB", context.state.forms[form_object.form_type][form_object.form_id])
     },
 
+    async renewFormLeasesFromApiIfNecessary (context) {
+        console.log("inside renewFormLeasesFromApiIfNecessary()")
+        for( let form in context.getters.arrayOfFormsRequiringRenewal) {
+            let number_of_attempts = 0
+            while (number_of_attempts < constants.MAX_NUMBER_UNIQUE_ID_FETCH_ATTEMPTS) {
+                number_of_attempts++;
+                await context.dispatch("renewFormFromApiById", form.form_type, form.form_id)
+                    .then(data => {
+                        if (data) {
+                            context.commit("pushFormToStore", data)
+                            context.dispatch("saveCurrentFormToDB", data)
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log('Unable to renew form lease for ' + form.form_id)
+                        console.log(error)
+                    })
+           }
+        }
+    },
+
     async getMoreFormsFromApiIfNecessary (context) {
         console.log("inside getMoreFormsFromApiIfNecessary()")
         for( let form_type in context.state.form_schemas.forms) {
@@ -37,8 +58,10 @@ export const actions = {
                 number_of_attempts++;
                 await context.dispatch("getFormIdsFromApiByType", form_type)
                     .then(data => {
-                        context.commit("pushFormToStore", data)
-                        context.dispatch("saveCurrentFormToDB", data)
+                        if (data) {
+                            context.commit("pushFormToStore", data)
+                            context.dispatch("saveCurrentFormToDB", data)
+                        }
                     })
                     .catch(function (error) {
                         console.log('Unable to retrieve UniqueIDs for ' + form_type)
@@ -51,10 +74,28 @@ export const actions = {
     async getFormIdsFromApiByType (context, form_type) {
         const headers = new Headers();
         const url = constants.URL_ROOT + "/api/v1/forms/" + form_type
-        // TODO - remove before flight
         headers.set('Content-Type', 'application/json')
-        headers.set('Authorization', 'Basic ' + btoa(constants.USERNAME + ":" + constants.PASSWORD));
-        return await fetch(url, {"method": 'POST', headers: headers, credentials: "same-origin"})
+        return await fetch(url, {"method": "POST", headers: headers, credentials: "same-origin"})
+            .then(response => response.json())
+            .then(data => {
+                return {
+                    form_id: data.id,
+                    form_type: data.form_type,
+                    lease_expiry: data.lease_expiry,
+                    served_timestamp: data.served_timestamp
+                }
+            })
+            .catch(function (error) {
+                console.log(error)
+            });
+    },
+
+    async renewFormFromApiById (context, form_type, form_id) {
+        console.log("inside renewFormFromApiById()")
+        const headers = new Headers();
+        const url = constants.URL_ROOT + "/api/v1/forms/" + form_type + "/" + form_id
+        headers.set('Content-Type', 'application/json')
+        return await fetch(url, {"method": "PATCH", headers: headers, credentials: "same-origin"})
             .then(response => response.json())
             .then(data => {
                 return {

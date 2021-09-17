@@ -22,7 +22,7 @@
 import {mapActions, mapGetters} from "vuex";
 
 export default {
-  name: "IssueProhibitions",
+  name: "ProhibitionCard",
   props: {
       form: {}
   },

@@ -4,7 +4,7 @@ import logging
 from flask_sqlalchemy import SQLAlchemy
 from python.prohibition_web_service.config import Config
 from python.prohibition_web_service.blueprints import impound_lot_operators, jurisdictions, forms, admin_forms
-from python.prohibition_web_service.blueprints import provinces, countries, cities, colors, vehicles, icbc
+from python.prohibition_web_service.blueprints import provinces, countries, cities, colors, vehicles, icbc, keycloak
 
 
 application = FlaskAPI(__name__)
@@ -21,6 +21,7 @@ application.register_blueprint(colors.bp)
 application.register_blueprint(vehicles.bp)
 application.register_blueprint(icbc.bp)
 application.register_blueprint(admin_forms.bp)
+application.register_blueprint(keycloak.bp)
 
 
 db = SQLAlchemy(application)

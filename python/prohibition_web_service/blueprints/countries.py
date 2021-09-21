@@ -3,14 +3,12 @@ from flask import request, make_response, Blueprint, jsonify
 from python.prohibition_web_service.blueprints.common import basic_auth_required
 import logging.config
 import python.common.helper as helper
-from flask_cors import CORS
 
 
 logging.config.dictConfig(Config.LOGGING)
 logging.info('*** countries blueprint loaded ***')
 
 bp = Blueprint('countries', __name__, url_prefix='/api/v1')
-CORS(bp, resources={r"/api/v1/countries": {"origins": Config.ACCESS_CONTROL_ALLOW_ORIGIN}})
 
 
 @bp.route('/countries', methods=['GET'])

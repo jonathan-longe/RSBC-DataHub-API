@@ -54,9 +54,6 @@ def test_index_method_only_returns_current_users_form_records(as_guest, forms):
         {'id': 'AA-123333', 'form_type': '24Hour', 'lease_expiry': '2021-07-20', 'served_timestamp': None}
     ]
     assert resp.status_code == 200
-    logging.warning(resp.headers)
-    assert resp.headers['Access-Control-Allow-Origin'] == Config.ACCESS_CONTROL_ALLOW_ORIGIN
-
 
 # def test_unauthorized_users_cannot_get_forms(as_guest, forms):
 #     resp = as_guest.get("/api/v1/forms/24Hour",

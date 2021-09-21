@@ -119,10 +119,10 @@ services:
           dockerfile: Dockerfile-local
 
         ports:
-            - "5008:5000"
+            - "8080:5000"
 
 
-    prohibition_web_service:
+    rsbc-dh-prohibition-web-service:
       build:
         context: python
         dockerfile: prohibition_web_service/Dockerfile-local
@@ -134,6 +134,9 @@ services:
         ICBC_API_PASSWORD: "${ICBC_API_PASSWORD}"
         ACCESS_CONTROL_ALLOW_ORIGIN: "${ACCESS_CONTROL_ALLOW_ORIGIN}"
         LOG_LEVEL: "INFO"
+        KEYCLOAK_REALM: "${KEYCLOAK_REALM}"
+        KEYCLOAK_AUTH_URL: "${KEYCLOAK_AUTH_URL}"
+        KEYCLOAK_CLIENT_ID: "${KEYCLOAK_CLIENT_ID}"
 
 
       ports:

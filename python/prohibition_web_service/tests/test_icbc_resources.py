@@ -32,7 +32,6 @@ def test_get_driver(as_guest):
     assert resp.status_code == 200
     assert 'dlNumber' in resp.json
     assert resp.json['dlNumber'] == "5120503"
-    assert resp.headers['Access-Control-Allow-Origin'] == Config.ACCESS_CONTROL_ALLOW_ORIGIN
     assert responses.calls[0].request.headers['loginUserId'] == 'usr'
 
 
@@ -51,7 +50,6 @@ def test_get_driver_not_found(as_guest):
     assert 'error' in resp.json
     assert resp.json['error']['message'] == "Not Found"
     assert resp.json['error']['description'] == "The resource specified in the request was not found"
-    assert resp.headers['Access-Control-Allow-Origin'] == Config.ACCESS_CONTROL_ALLOW_ORIGIN
     assert responses.calls[0].request.headers['loginUserId'] == 'usr'
 
 
@@ -71,7 +69,6 @@ def test_get_vehicle_not_found(as_guest):
     assert 'error' in resp.json
     assert resp.json['error']['message'] == "Not Found"
     assert resp.json['error']['description'] == "vehicle not found"
-    assert resp.headers['Access-Control-Allow-Origin'] == Config.ACCESS_CONTROL_ALLOW_ORIGIN
     assert responses.calls[0].request.headers['loginUserId'] == 'usr'
 
 
@@ -89,7 +86,6 @@ def test_get_vehicle(as_guest):
     assert resp.status_code == 200
     assert 'plateNumber' in resp.json[0]
     assert resp.json[0]['plateNumber'] == "LD626J"
-    assert resp.headers['Access-Control-Allow-Origin'] == Config.ACCESS_CONTROL_ALLOW_ORIGIN
     assert responses.calls[0].request.headers['loginUserId'] == 'usr'
 
 

@@ -19,6 +19,10 @@ class Config(BaseConfig):
     ADMIN_USERNAME                      = os.getenv('ADMIN_USERNAME', 'admin')
     ADMIN_PASSWORD                      = os.getenv('ADMIN_PASSWORD', 'secret')
 
+    KEYCLOAK_REALM                      = os.getenv("KEYCLOAK_REALM")
+    KEYCLOAK_AUTH_URL                   = os.getenv("KEYCLOAK_AUTH_URL")
+    KEYCLOAK_CLIENT_ID                  = os.getenv("KEYCLOAK_CLIENT_ID")
+
     MAX_RECORDS_RETURNED                = 200
 
 

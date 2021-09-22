@@ -141,3 +141,13 @@ services:
 
       ports:
         - "5002:5000"
+
+
+    geocoder:
+        build:
+          context: python
+          dockerfile: geocodersvc/Dockerfile-local
+        environment:
+          LOG_LEVEL: "WARNING"
+          ENCRYPT_KEY: "${ENCRYPT_KEY}"
+

@@ -1,6 +1,7 @@
 import python.common.helper as helper
 from python.ingestor.config import Config
 from python.common.rabbitmq import RabbitMQ
+from python.common.message import encode_message
 import python.ingestor.business as business
 from flask import request, jsonify, Response, g
 from flask_api import FlaskAPI
@@ -47,25 +48,20 @@ def basic_auth_required(f):
     return decorated
 
 
-@application.route('/v1/publish/event/form_intake', methods=["POST"])
 @basic_auth_required
-def ingest_form():
-    if request.method == 'POST':
-        logging.info("ingest_form() invoked: {} | {}".format(request.remote_addr, request.get_data()))
-        args = helper.middle_logic(business.ingest_form(),
-                                   writer=g.writer,
-                                   form_parameters=available_parameters,
-                                   request=request,
-                                   config=Config)
-
-        return args.get('response')
+@application.route('/v1/publish/event/etk', methods=["POST"])
+def ingest_e_ticket_event():
+    if request.method == 'POST' and request.content_type == 'application/json':
+        payload = request.json
+        encoded_message = encode_message(payload, Config.ENCRYPT_KEY)
+        if payload is not None and g.writer.publish('ingested', encoded_message):
+            return jsonify(payload), 200
+        else:
+            return Response({'error': 'Unavailable'}, 500, mimetype='application/json')
 
 
 @application.route('/v1/publish/event/form', methods=["POST"])
-def ingest_form_deprecated():
-    """
-    DEPRECATED - USE "form_take" endpoint instead
-    """
+def ingest_orbeon_form():
     if request.method == 'POST':
         logging.info("ingest_form_deprecated() invoked: {} | {}".format(request.remote_addr, request.get_data()))
         args = helper.middle_logic(business.ingest_form(),
@@ -73,7 +69,6 @@ def ingest_form_deprecated():
                                    form_parameters=available_parameters,
                                    request=request,
                                    config=Config)
-
         return args.get('response')
 
 

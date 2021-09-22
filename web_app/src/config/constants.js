@@ -1,13 +1,4 @@
 export default {
-    // TODO - remove before flight
-    //  inject root URLS per environment
-
-    // root URLs should NOT end with a "/"
-    // URL_ROOT: "https://rsbc-dh-prohibition-web-service-dev.apps.silver.devops.gov.bc.ca",
-    URL_ROOT: "http://localhost:5002",
-
-    USERNAME: 'admin',
-    PASSWORD: 'secret',
 
     // Number of days before this app will refresh unique prohibition ids.  The unique
     // id expiry date is set by the prohibition web service (currently set to 30 days),
@@ -21,4 +12,5 @@ export default {
 
     // The maximum number of times app will attempt to retrieve unique IDs
     MAX_NUMBER_UNIQUE_ID_FETCH_ATTEMPTS: 2,
+
 }

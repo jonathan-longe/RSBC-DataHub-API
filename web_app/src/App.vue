@@ -3,7 +3,10 @@
     <div id="roadsafety-header" class="card-header">
             <div class="d-flex justify-content-between">
               <img width="300px" src="@/assets/BCID_RoadSafetyBC_logo_transparent.png" >
-              <p class="font-weight-bold text-warning">DRAFT <span class="text-light small">{{ getAppVersion }}</span></p>
+              <div class="d-flex align-items-end flex-column">
+                <div class="font-weight-bold text-warning">DRAFT <span class="text-light small">{{ getAppVersion }}</span></div>
+                <div class="mt-auto small">User: {{ getKeycloakUsername }}</div>
+              </div>
             </div>
     </div>
     <div class="card-body">
@@ -47,7 +50,7 @@ export default {
   computed: {
     ...mapGetters(['getAppVersion', 'isFormBeingEdited',"getSelectedFormComponent",
       "getCurrentlyEditedFormObject","isRecentProhibitions","isNetworkOnline",
-      "getCurrentlyEditedFormData"]),
+      "getCurrentlyEditedFormData", "getKeycloakUsername"]),
   },
 
   methods: {

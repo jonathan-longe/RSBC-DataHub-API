@@ -104,7 +104,8 @@ export const mutations = {
         Vue.set(state, 'icbc_vehicle_lookup', data)
     },
 
-    populateVehicleFromICBC(state, data) {
+    populateVehicleFromICBC(state, payload) {
+        let data = payload[0]
         let form_object = state.currently_editing_form_object
         Vue.set(state.forms[form_object.form_type][form_object.form_id].data, "registration_number", data['registrationNumber']);
         Vue.set(state.forms[form_object.form_type][form_object.form_id].data, "vehicle_year", data['vehicleModelYear']);
@@ -139,6 +140,10 @@ export const mutations = {
     pushFormToStore(state, form_object) {
         console.log("inside pushFormToStore()", form_object)
         Vue.set(state.forms[form_object.form_type], form_object.form_id, form_object)
+    },
+
+    setKeycloak(state, keycloak_object) {
+        Vue.set(state, "keycloak", keycloak_object)
     }
 }
 

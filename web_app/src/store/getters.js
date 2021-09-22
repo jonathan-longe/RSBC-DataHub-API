@@ -159,18 +159,22 @@ export const getters = {
         return state.ROADSAFETY_EMAIL;
     },
 
-    getXdfFileNameString: state => form_object => {
+    getXdfFileNameString: state => (form_object, document_type) => {
         let file_extension = ".xfdf"
-        let last_name = state.forms[form_object.form_type][form_object.form_id].data.last_name;
-        let form_id = state.forms[form_object.form_type][form_object.form_id].form_id;
-        let file_name = last_name + "_" + form_id + file_extension;
-        console.log('filename', file_name)
-        return file_name
+        let root = state.forms[form_object.form_type][form_object.form_id]
+        let last_name = root.data.last_name;
+        let form_id = root.form_id;
+        return last_name + "_" + form_id + "_" + document_type + file_extension;
     },
 
-    getPDFTemplateFileName: state => {
+    getPDFTemplateFileName: state => document_type => {
         let form_object = state.currently_editing_form_object;
-        return state.forms[form_object.form_type][form_object.form_id].pdf_template;
+        return state.form_schemas.forms[form_object.form_type].documents[document_type].pdf;
+    },
+
+    documentObjects: state => {
+        let form_object = state.currently_editing_form_object;
+        return state.form_schemas.forms[form_object.form_type].documents;
     },
 
     getArrayOfJurisdictions: state => {
@@ -215,8 +219,8 @@ export const getters = {
         return state.forms[form_object.form_type][form_object.form_id].data;
     },
 
-    getXFDF: (state, getters) => pdf_template_filepath => {
-        let key_value_pairs = getters.getKeyValuePairs;
+    getXFDF: (state, getters) => (pdf_template_filepath, form_type, document_type) => {
+        let key_value_pairs = getters.getXfdfMappings(form_type, document_type);
         return xfdf.generate(pdf_template_filepath, key_value_pairs)
     },
 
@@ -256,13 +260,72 @@ export const getters = {
         }
     },
 
-    getKeyValuePairs: state => {
+    getXfdfMappings: (state, getters) => (form_type, document_type) => {
+        console.log(document_type)
         let form_object = state.currently_editing_form_object;
-        let form_data = state.forms[form_object.form_type][form_object.form_id].data;
         let key_value_pairs = Array();
-        for( let object in form_data) {
-            key_value_pairs[object] = form_data[object];
+
+        key_value_pairs['VIOLATION_NUMBER'] = form_object.form_id
+        key_value_pairs['DRIVER_SURNAME'] = getters.getAttributeValue("last_name")
+        key_value_pairs['DRIVER_GIVEN'] = getters.getAttributeValue('first_name')
+        key_value_pairs['DRIVER_DL_NUMBER'] = getters.getAttributeValue('drivers_number')
+        key_value_pairs['DRIVER_DL_PROVINCE'] = getters.getAttributeValue('drivers_licence_jurisdiction')
+        // key_value_pairs['DRIVER_DOB_YYYY'] = getters.getAttributeValue('dob')
+        // key_value_pairs['DRIVER_DOB_MM'] = getters.getAttributeValue('dob')
+        // key_value_pairs['DRIVER_DOB_DD'] = getters.getAttributeValue('dob')
+        key_value_pairs['DRIVER_ADDRESS'] = getters.getAttributeValue('address1')
+        key_value_pairs['DRIVER_CITY'] = getters.getAttributeValue('city')
+        key_value_pairs['DRIVER_PROVINCE'] = getters.getAttributeValue('province')
+        key_value_pairs['DRIVER_POSTAL_CODE'] = getters.getAttributeValue('postal')
+        key_value_pairs['REASON_ALCOHOL'] = getters.getAttributeValue('prohibition_type')
+        key_value_pairs['REASON_DRUGS'] = getters.getAttributeValue('prohibition_type')
+
+        key_value_pairs['NOTICE_TIME'] = getters.getAttributeValue('prohibition_start_time')
+        key_value_pairs['NOTICE_DAY'] = getters.getAttributeValue('prohibition_start_time')
+        key_value_pairs['NOTICE_MONTH'] = getters.getAttributeValue('prohibition_start_time')
+        key_value_pairs['NOTICE_YEAR'] = getters.getAttributeValue('prohibition_start_time')
+        key_value_pairs['DL_SURRENDER_LOCATION'] = getters.getAttributeValue('offence_city')
+        key_value_pairs['OFFICER_BADGE_NUMBER'] = getters.getAttributeValue('badge_number')
+        key_value_pairs['AGENCY_NAME'] = getters.getAttributeValue('agency')
+        key_value_pairs['AGENCY_FILE_NUMBER'] = getters.getAttributeValue('file_number')
+        key_value_pairs['OWNER_SURNAME'] = getters.getAttributeValue('owners_last_name')
+        key_value_pairs['OWNER_GIVEN'] = getters.getAttributeValue('owners_first_name')
+        key_value_pairs['OWNER_ADDRESS'] = getters.getAttributeValue('owners_address1')
+        key_value_pairs['OWNER_CITY'] = getters.getAttributeValue('owners_city')
+        key_value_pairs['OWNER_PROVINCE'] = getters.getAttributeValue('owners_province')
+        key_value_pairs['OWNER_POSTAL_CODE'] = getters.getAttributeValue('owners_postal')
+        key_value_pairs['VEHICLE_LICENSE_NUMBER'] = getters.getAttributeValue('plate_number')
+        key_value_pairs['VEHICLE_PROVINCE'] = getters.getAttributeValue('plate_province')
+        key_value_pairs['VEHICLE_LICENSE_YEAR'] = getters.getAttributeValue('plate_year')
+        key_value_pairs['VEHICLE_TAG_NUMBER'] = getters.getAttributeValue('plate_val_tag')
+        key_value_pairs['VEHICLE_REGISTRATION_NUMBER'] = getters.getAttributeValue('registration_number')
+        key_value_pairs['VEHICLE_TYPE'] = getters.getAttributeValue('vehicle_model')
+        key_value_pairs['VEHICLE_MAKE'] = getters.getAttributeValue('vehicle_make')
+        key_value_pairs['VEHICLE_MODEL'] = getters.getAttributeValue('vehicle_model')
+        key_value_pairs['VEHICLE_YEAR'] = getters.getAttributeValue('vehicle_year')
+        key_value_pairs['VEHICLE_COLOUR'] = getters.getAttributeValue('vehicle_color')
+        key_value_pairs['VEHICLE_NSC_PUJ'] = getters.getAttributeValue('puj_code')
+        key_value_pairs['VEHICLE_NSC_NUMBER'] = getters.getAttributeValue('nsc_number')
+        key_value_pairs['VEHICLE_VIN'] = getters.getAttributeValue('vin_number')
+        key_value_pairs['OWNER_PHONE_AREA_CODE'] = getters.getAttributeValue('owners_phone')
+        key_value_pairs['OWNER_PHONE_NUMBER'] = getters.getAttributeValue('owners_phone')
+        key_value_pairs['NOT_IMPOUNDED'] = getters.getAttributeValue('vehicle_impounded')
+        key_value_pairs['NOT_IMPOUNDED_REASON'] = getters.getAttributeValue('reason_for_not_impounding')
+        key_value_pairs['IMPOUNDED'] = getters.getAttributeValue('vehicle_impounded')
+        key_value_pairs['IMPOUNDED_LOT'] = getters.getAttributeValue('impound_lot_operator')
+        key_value_pairs['IMPOUNDED_ADDRESS'] = getters.getAttributeValue('impound_lot_operator')
+        key_value_pairs['IMPOUNDED_CITY'] = getters.getAttributeValue('impound_lot_operator')
+        key_value_pairs['IMPOUNDED_PHONE_AREA_CODE'] = getters.getAttributeValue('impound_lot_operator')
+        key_value_pairs['IMPOUNDED_PHONE_NUMBER'] = getters.getAttributeValue('impound_lot_operator')
+        key_value_pairs['RELEASE_LOCATION_KEYS'] = getters.getAttributeValue('location_of_keys')
+        key_value_pairs['RELEASE_PERSON'] = getters.getAttributeValue('vehicle_released_to')
+        key_value_pairs['RELEASE_DATETIME'] = getters.getAttributeValue('datetime_released')
+        
+        if (form_type === "24Hour") {
+            // mappings specific to 24Hour Form
+            
         }
+
         return key_value_pairs;
     },
 
@@ -279,6 +342,22 @@ export const getters = {
         }
         return forms
     },
+
+    apiHeader: state => {
+        const headers = new Headers();
+        headers.set('Content-Type', 'application/json')
+        if (state.keycloak) {
+            headers.set('Authorization', 'Basic ' + state.keycloak.token)
+        }
+        return headers
+    },
+
+    getKeycloakUsername: state => {
+        if (state.keycloak) {
+            return state.keycloak.userName;
+        }
+        return ''
+    }
 
 }
 

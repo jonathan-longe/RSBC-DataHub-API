@@ -16,6 +16,7 @@
                   class="btn-sm btn-primary text-white">Driver's Lookup
             <b-spinner v-if="display_spinner" small label="Loading..."></b-spinner>
           </button>
+          <button :disabled=true class="btn-sm btn-secondary text-white ml-2">Scan DL</button>
         </div>
       </div>
       <div class="small text-danger">{{ errors[0] }}</div>

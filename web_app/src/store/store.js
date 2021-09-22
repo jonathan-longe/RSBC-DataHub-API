@@ -26,25 +26,45 @@ export const store = new Vuex.Store ({
         "12Hour": {
           "component": "TwelveHourProhibition",
           "form_type": "12Hour",
-          "steps": ["Prohibition" ,"Validate & Serve"],
+          "steps": ["Prohibition" ,"Validate & Serve", "Download Documents"],
           "description": "12 Hour Driving Suspension",
           "full_name": "MV2906",
-          "pdf_template": "MV2906_12h_Suspension_2021-04-27.pdf"
+          "documents": {
+            "notice": {
+              "name": "Notice for driver",
+              "pdf": "MV2906_12h_Suspension_2021-04-27.pdf"
+            }
+          }
         },
         "24Hour": {
           "component": "TwentyFourHourProhibition",
-          "steps": ["Prohibition" ,"Validate & Serve"],
+          "steps": ["Prohibition" ,"Validate & Serve", "Download Documents"],
           "form_type": "24Hour",
           "description": "24-Hour Prohibition",
           "full_name": "MV2634",
-          "pdf_template": "MV2634_24h_Prohibition_2021-04-27.pdf"
+          "documents": {
+            "notice": {
+              "name": "Notice for driver",
+              "pdf": "MV2634_24h_Prohibition_2021-04-27.pdf",
+            },
+            "ilo": {
+              "name": "ILO Copy",
+              "pdf": "MV2634_24h_Prohibition_2021-04-27.pdf",
+            },
+            "report": {
+              "name": "Report to ICBC",
+              "pdf": "MV2634_24h_Prohibition_2021-04-27.pdf",
+            },
+          }
         },
         "IRP": {
           "component": "ImmediateRoadsideProhibition",
           "form_type": "IRP",
           "description": "Immediate Roadside Prohibition",
           "full_name": "MV2723",
-          "pdf_template": "MV2906_12h_Suspension_2021-04-27.pdf"
+          "documents": {
+            "notice": "MV2906_12h_Suspension_2021-04-27.pdf"
+          }
         }
       }
     },
@@ -57,7 +77,8 @@ export const store = new Vuex.Store ({
     vehicles: [],
     pickup_locations: [],
     ROADSAFETY_EMAIL: '[to_be_determined@gov.bc.ca]',
-    icbc_vehicle_lookup: []
+    icbc_vehicle_lookup: [],
+    keycloak: {}
   },
 
   getters: getters,

@@ -28,16 +28,12 @@ Vue.config.productionTip = false
 
 Vue.use(VueKeyCloak, {
   onLoad: 'login-required',
-  config: {
-    realm: '',
-    url: '',
-    clientId: ''
-  },
-  onReady: kc => {
-    console.log(`I wonder what Keycloak returns: ${kc}`)
+  config: '/api/v1/keycloak',
+  onReady: () => {
     new Vue({
       store: store,
       async created() {
+        store.commit("setKeycloak", Vue.prototype.$keycloak)
         await store.dispatch("getAllFormsFromDB");
 
         await store.dispatch("getMoreFormsFromApiIfNecessary")
@@ -50,7 +46,7 @@ Vue.use(VueKeyCloak, {
         await store.dispatch("fetchStaticLookupTables", "colors")
         await store.dispatch("fetchStaticLookupTables", "vehicles")
 
-        // await store.dispatch("renewFormLeasesFromApiIfNecessary")
+        // TODO - await store.dispatch("renewFormLeasesFromApiIfNecessary")
 
       },
       render: h => h(App),

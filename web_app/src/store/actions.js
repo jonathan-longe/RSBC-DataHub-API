@@ -72,10 +72,11 @@ export const actions = {
     },
 
     async getFormIdsFromApiByType (context, form_type) {
-        const headers = new Headers();
-        const url = constants.URL_ROOT + "/api/v1/forms/" + form_type
-        headers.set('Content-Type', 'application/json')
-        return await fetch(url, {"method": "POST", headers: headers, credentials: "same-origin"})
+        const url = "/api/v1/forms/" + form_type
+        return await fetch(url, {
+            "method": "POST",
+            headers: context.getters.apiHeader,
+            credentials: "same-origin"})
             .then(response => response.json())
             .then(data => {
                 return {
@@ -92,10 +93,11 @@ export const actions = {
 
     async renewFormFromApiById (context, form_type, form_id) {
         console.log("inside renewFormFromApiById()")
-        const headers = new Headers();
-        const url = constants.URL_ROOT + "/api/v1/forms/" + form_type + "/" + form_id
-        headers.set('Content-Type', 'application/json')
-        return await fetch(url, {"method": "PATCH", headers: headers, credentials: "same-origin"})
+        const url = "/api/v1/forms/" + form_type + "/" + form_id
+        return await fetch(url, {
+            "method": "PATCH",
+            headers: context.getters.apiHeader,
+            credentials: "same-origin"})
             .then(response => response.json())
             .then(data => {
                 return {
@@ -110,55 +112,58 @@ export const actions = {
             });
     },
 
-    async lookupDriverFromICBC({commit}, icbcPayload) {
+    async lookupDriverFromICBC(context, icbcPayload) {
         console.log("inside actions.js lookupDriverFromICBC(): " + icbcPayload)
         let dlNumber = icbcPayload['dlNumber']
-        const url = constants.URL_ROOT + "/api/v1/icbc/drivers/" + dlNumber
+        const url = "/api/v1/icbc/drivers/" + dlNumber
         return await fetch(url, {
             "method": 'GET',
+            "headers": context.getters.apiHeader
         })
             .then(response => response.json())
             .then(data => {
                 console.log("data", data)
-                commit("populateDriverFromICBC", data )
+                context.commit("populateDriverFromICBC", data )
             })
             .catch(function (error) {
                 console.log(error)
             });
     },
 
-    async lookupPlateFromICBC({commit}, icbcPayload) {
-        console.log("inside actions.js populateFromICBCPlateLookup(): ")
+    async lookupPlateFromICBC(context, icbcPayload) {
+        console.log("inside actions.js lookupPlateFromICBC(): ")
         console.log("icbcPayload", icbcPayload)
         let plate_number = icbcPayload['plateNumber']
-        const url = constants.URL_ROOT + "/api/v1/icbc/vehicles/" + plate_number
+        const url = "/api/v1/icbc/vehicles/" + plate_number
         return await fetch(url, {
             "method": 'GET',
+            "headers": context.getters.apiHeader
         })
             .then(response => response.json())
             .then(data => {
                 console.log("data", data)
-                commit("saveICBCVehicleToStore", data)
+                context.commit("populateVehicleFromICBC", data)
             })
             .catch(function (error) {
                console.log(error)
             });
     },
 
-    fetchDynamicLookupTables({commit}, type) {
-        const url = constants.URL_ROOT + "/api/v1/" + type
+    fetchDynamicLookupTables(context, type) {
+        const url = "/api/v1/" + type
         let networkDataRetrieved = false
 
         // trigger request for fresh data from API
         var networkUpdate = fetch(url, {
             "method": 'GET',
+            "headers": context.getters.apiHeader
         })
             .then( response => {
                 return response.json()
             })
             .then( data => {
                 networkDataRetrieved = true
-                commit("populateStaticLookupTables", { "type": type, "data": data })
+                context.commit("populateStaticLookupTables", { "type": type, "data": data })
             })
             .catch(function (error) {
                 console.log('network request failed', error)
@@ -170,7 +175,7 @@ export const actions = {
         }).then ( data => {
             // don't overwrite newer network data
             if(!networkDataRetrieved) {
-                commit("populateStaticLookupTables", { "type": type, "data": data })
+                context.commit("populateStaticLookupTables", { "type": type, "data": data })
                 return data;
             }
         }).catch( function() {
@@ -179,23 +184,24 @@ export const actions = {
         })
     },
 
-    async fetchStaticLookupTables({commit}, type) {
-        const url = constants.URL_ROOT + "/api/v1/" + type
+    async fetchStaticLookupTables(context, type) {
+        const url = "/api/v1/" + type
 
         caches.match(url).then( response => {
             if (!response) throw Error("No cached data");
             return response.json();
         }).then ( data => {
-            commit("populateStaticLookupTables", { "type": type, "data": data })
+            context.commit("populateStaticLookupTables", { "type": type, "data": data })
         }).catch( async function() {
             // we didn't get cached data, get the data from the network
             return await fetch(url, {
-            "method": 'GET',
+                "method": 'GET',
+                "headers": context.getters.apiHeader
         }).then( response => {
                 return response.json()
             })
             .then( data => {
-                commit("populateStaticLookupTables", { "type": type, "data": data })
+                context.commit("populateStaticLookupTables", { "type": type, "data": data })
             })
             .catch(function (error) {
                 console.log('network request failed', error)
@@ -226,7 +232,7 @@ export const actions = {
     async saveCurrentFormToDB(context, form_object) {
         let form_object_to_save = context.state.forms[form_object.form_type][form_object.form_id]
         await persistence.updateOrCreate(form_object.form_id, form_object_to_save)
-    }
+    },
 
 
 }

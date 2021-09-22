@@ -8,18 +8,10 @@ RUN source /opt/app-root/etc/scl_enable && \
     sha256sum "${APP_ROOT}/src/requirements.txt" > ${APP_ROOT}/requirements.sha256  && \
     cd ${APP_ROOT}/src && pip install -r requirements.txt
 
-CMD [ "echo" , "requirements installed" ]
-RUN [ "pwd" ]
-RUN [ "ls", "-R" ]
-
 COPY common ${APP_ROOT}/src/python/common
 COPY prohibition_web_service ${APP_ROOT}/src/python/prohibition_web_service
 
-CMD [ "echo" , "python files copied" ]
-RUN [ "pwd" ]
-RUN [ "ls", "-R" ]
-
-RUN ["python", "-m", "pytest", "python/prohibition_web_service"]
+RUN ["python", "-m", "pytest"]
 
 CMD [ "gunicorn", "--error-logfile", "-", "--bind", "0.0.0.0:5000", "--pythonpath", "python/prohibition_web_service", "__init__:create_app()" ]
 

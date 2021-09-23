@@ -14,5 +14,5 @@ COPY prohibition_web_service ${APP_ROOT}/src/python/prohibition_web_service
 
 RUN ["python", "-m", "pytest", "python/prohibition_web_service"]
 
-CMD [ "gunicorn", "--error-logfile", "-", "--bind", "0.0.0.0:5000", "--pythonpath", "python/prohibition_web_service", "__init__:create_app()" ]
+CMD [ "gunicorn", "--error-logfile", "-", "--bind", "0.0.0.0:5000", "--pythonpath", "python/prohibition_web_service", "app:create_app()" ]
 

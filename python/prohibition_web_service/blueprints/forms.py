@@ -3,6 +3,7 @@ import python.common.helper as helper
 from flask import request, Blueprint, make_response, jsonify
 import logging.config
 import python.prohibition_web_service.business as rules
+from python.prohibition_web_service.models import db, Form
 
 
 logging.config.dictConfig(Config.LOGGING)
@@ -17,7 +18,6 @@ def index(form_type):
     List all forms for a user
     """
     if request.method == 'GET':
-        from python.prohibition_web_service import db, Form
         username = 'usr'
         all_forms = db.session.query(Form) \
             .filter(Form.form_type == form_type) \
@@ -32,7 +32,6 @@ def get(form_type, form_id):
     Get a specific form
     """
     if request.method == 'GET':
-        from python.prohibition_web_service import db, Form
         username = 'usr'
         form = db.session.query(Form) \
             .filter(Form.form_type == form_type) \

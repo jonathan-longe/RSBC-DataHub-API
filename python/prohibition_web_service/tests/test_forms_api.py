@@ -3,7 +3,8 @@ import logging
 import base64
 import json
 from datetime import datetime, timedelta
-from python.prohibition_web_service import create_app, Form
+from python.prohibition_web_service.models import Form
+from python.prohibition_web_service.app import db, create_app
 from python.prohibition_web_service.config import Config
 
 
@@ -20,8 +21,7 @@ def as_guest(app):
 
 
 @pytest.fixture
-def db(app):
-    from python.prohibition_web_service import db
+def database(app):
     with app.app_context():
         db.init_app(app)
         db.create_all()
@@ -31,7 +31,7 @@ def db(app):
 
 
 @pytest.fixture
-def forms(db):
+def forms(database):
     today = datetime.strptime("2021-07-21", "%Y-%m-%d")
     yesterday = today - timedelta(days=1)
     forms = [
@@ -80,13 +80,13 @@ def test_when_form_created_user_receives_unique_form_id_for_later_use(as_guest, 
 #     assert resp.status_code == 401
 
 
-def test_if_no_unique_ids_available_user_receives_a_500_response(as_guest, db):
+def test_if_no_unique_ids_available_user_receives_a_500_response(as_guest, database):
     today = datetime.strptime("2021-07-21", "%Y-%m-%d")
     forms = [
         Form(form_id='AA-123332', form_type='24Hour', username='other_user', lease_expiry=today, served=None),
     ]
-    db.session.bulk_save_objects(forms)
-    db.session.commit()
+    database.session.bulk_save_objects(forms)
+    database.session.commit()
 
     resp = as_guest.post("/api/v1/forms/24Hour",
                          content_type="application/json",
@@ -94,7 +94,7 @@ def test_if_no_unique_ids_available_user_receives_a_500_response(as_guest, db):
     assert resp.status_code == 500
 
 
-def test_users_cannot_submit_payloads_to_the_create_endpoint(as_guest, db):
+def test_users_cannot_submit_payloads_to_the_create_endpoint(as_guest, database):
     resp = as_guest.post("/api/v1/forms/24Hour",
                          content_type="application/json",
                          data=json.dumps({"attribute": "value"}),
@@ -102,13 +102,13 @@ def test_users_cannot_submit_payloads_to_the_create_endpoint(as_guest, db):
     assert resp.status_code == 400
 
 
-def test_user_cannot_renew_lease_on_form_that_has_been_served(as_guest, db):
+def test_user_cannot_renew_lease_on_form_that_has_been_served(as_guest, database):
     today = datetime.strptime("2021-07-21", "%Y-%m-%d")
     forms = [
         Form(form_id='AA-123332', form_type='24Hour', username='usr', lease_expiry=today, served=today),
     ]
-    db.session.bulk_save_objects(forms)
-    db.session.commit()
+    database.session.bulk_save_objects(forms)
+    database.session.commit()
 
     resp = as_guest.patch("/api/v1/forms/24Hour/{}".format('AA-123332'),
                           content_type="application/json",

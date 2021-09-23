@@ -1,6 +1,5 @@
 import pytest
-from python.prohibition_web_service import create_app
-from python.prohibition_web_service.config import Config
+from python.prohibition_web_service.app import create_app
 
 
 @pytest.fixture

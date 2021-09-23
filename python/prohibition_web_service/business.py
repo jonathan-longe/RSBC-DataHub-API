@@ -3,11 +3,6 @@ import python.prohibition_web_service.http_responses as http_responses
 
 
 def create_a_form() -> list:
-    """
-    PayBC has successfully processed the applicant's credit card details and
-    is now posting the payment details to our API.  In the event that PayBC
-    does not receive a successful response, PayBC will try again indefinitely.
-    """
     return [
         {"try": middleware.request_contains_a_payload, "fail": [
             {"try": middleware.lease_a_form_id, "fail": [
@@ -20,11 +15,6 @@ def create_a_form() -> list:
 
 
 def update_a_form() -> list:
-    """
-    PayBC has successfully processed the applicant's credit card details and
-    is now posting the payment details to our API.  In the event that PayBC
-    does not receive a successful response, PayBC will try again indefinitely.
-    """
     return [
         {"try": middleware.request_contains_a_payload, "fail": [
             # Request contains no payload - renew form lease

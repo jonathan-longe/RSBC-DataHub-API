@@ -1,6 +1,6 @@
 import pytest
 import responses
-from python.prohibition_web_service import create_app
+from python.prohibition_web_service.app import create_app
 from python.prohibition_web_service.config import Config
 import logging
 import json

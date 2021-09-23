@@ -1,6 +1,7 @@
 import logging
 import json
 import datetime
+from python.prohibition_web_service.models import db, Form
 
 
 def validate_update(**kwargs) -> tuple:
@@ -9,7 +10,6 @@ def validate_update(**kwargs) -> tuple:
 
 def lease_a_form_id(**kwargs) -> tuple:
     logging.debug('inside lease_a_form_id()')
-    from python.prohibition_web_service import db, Form
     form_type = kwargs.get('form_type')
     username = kwargs.get('username')
     form = db.session.query(Form) \
@@ -30,7 +30,6 @@ def lease_a_form_id(**kwargs) -> tuple:
 
 def renew_form_id_lease(**kwargs) -> tuple:
     logging.debug('inside renew_form_id_lease()')
-    from python.prohibition_web_service import db, Form
     form_type = kwargs.get('form_type')
     username = kwargs.get('username')
     form_id = kwargs.get('form_id')
@@ -54,7 +53,6 @@ def renew_form_id_lease(**kwargs) -> tuple:
 
 def mark_form_as_served(**kwargs) -> tuple:
     logging.debug('inside mark_form_as_served()')
-    from python.prohibition_web_service import db, Form
     form_type = kwargs.get('form_type')
     username = kwargs.get('username')
     form_id = kwargs.get('form_id')

@@ -63,7 +63,7 @@ def test_get_car_colors(as_guest):
                         follow_redirects=True,
                         content_type="application/json")
     assert resp.status_code == 200
-    assert "Yellow" in resp.json
+    assert "BLU" in resp.json
     
 
 def test_get_vehicles(as_guest):
@@ -71,7 +71,14 @@ def test_get_vehicles(as_guest):
                         follow_redirects=True,
                         content_type="application/json")
     assert resp.status_code == 200
-    assert "A.C." == resp.json[0]['make']
-    assert "ACE ROADSTER" == resp.json[0]['model']
-    assert "1961" == resp.json[0]['year']
-    
+    assert "AC" == resp.json[0]['make']
+    assert "300" == resp.json[0]['model']
+
+
+def test_get_vehicle_styles(as_guest):
+    resp = as_guest.get("/api/v1/vehicle_styles",
+                        follow_redirects=True,
+                        content_type="application/json")
+    assert resp.status_code == 200
+    assert "2DR" == resp.json[0]
+

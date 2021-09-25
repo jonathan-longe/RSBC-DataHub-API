@@ -1,3 +1,4 @@
+import moment from "moment";
 export default {
 
     // Number of days before this app will refresh unique prohibition ids.  The unique
@@ -12,5 +13,8 @@ export default {
 
     // The maximum number of times app will attempt to retrieve unique IDs
     MAX_NUMBER_UNIQUE_ID_FETCH_ATTEMPTS: 2,
+
+    MIN_VEHICLE_YEAR: 1920,
+    MAX_VEHICLE_YEAR: moment().format("YYYY") + 1
 
 }

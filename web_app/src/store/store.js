@@ -44,16 +44,16 @@ export const store = new Vuex.Store ({
           "full_name": "MV2634",
           "documents": {
             "notice": {
-              "name": "Notice for driver",
-              "pdf": "MV2634_24h_Prohibition_2021-04-27.pdf",
+              "name": "Notice",
+              "pdf": "MV2634_102018_Notice.pdf",
             },
             "ilo": {
               "name": "ILO Copy",
-              "pdf": "MV2634_24h_Prohibition_2021-04-27.pdf",
+              "pdf": "MV2634_102018_Notice.pdf",
             },
             "report": {
-              "name": "Report to ICBC",
-              "pdf": "MV2634_24h_Prohibition_2021-04-27.pdf",
+              "name": "Officer Report",
+              "pdf": "MV2634_102018_Report.pdf",
             },
           }
         },
@@ -75,6 +75,7 @@ export const store = new Vuex.Store ({
     cities: [],
     colors: [],
     vehicles: [],
+    vehicle_styles: [],
     pickup_locations: [],
     ROADSAFETY_EMAIL: '[to_be_determined@gov.bc.ca]',
     icbc_vehicle_lookup: [],

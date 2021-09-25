@@ -8,6 +8,7 @@
     <read-only-element id="registration_number">Registration Number</read-only-element>
     <read-only-element id="vehicle_year">Vehicle Year</read-only-element>
     <read-only-element id="vehicle_make">Vehicle Make</read-only-element>
+    <read-only-element id="vehicle_style">Vehicle Style</read-only-element>
     <read-only-element id="vehicle_model">Vehicle Model</read-only-element>
     <read-only-element id="vehicle_color">Vehicle Colour</read-only-element>
     <read-only-element id="vin_number">VIN Number</read-only-element>
@@ -24,10 +25,11 @@
     <text-field id="registration_number" fg_class="col-sm-4">Registration Number</text-field>
   </form-row>
   <form-row v-if="! isReadOnly">
-    <type-ahead-field :suggestions="getArrayOfVehicleYears" id="vehicle_year" fg_class="col-sm-3">Vehicle Year</type-ahead-field>
+    <type-ahead-field :suggestions="getArrayOfVehicleYears" id="vehicle_year" fg_class="col-sm-2">Vehicle Year</type-ahead-field>
     <type-ahead-field :suggestions="getArrayOfVehicleMakes" id="vehicle_make" input_type="number" fg_class="col-sm-3">Vehicle Make</type-ahead-field>
     <type-ahead-field :suggestions="getArrayOfVehicleModels" id="vehicle_model" fg_class="col-sm-3">Vehicle Model</type-ahead-field>
-    <type-ahead-field :suggestions="getArrayOfCommonCarColors" id="vehicle_color" fg_class="col-sm-3">Vehicle Colour</type-ahead-field>
+    <type-ahead-field :suggestions="getArrayOfVehicleStyles" id="vehicle_style" fg_class="col-sm-2">Vehicle Style</type-ahead-field>
+    <type-ahead-field :suggestions="getArrayOfCommonCarColors" id="vehicle_color" fg_class="col-sm-2">Vehicle Colour</type-ahead-field>
   </form-row>
   <form-row v-if="! isReadOnly">
     <text-field id="vin_number" fg_class="col-sm-12">VIN Number</text-field>
@@ -49,7 +51,7 @@ export default {
   name: "VehicleInformationCard",
   mixins: [CardsCommon],
   computed: {
-    ...mapGetters(["getArrayOfCommonCarColors", "getArrayOfVehicleYears",
+    ...mapGetters(["getArrayOfCommonCarColors", "getArrayOfVehicleYears", "getArrayOfVehicleStyles",
       "getArrayOfVehicleMakes", "getArrayOfVehicleModels"])
   }
 }

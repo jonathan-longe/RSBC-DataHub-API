@@ -30,7 +30,7 @@ export default {
       let pdf_template_filepath = this.getPDFTemplateFileName(document_type)
       let form_object = this.getCurrentlyEditedFormObject
       this.saveCurrentFormToDB(form_object)
-      const xml_file = this.getXFDF(pdf_template_filepath, form_object.form_type, document_type);
+      const xml_file = this.getXFDF(pdf_template_filepath, form_object, document_type);
       const href = window.URL.createObjectURL(xml_file); //create the download url
       const downloadElement = document.createElement("a");
       downloadElement.href = href;

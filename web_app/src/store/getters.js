@@ -100,31 +100,29 @@ export const getters = {
         return state.colors;
     },
 
-    getArrayOfVehicleYears: state => {
-        return state.vehicles.map(v => v.year).filter(_onlyUnique);
+    getArrayOfVehicleYears: () => {
+        const start = constants.MIN_VEHICLE_YEAR;
+        const end = constants.MAX_VEHICLE_YEAR;
+        return Array( end - start + 1).fill().map((_, idx) => start + idx)
     },
 
     getArrayOfVehicleMakes: state => {
-        let form_object = state.currently_editing_form_object;
-        let year = state.forms[form_object.form_type][form_object.form_id].data.vehicle_year
-        let results = state.vehicles.filter(v => v.year === year);
-        if (results.length > 0) {
-            return results.map( v => v.make ).filter(_onlyUnique)
-        } else {
-            return []
-        }
+        return state.vehicles.map(v => v.make).filter(_onlyUnique);
     },
 
     getArrayOfVehicleModels: state => {
         let form_object = state.currently_editing_form_object;
-        let year = state.forms[form_object.form_type][form_object.form_id].data.vehicle_year
         let make = state.forms[form_object.form_type][form_object.form_id].data.vehicle_make
-        let results = state.vehicles.filter( v => v.year === year && v.make === make);
+        let results = state.vehicles.filter( v => v.make === make);
         if (results.length > 0) {
             return results.map( v => v.model )
         } else {
             return []
         }
+    },
+
+    getArrayOfVehicleStyles: state => {
+        return state.vehicle_styles;
     },
 
     isRecentProhibitions: state => {
@@ -186,7 +184,7 @@ export const getters = {
     },
 
     getArrayOfImpoundLotOperators: state => {
-        return state.impound_lot_operators.map( o => o.name + " - " + o.lot_address + ", " + o.city + ", " + o.phone);
+        return state.impound_lot_operators.map( o => o.name + ", " + o.lot_address + ", " + o.city + ", " + o.phone);
     },
 
     getArrayOfPickupLocations: state => {
@@ -219,8 +217,8 @@ export const getters = {
         return state.forms[form_object.form_type][form_object.form_id].data;
     },
 
-    getXFDF: (state, getters) => (pdf_template_filepath, form_type, document_type) => {
-        let key_value_pairs = getters.getXfdfMappings(form_type, document_type);
+    getXFDF: (state, getters) => (pdf_template_filepath, form_object, document_type) => {
+        let key_value_pairs = getters.getXfdfMappings(form_object, document_type);
         return xfdf.generate(pdf_template_filepath, key_value_pairs)
     },
 
@@ -260,70 +258,98 @@ export const getters = {
         }
     },
 
-    getXfdfMappings: (state, getters) => (form_type, document_type) => {
-        console.log(document_type)
-        let form_object = state.currently_editing_form_object;
+    getXfdfMappings: (state, getters) => (form_object, document_type) => {
         let key_value_pairs = Array();
 
-        key_value_pairs['VIOLATION_NUMBER'] = form_object.form_id
-        key_value_pairs['DRIVER_SURNAME'] = getters.getAttributeValue("last_name")
-        key_value_pairs['DRIVER_GIVEN'] = getters.getAttributeValue('first_name')
-        key_value_pairs['DRIVER_DL_NUMBER'] = getters.getAttributeValue('drivers_number')
-        key_value_pairs['DRIVER_DL_PROVINCE'] = getters.getAttributeValue('drivers_licence_jurisdiction')
-        // key_value_pairs['DRIVER_DOB_YYYY'] = getters.getAttributeValue('dob')
-        // key_value_pairs['DRIVER_DOB_MM'] = getters.getAttributeValue('dob')
-        // key_value_pairs['DRIVER_DOB_DD'] = getters.getAttributeValue('dob')
-        key_value_pairs['DRIVER_ADDRESS'] = getters.getAttributeValue('address1')
-        key_value_pairs['DRIVER_CITY'] = getters.getAttributeValue('city')
-        key_value_pairs['DRIVER_PROVINCE'] = getters.getAttributeValue('province')
-        key_value_pairs['DRIVER_POSTAL_CODE'] = getters.getAttributeValue('postal')
-        key_value_pairs['REASON_ALCOHOL'] = getters.getAttributeValue('prohibition_type')
-        key_value_pairs['REASON_DRUGS'] = getters.getAttributeValue('prohibition_type')
+        key_value_pairs['VIOLATION_NUMBER'] = form_object.form_id.substring(3)
 
-        key_value_pairs['NOTICE_TIME'] = getters.getAttributeValue('prohibition_start_time')
-        key_value_pairs['NOTICE_DAY'] = getters.getAttributeValue('prohibition_start_time')
-        key_value_pairs['NOTICE_MONTH'] = getters.getAttributeValue('prohibition_start_time')
-        key_value_pairs['NOTICE_YEAR'] = getters.getAttributeValue('prohibition_start_time')
-        key_value_pairs['DL_SURRENDER_LOCATION'] = getters.getAttributeValue('offence_city')
-        key_value_pairs['OFFICER_BADGE_NUMBER'] = getters.getAttributeValue('badge_number')
-        key_value_pairs['AGENCY_NAME'] = getters.getAttributeValue('agency')
-        key_value_pairs['AGENCY_FILE_NUMBER'] = getters.getAttributeValue('file_number')
-        key_value_pairs['OWNER_SURNAME'] = getters.getAttributeValue('owners_last_name')
-        key_value_pairs['OWNER_GIVEN'] = getters.getAttributeValue('owners_first_name')
-        key_value_pairs['OWNER_ADDRESS'] = getters.getAttributeValue('owners_address1')
-        key_value_pairs['OWNER_CITY'] = getters.getAttributeValue('owners_city')
-        key_value_pairs['OWNER_PROVINCE'] = getters.getAttributeValue('owners_province')
-        key_value_pairs['OWNER_POSTAL_CODE'] = getters.getAttributeValue('owners_postal')
-        key_value_pairs['VEHICLE_LICENSE_NUMBER'] = getters.getAttributeValue('plate_number')
-        key_value_pairs['VEHICLE_PROVINCE'] = getters.getAttributeValue('plate_province')
-        key_value_pairs['VEHICLE_LICENSE_YEAR'] = getters.getAttributeValue('plate_year')
-        key_value_pairs['VEHICLE_TAG_NUMBER'] = getters.getAttributeValue('plate_val_tag')
-        key_value_pairs['VEHICLE_REGISTRATION_NUMBER'] = getters.getAttributeValue('registration_number')
-        key_value_pairs['VEHICLE_TYPE'] = getters.getAttributeValue('vehicle_model')
-        key_value_pairs['VEHICLE_MAKE'] = getters.getAttributeValue('vehicle_make')
-        key_value_pairs['VEHICLE_MODEL'] = getters.getAttributeValue('vehicle_model')
-        key_value_pairs['VEHICLE_YEAR'] = getters.getAttributeValue('vehicle_year')
-        key_value_pairs['VEHICLE_COLOUR'] = getters.getAttributeValue('vehicle_color')
-        key_value_pairs['VEHICLE_NSC_PUJ'] = getters.getAttributeValue('puj_code')
-        key_value_pairs['VEHICLE_NSC_NUMBER'] = getters.getAttributeValue('nsc_number')
-        key_value_pairs['VEHICLE_VIN'] = getters.getAttributeValue('vin_number')
-        key_value_pairs['OWNER_PHONE_AREA_CODE'] = getters.getAttributeValue('owners_phone')
-        key_value_pairs['OWNER_PHONE_NUMBER'] = getters.getAttributeValue('owners_phone')
-        key_value_pairs['NOT_IMPOUNDED'] = getters.getAttributeValue('vehicle_impounded')
-        key_value_pairs['NOT_IMPOUNDED_REASON'] = getters.getAttributeValue('reason_for_not_impounding')
-        key_value_pairs['IMPOUNDED'] = getters.getAttributeValue('vehicle_impounded')
-        key_value_pairs['IMPOUNDED_LOT'] = getters.getAttributeValue('impound_lot_operator')
-        key_value_pairs['IMPOUNDED_ADDRESS'] = getters.getAttributeValue('impound_lot_operator')
-        key_value_pairs['IMPOUNDED_CITY'] = getters.getAttributeValue('impound_lot_operator')
-        key_value_pairs['IMPOUNDED_PHONE_AREA_CODE'] = getters.getAttributeValue('impound_lot_operator')
-        key_value_pairs['IMPOUNDED_PHONE_NUMBER'] = getters.getAttributeValue('impound_lot_operator')
-        key_value_pairs['RELEASE_LOCATION_KEYS'] = getters.getAttributeValue('location_of_keys')
-        key_value_pairs['RELEASE_PERSON'] = getters.getAttributeValue('vehicle_released_to')
-        key_value_pairs['RELEASE_DATETIME'] = getters.getAttributeValue('datetime_released')
-        
-        if (form_type === "24Hour") {
-            // mappings specific to 24Hour Form
-            
+        key_value_pairs['REASON_ALCOHOL'] = getters.getXfdfRadioValue(form_object,'prohibition_type', 'Alcohol 215(2)')
+        key_value_pairs['REASON_DRUGS'] = getters.getXfdfRadioValue(form_object,'prohibition_type', 'Drugs 215(3)')
+
+        let prohibition_start_time = moment(getters.getXfdfValue(form_object,'prohibition_start_time'))
+        key_value_pairs['NOTICE_TIME'] = prohibition_start_time.format("HH:mm")
+        key_value_pairs['NOTICE_DAY'] = prohibition_start_time.format("Do")
+        key_value_pairs['NOTICE_MONTH'] = prohibition_start_time.format("MMMM")
+        key_value_pairs['NOTICE_YEAR'] = prohibition_start_time.format("YYYY")
+
+        key_value_pairs['DL_SURRENDER_LOCATION'] = getters.getXfdfValue(form_object,'offence_city')
+        key_value_pairs['OFFICER_BADGE_NUMBER'] = getters.getXfdfValue(form_object,'badge_number')
+        key_value_pairs['AGENCY_NAME'] = getters.getXfdfValue(form_object,'agency')
+        key_value_pairs['AGENCY_FILE_NUMBER'] = getters.getXfdfValue(form_object,'file_number')
+
+        key_value_pairs['OWNER_SURNAME'] = getters.getXfdfValue(form_object,'owners_last_name')
+        key_value_pairs['OWNER_GIVEN'] = getters.getXfdfValue(form_object,'owners_first_name')
+        key_value_pairs['OWNER_ADDRESS'] = getters.getXfdfValue(form_object,'owners_address1')
+        key_value_pairs['OWNER_CITY'] = getters.getXfdfValue(form_object,'owners_city')
+        key_value_pairs['OWNER_PROVINCE'] = getters.getXfdfValue(form_object,'owners_province')
+        key_value_pairs['OWNER_POSTAL_CODE'] = getters.getXfdfValue(form_object,'owners_postal')
+        key_value_pairs['OWNER_PHONE_AREA_CODE'] = getters.getXfdfValue(form_object,'owners_phone').substr(0,3)
+
+        let phone_number = getters.getXfdfValue(form_object,'owners_phone')
+        key_value_pairs['OWNER_PHONE_NUMBER'] = phone_number.substr(3,3 ) + '-' + phone_number.substr(6,9)
+
+        key_value_pairs['VEHICLE_LICENSE_NUMBER'] = getters.getXfdfValue(form_object,'plate_number')
+        key_value_pairs['VEHICLE_PROVINCE'] = getters.getXfdfValue(form_object,'plate_province')
+        key_value_pairs['VEHICLE_LICENSE_YEAR'] = getters.getXfdfValue(form_object,'plate_year')
+        key_value_pairs['VEHICLE_TAG_NUMBER'] = getters.getXfdfValue(form_object,'plate_val_tag')
+        key_value_pairs['VEHICLE_REGISTRATION_NUMBER'] = getters.getXfdfValue(form_object,'registration_number')
+        key_value_pairs['VEHICLE_TYPE'] = getters.getXfdfValue(form_object,'vehicle_type')
+        key_value_pairs['VEHICLE_MAKE'] = getters.getXfdfValue(form_object,'vehicle_make')
+        key_value_pairs['VEHICLE_MODEL'] = getters.getXfdfValue(form_object,'vehicle_model')
+        key_value_pairs['VEHICLE_YEAR'] = getters.getXfdfValue(form_object,'vehicle_year')
+        key_value_pairs['VEHICLE_COLOUR'] = getters.getXfdfValue(form_object,'vehicle_color')
+        key_value_pairs['VEHICLE_NSC_PUJ'] = getters.getXfdfValue(form_object,'puj_code')
+        key_value_pairs['VEHICLE_NSC_NUMBER'] = getters.getXfdfValue(form_object,'nsc_number')
+        key_value_pairs['VEHICLE_VIN'] = getters.getXfdfValue(form_object,'vin_number')
+
+        key_value_pairs['NOT_IMPOUNDED'] = getters.getXfdfRadioValue(form_object,'vehicle_impounded', 'No')
+        key_value_pairs['IMPOUNDED'] = getters.getXfdfRadioValue(form_object,'vehicle_impounded', 'Yes')
+
+        // TODO - don't print the following if the vehicle is impounded
+        key_value_pairs['NOT_IMPOUNDED_REASON'] = getters.getXfdfValue(form_object,'reason_for_not_impounding')
+
+        let ilo = getters.getXfdfValue(form_object,'impound_lot_operator').split(", ")
+        key_value_pairs['IMPOUNDED_LOT'] = ilo[0]
+        key_value_pairs['IMPOUNDED_ADDRESS'] = ilo[1]
+        key_value_pairs['IMPOUNDED_CITY'] = ilo[2]
+        key_value_pairs['IMPOUNDED_PHONE_AREA_CODE'] = ilo[3].substr(0,3)
+        key_value_pairs['IMPOUNDED_PHONE_NUMBER'] = ilo[3].substr(4)
+
+        key_value_pairs['RELEASE_LOCATION_KEYS'] = getters.getXfdfValue(form_object,'location_of_keys')
+        key_value_pairs['RELEASE_PERSON'] = getters.getXfdfValue(form_object,'vehicle_released_to')
+
+
+        if (document_type === 'ilo') {
+            key_value_pairs['DRIVER_SURNAME'] = getters.getXfdfRedactedValue
+            key_value_pairs['DRIVER_GIVEN'] = getters.getXfdfRedactedValue
+            key_value_pairs['DRIVER_DL_NUMBER'] = getters.getXfdfRedactedValue
+            key_value_pairs['DRIVER_DL_PROVINCE'] = getters.getXfdfRedactedValue
+
+            key_value_pairs['DRIVER_DOB_YYYY'] = getters.getXfdfRedactedValue
+            key_value_pairs['DRIVER_DOB_MM'] = getters.getXfdfRedactedValue
+            key_value_pairs['DRIVER_DOB_DD'] = getters.getXfdfRedactedValue
+
+            key_value_pairs['DRIVER_ADDRESS'] = getters.getXfdfRedactedValue
+            key_value_pairs['DRIVER_CITY'] = getters.getXfdfRedactedValue
+            key_value_pairs['DRIVER_PROVINCE'] = getters.getXfdfRedactedValue
+            key_value_pairs['DRIVER_POSTAL_CODE'] = getters.getXfdfRedactedValue
+        }
+
+        if (document_type === 'notice') {
+            key_value_pairs['DRIVER_SURNAME'] = getters.getXfdfValue(form_object,"last_name")
+            key_value_pairs['DRIVER_GIVEN'] = getters.getXfdfValue(form_object,'first_name')
+            key_value_pairs['DRIVER_DL_NUMBER'] = getters.getXfdfValue(form_object,'drivers_number')
+            key_value_pairs['DRIVER_DL_PROVINCE'] = getters.getXfdfValue(form_object,'drivers_licence_jurisdiction')
+
+            let dob = moment(getters.getXfdfValue(form_object,'dob'))
+            key_value_pairs['DRIVER_DOB_YYYY'] = dob.format("YYYY")
+            key_value_pairs['DRIVER_DOB_MM'] = dob.format("MM")
+            key_value_pairs['DRIVER_DOB_DD'] = dob.format("DD")
+
+            key_value_pairs['DRIVER_ADDRESS'] = getters.getXfdfValue(form_object,'address1')
+            key_value_pairs['DRIVER_CITY'] = getters.getXfdfValue(form_object,'city')
+            key_value_pairs['DRIVER_PROVINCE'] = getters.getXfdfValue(form_object,'province')
+            key_value_pairs['DRIVER_POSTAL_CODE'] = getters.getXfdfValue(form_object,'postal')
         }
 
         return key_value_pairs;
@@ -357,7 +383,38 @@ export const getters = {
             return state.keycloak.userName;
         }
         return ''
-    }
+    },
+
+    getXfdfValue: state => (form_object, attribute) => {
+        let root = state.forms[form_object.form_type][form_object.form_id].data;
+        if (!(attribute in root)) {
+            return '';
+        }
+        return root[attribute];
+    },
+
+    getXfdfRadioValue: state => (form_object, attribute, checked_value) => {
+        let root = state.forms[form_object.form_type][form_object.form_id].data;
+        if (!(attribute in root)) {
+            return '';
+        }
+        if (root[attribute] === checked_value) {
+            return "Yes";
+        }
+        return "";
+    },
+
+    getXfdfListValues: state => (form_object, attribute) => {
+        let root = state.forms[form_object.form_type][form_object.form_id].data;
+        if (!(attribute in root)) {
+            return '';
+        }
+        return root[attribute].join(" ")
+    },
+
+    getXfdfRedactedValue: () => {
+        return "--";
+    },
 
 }
 

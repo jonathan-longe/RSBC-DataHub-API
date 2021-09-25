@@ -153,7 +153,6 @@ test('test isFormEditable() returns false when form has been served', () => {
        "form_type": "12Hour",
       }
     let result = getters.isFormEditable(state)(form_object)
-    console.log("result", result)
     expect(result).toEqual(false)
 
 })

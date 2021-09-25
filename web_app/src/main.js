@@ -45,6 +45,7 @@ Vue.use(VueKeyCloak, {
         await store.dispatch("fetchStaticLookupTables", "cities")
         await store.dispatch("fetchStaticLookupTables", "colors")
         await store.dispatch("fetchStaticLookupTables", "vehicles")
+        await store.dispatch("fetchStaticLookupTables", "vehicle_styles")
 
         // TODO - await store.dispatch("renewFormLeasesFromApiIfNecessary")
 

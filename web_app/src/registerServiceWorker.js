@@ -35,13 +35,7 @@ if (process.env.NODE_ENV === 'production') {
       document.dispatchEvent(
           new CustomEvent('swUpdated', { detail: registration })
       )
-      let refreshing = false;
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if(!refreshing) {
-          window.location.reload()
-          refreshing = true
-        }
-      })
+      // TODO - causes endless loop - window.location.reload()
     },
     offline () {
       console.log('No internet connection found. App is running in offline mode.')

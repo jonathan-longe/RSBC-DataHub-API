@@ -121,16 +121,16 @@ export const actions = {
                 "method": 'GET',
                 "headers": context.getters.apiHeader
             })
-                .then(response => response.json()
+                .then(response => response.json())
                 .then(data => {
                     console.log("data", data)
                     resolve(context.commit("populateDriverFromICBC", data ))
                 })
-                    .catch(() => {
-                        reject({"description": "No valid response from ICBC"})
-                    }))
-                .catch( () => {
-                    reject({"description": "ICBC server did not respond"})
+                .catch( (error) => {
+                    if (error) {
+                        reject("error" in error ? error.error : {"description": "No valid response"})
+                    }
+                    reject({"description": "Server did not respond"})
                 });
             })
     },
@@ -145,17 +145,18 @@ export const actions = {
             "method": 'GET',
             "headers": context.getters.apiHeader
                 })
-                    .then(response => response.json()
+                    .then(response => response.json())
                     .then(data => {
                         console.log("data", data)
                         resolve(context.commit("populateVehicleFromICBC", data))
                     })
-                        .catch(() => {
-                        reject({"description": "No valid response from ICBC"})
-                    }))
-                    .catch( () => {
-                        reject({"description": "ICBC server did not respond"})
-                    });
+                    .catch((error) => {
+                        console.log("error", error)
+                        if (error) {
+                            reject("error" in error ? error.error : {"description": "No valid response"})
+                        }
+                        reject({"description": "Server did not respond"})
+                        });
                 })
     },
 

@@ -116,18 +116,23 @@ export const actions = {
         console.log("inside actions.js lookupDriverFromICBC(): " + icbcPayload)
         let dlNumber = icbcPayload['dlNumber']
         const url = "/api/v1/icbc/drivers/" + dlNumber
-        return await fetch(url, {
-            "method": 'GET',
-            "headers": context.getters.apiHeader
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log("data", data)
-                context.commit("populateDriverFromICBC", data )
+        return await new Promise((resolve, reject) => {
+             fetch(url, {
+                "method": 'GET',
+                "headers": context.getters.apiHeader
             })
-            .catch(function (error) {
-                console.log(error)
-            });
+                .then(response => response.json()
+                .then(data => {
+                    console.log("data", data)
+                    resolve(context.commit("populateDriverFromICBC", data ))
+                })
+                    .catch(() => {
+                        reject({"description": "No valid response from ICBC"})
+                    }))
+                .catch( () => {
+                    reject({"description": "ICBC server did not respond"})
+                });
+            })
     },
 
     async lookupPlateFromICBC(context, icbcPayload) {
@@ -135,18 +140,23 @@ export const actions = {
         console.log("icbcPayload", icbcPayload)
         let plate_number = icbcPayload['plateNumber']
         const url = "/api/v1/icbc/vehicles/" + plate_number
-        return await fetch(url, {
+        return await new Promise((resolve, reject) => {
+            fetch(url, {
             "method": 'GET',
             "headers": context.getters.apiHeader
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log("data", data)
-                context.commit("populateVehicleFromICBC", data)
-            })
-            .catch(function (error) {
-               console.log(error)
-            });
+                })
+                    .then(response => response.json()
+                    .then(data => {
+                        console.log("data", data)
+                        resolve(context.commit("populateVehicleFromICBC", data))
+                    })
+                        .catch(() => {
+                        reject({"description": "No valid response from ICBC"})
+                    }))
+                    .catch( () => {
+                        reject({"description": "ICBC server did not respond"})
+                    });
+                })
     },
 
     fetchDynamicLookupTables(context, type) {

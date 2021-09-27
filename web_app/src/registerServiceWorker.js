@@ -21,23 +21,27 @@ if (process.env.NODE_ENV === 'production') {
       console.log('New content is downloading.')
     },
     updated (registration) {
-      // console.log('New version of app is available - delete old caches')
-      // caches.keys().then(function(cacheNames) {
-      //   return Promise.all(
-      //     cacheNames.filter(function(cacheName) {
-      //       console.log('  - deleting: ' + cacheName)
-      //     }).map(function(cacheName) {
-      //       return caches.delete(cacheName);
-      //     })
-      //   );
-      // })
+      console.log('New version of app is available - delete old caches')
+      caches.keys().then(function(cacheNames) {
+        return Promise.all(
+          cacheNames.filter(function(cacheName) {
+            console.log('  - deleting: ' + cacheName)
+          }).map(function(cacheName) {
+            return caches.delete(cacheName);
+          })
+        );
+      })
       console.log('New version of app is available - reloading app automatically')
       document.dispatchEvent(
           new CustomEvent('swUpdated', { detail: registration })
       )
-      // setTimeout(() => {
-      //   window.location.reload(true)
-      // }, 1000)
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if(!refreshing) {
+          window.location.reload()
+          refreshing = true
+        }
+      })
     },
     offline () {
       console.log('No internet connection found. App is running in offline mode.')

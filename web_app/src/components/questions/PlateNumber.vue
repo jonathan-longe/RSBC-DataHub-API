@@ -17,7 +17,10 @@
             <b-spinner v-if="display_spinner" small label="Loading..."></b-spinner>
           </button>
         </div>
-        <div class="small text-danger">{{ errors[0] }}</div>
+      </div>
+      <div class="small text-danger">
+        {{ errors[0] }}
+        <fade-text v-if="fetch_error" :show-seconds=3000>{{ fetch_error }}</fade-text>
       </div>
     </validation-provider>
   </div>
@@ -27,21 +30,22 @@
 
 import FieldCommon from "@/components/questions/FieldCommon";
 import {mapGetters, mapMutations, mapActions} from "vuex";
+import FadeText from "@/components/FadeText";
 
 export default {
   name: "PlateNumber",
   mixins: [FieldCommon],
   data() {
     return {
-      display_spinner: false
+      display_spinner: false,
+      fetch_error: ''
     }
   },
   computed: {
     ...mapGetters(["getAttributeValue", "isPlateJurisdictionBC", "getCurrentlyEditedFormId"]),
     icbcPayload() {
       return {
-        "plateNumber": this.getAttributeValue(this.id),
-        "formIndex": this.getCurrentlyEditedProhibitionIndex
+        "plateNumber": this.getAttributeValue(this.id)
       }
     },
   },
@@ -50,6 +54,7 @@ export default {
     ...mapActions(["lookupPlateFromICBC"]),
     triggerPlateLookup() {
       console.log("inside triggerPlateLookup()")
+      this.fetch_error = ''
       this.display_spinner = true;
       this.lookupPlateFromICBC(this.icbcPayload)
           .then( () => {
@@ -58,8 +63,12 @@ export default {
           .catch( error => {
             console.log("error", error)
             this.display_spinner = false
+            this.fetch_error = error.description;
           })
     }
+  },
+  components: {
+    FadeText
   }
 }
 </script>

@@ -19,7 +19,9 @@
           <button :disabled=true class="btn-sm btn-secondary text-white ml-2">Scan DL</button>
         </div>
       </div>
-      <div class="small text-danger">{{ errors[0] }}</div>
+      <div class="small text-danger">{{ errors[0] }}
+        <fade-text v-if="fetch_error" show-seconds=3000>{{ fetch_error }}</fade-text>
+      </div>
     </validation-provider>
   </div>
 </template>
@@ -28,13 +30,16 @@
 
 import FieldCommon from "@/components/questions/FieldCommon";
 import {mapGetters, mapMutations, mapActions} from 'vuex';
+import FadeText from "@/components/FadeText";
 
 export default {
   name: "DriversLicenceNumber",
+  components: {FadeText},
   mixins: [FieldCommon],
   data() {
     return {
-      display_spinner: false
+      display_spinner: false,
+      fetch_error: ''
     }
   },
   computed: {
@@ -51,15 +56,17 @@ export default {
     ...mapActions(['lookupDriverFromICBC']),
     triggerDriversLookup() {
       console.log("inside triggerDriversLookup()")
+      this.fetch_error = ''
       this.display_spinner = true;
       this.lookupDriverFromICBC(this.icbcPayload)
-          .then(() => {
-            this.display_spinner = false
-          })
-          .catch( error => {
-            console.log("error", error)
-            this.display_spinner = false
-          })
+        .then(() => {
+          this.display_spinner = false;
+        })
+        .catch( error => {
+          console.log("error", error)
+          this.display_spinner = false;
+          this.fetch_error = error.description;
+        })
     }
   }
 }

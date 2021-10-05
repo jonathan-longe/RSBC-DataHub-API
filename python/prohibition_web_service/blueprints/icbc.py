@@ -1,5 +1,6 @@
 from python.prohibition_web_service.config import Config
 from flask import request, make_response, Blueprint
+from flask_cors import CORS
 import logging.config
 import base64
 import requests
@@ -8,6 +9,7 @@ logging.config.dictConfig(Config.LOGGING)
 logging.info('*** icbc blueprint loaded ***')
 
 bp = Blueprint('icbc', __name__, url_prefix='/api/v1/icbc')
+CORS(bp, resources={"/api/v1/icbc/*": {"origins": Config.ACCESS_CONTROL_ALLOW_ORIGIN}})
 
 
 def _icbc_api_authorization(username) -> dict:

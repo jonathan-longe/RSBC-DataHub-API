@@ -1,6 +1,7 @@
 from python.prohibition_web_service.config import Config
 import python.common.helper as helper
 from flask import request, Blueprint, make_response, jsonify
+from flask_cors import CORS
 import logging.config
 import python.prohibition_web_service.business as rules
 from python.prohibition_web_service.models import db, Form
@@ -10,6 +11,7 @@ logging.config.dictConfig(Config.LOGGING)
 logging.info('*** forms blueprint loaded ***')
 
 bp = Blueprint('forms', __name__, url_prefix='/api/v1')
+CORS(bp, resources={"/api/v1/forms/*": {"origins": Config.ACCESS_CONTROL_ALLOW_ORIGIN}})
 
 
 @bp.route('/forms/<string:form_type>', methods=['GET'])

@@ -33,6 +33,6 @@ def get_driver(dl_number):
 def get_vehicle(plate_number):
     if request.method == 'GET':
         username = 'usr'  # TODO - remove before flight
-        url = "{}/vehicles?plateNumber={}".format(Config.ICBC_API_ROOT, plate_number)
+        url = "{}/vehicles?plateNumber={}".format(Config.ICBC_API_ROOT, plate_number.upper())
         icbc_response = requests.get(url, headers=_icbc_api_authorization(username))
         return make_response(icbc_response.json(), icbc_response.status_code)

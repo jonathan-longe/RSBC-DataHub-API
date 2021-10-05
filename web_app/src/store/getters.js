@@ -260,63 +260,66 @@ export const getters = {
 
     getXfdfMappings: (state, getters) => (form_object, document_type) => {
         let key_value_pairs = Array();
+        if (document_type === 'ilo' || document_type === 'notice') {
+            key_value_pairs['VIOLATION_NUMBER'] = form_object.form_id.substring(3)
 
-        key_value_pairs['VIOLATION_NUMBER'] = form_object.form_id.substring(3)
+            key_value_pairs['REASON_ALCOHOL'] = getters.getXfdfRadioValue(form_object, 'prohibition_type', 'Alcohol 215(2)')
+            key_value_pairs['REASON_DRUGS'] = getters.getXfdfRadioValue(form_object, 'prohibition_type', 'Drugs 215(3)')
 
-        key_value_pairs['REASON_ALCOHOL'] = getters.getXfdfRadioValue(form_object,'prohibition_type', 'Alcohol 215(2)')
-        key_value_pairs['REASON_DRUGS'] = getters.getXfdfRadioValue(form_object,'prohibition_type', 'Drugs 215(3)')
+            let prohibition_start_time = moment(getters.getXfdfValue(form_object, 'prohibition_start_time'))
+            key_value_pairs['NOTICE_TIME'] = prohibition_start_time.format("HH:mm")
+            key_value_pairs['NOTICE_DAY'] = prohibition_start_time.format("Do")
+            key_value_pairs['NOTICE_MONTH'] = prohibition_start_time.format("MMMM")
+            key_value_pairs['NOTICE_YEAR'] = prohibition_start_time.format("YYYY")
 
-        let prohibition_start_time = moment(getters.getXfdfValue(form_object,'prohibition_start_time'))
-        key_value_pairs['NOTICE_TIME'] = prohibition_start_time.format("HH:mm")
-        key_value_pairs['NOTICE_DAY'] = prohibition_start_time.format("Do")
-        key_value_pairs['NOTICE_MONTH'] = prohibition_start_time.format("MMMM")
-        key_value_pairs['NOTICE_YEAR'] = prohibition_start_time.format("YYYY")
+            key_value_pairs['DL_SURRENDER_LOCATION'] = getters.getXfdfValue(form_object, 'offence_city')
+            key_value_pairs['OFFICER_BADGE_NUMBER'] = getters.getXfdfValue(form_object, 'badge_number')
+            key_value_pairs['AGENCY_NAME'] = getters.getXfdfValue(form_object, 'agency')
+            key_value_pairs['AGENCY_FILE_NUMBER'] = getters.getXfdfValue(form_object, 'file_number')
 
-        key_value_pairs['DL_SURRENDER_LOCATION'] = getters.getXfdfValue(form_object,'offence_city')
-        key_value_pairs['OFFICER_BADGE_NUMBER'] = getters.getXfdfValue(form_object,'badge_number')
-        key_value_pairs['AGENCY_NAME'] = getters.getXfdfValue(form_object,'agency')
-        key_value_pairs['AGENCY_FILE_NUMBER'] = getters.getXfdfValue(form_object,'file_number')
+            key_value_pairs['OWNER_SURNAME'] = getters.getXfdfValue(form_object, 'owners_last_name')
+            key_value_pairs['OWNER_GIVEN'] = getters.getXfdfValue(form_object, 'owners_first_name')
+            key_value_pairs['OWNER_ADDRESS'] = getters.getXfdfValue(form_object, 'owners_address1')
+            key_value_pairs['OWNER_CITY'] = getters.getXfdfValue(form_object, 'owners_city')
+            key_value_pairs['OWNER_PROVINCE'] = getters.getXfdfValue(form_object, 'owners_province')
+            key_value_pairs['OWNER_POSTAL_CODE'] = getters.getXfdfValue(form_object, 'owners_postal')
+            key_value_pairs['OWNER_PHONE_AREA_CODE'] = getters.getXfdfValue(form_object, 'owners_phone').substr(0, 3)
 
-        key_value_pairs['OWNER_SURNAME'] = getters.getXfdfValue(form_object,'owners_last_name')
-        key_value_pairs['OWNER_GIVEN'] = getters.getXfdfValue(form_object,'owners_first_name')
-        key_value_pairs['OWNER_ADDRESS'] = getters.getXfdfValue(form_object,'owners_address1')
-        key_value_pairs['OWNER_CITY'] = getters.getXfdfValue(form_object,'owners_city')
-        key_value_pairs['OWNER_PROVINCE'] = getters.getXfdfValue(form_object,'owners_province')
-        key_value_pairs['OWNER_POSTAL_CODE'] = getters.getXfdfValue(form_object,'owners_postal')
-        key_value_pairs['OWNER_PHONE_AREA_CODE'] = getters.getXfdfValue(form_object,'owners_phone').substr(0,3)
+            let phone_number = getters.getXfdfValue(form_object, 'owners_phone')
+            key_value_pairs['OWNER_PHONE_NUMBER'] = phone_number.substr(3, 3) + '-' + phone_number.substr(6, 9)
 
-        let phone_number = getters.getXfdfValue(form_object,'owners_phone')
-        key_value_pairs['OWNER_PHONE_NUMBER'] = phone_number.substr(3,3 ) + '-' + phone_number.substr(6,9)
+            key_value_pairs['VEHICLE_LICENSE_NUMBER'] = getters.getXfdfValue(form_object, 'plate_number')
+            key_value_pairs['VEHICLE_PROVINCE'] = getters.getXfdfValue(form_object, 'plate_province')
+            key_value_pairs['VEHICLE_LICENSE_YEAR'] = getters.getXfdfValue(form_object, 'plate_year')
+            key_value_pairs['VEHICLE_TAG_NUMBER'] = getters.getXfdfValue(form_object, 'plate_val_tag')
+            key_value_pairs['VEHICLE_REGISTRATION_NUMBER'] = getters.getXfdfValue(form_object, 'registration_number')
+            key_value_pairs['VEHICLE_TYPE'] = getters.getXfdfValue(form_object, 'vehicle_type')
+            key_value_pairs['VEHICLE_MAKE'] = getters.getXfdfValue(form_object, 'vehicle_make')
+            key_value_pairs['VEHICLE_MODEL'] = getters.getXfdfValue(form_object, 'vehicle_model')
+            key_value_pairs['VEHICLE_YEAR'] = getters.getXfdfValue(form_object, 'vehicle_year')
+            key_value_pairs['VEHICLE_COLOUR'] = getters.getXfdfValue(form_object, 'vehicle_color')
+            key_value_pairs['VEHICLE_NSC_PUJ'] = getters.getXfdfValue(form_object, 'puj_code')
+            key_value_pairs['VEHICLE_NSC_NUMBER'] = getters.getXfdfValue(form_object, 'nsc_number')
+            key_value_pairs['VEHICLE_VIN'] = getters.getXfdfValue(form_object, 'vin_number')
 
-        key_value_pairs['VEHICLE_LICENSE_NUMBER'] = getters.getXfdfValue(form_object,'plate_number')
-        key_value_pairs['VEHICLE_PROVINCE'] = getters.getXfdfValue(form_object,'plate_province')
-        key_value_pairs['VEHICLE_LICENSE_YEAR'] = getters.getXfdfValue(form_object,'plate_year')
-        key_value_pairs['VEHICLE_TAG_NUMBER'] = getters.getXfdfValue(form_object,'plate_val_tag')
-        key_value_pairs['VEHICLE_REGISTRATION_NUMBER'] = getters.getXfdfValue(form_object,'registration_number')
-        key_value_pairs['VEHICLE_TYPE'] = getters.getXfdfValue(form_object,'vehicle_type')
-        key_value_pairs['VEHICLE_MAKE'] = getters.getXfdfValue(form_object,'vehicle_make')
-        key_value_pairs['VEHICLE_MODEL'] = getters.getXfdfValue(form_object,'vehicle_model')
-        key_value_pairs['VEHICLE_YEAR'] = getters.getXfdfValue(form_object,'vehicle_year')
-        key_value_pairs['VEHICLE_COLOUR'] = getters.getXfdfValue(form_object,'vehicle_color')
-        key_value_pairs['VEHICLE_NSC_PUJ'] = getters.getXfdfValue(form_object,'puj_code')
-        key_value_pairs['VEHICLE_NSC_NUMBER'] = getters.getXfdfValue(form_object,'nsc_number')
-        key_value_pairs['VEHICLE_VIN'] = getters.getXfdfValue(form_object,'vin_number')
+            key_value_pairs['NOT_IMPOUNDED'] = getters.getXfdfRadioValue(form_object, 'vehicle_impounded', 'No')
+            key_value_pairs['IMPOUNDED'] = getters.getXfdfRadioValue(form_object, 'vehicle_impounded', 'Yes')
 
-        key_value_pairs['NOT_IMPOUNDED'] = getters.getXfdfRadioValue(form_object,'vehicle_impounded', 'No')
-        key_value_pairs['IMPOUNDED'] = getters.getXfdfRadioValue(form_object,'vehicle_impounded', 'Yes')
+            // TODO - don't print the following if the vehicle is impounded
+            key_value_pairs['NOT_IMPOUNDED_REASON'] = getters.getXfdfValue(form_object, 'reason_for_not_impounding')
 
-        // TODO - don't print the following if the vehicle is impounded
-        key_value_pairs['NOT_IMPOUNDED_REASON'] = getters.getXfdfValue(form_object,'reason_for_not_impounding')
+            let ilo = getters.getXfdfValue(form_object, 'impound_lot_operator').split(", ")
+            if (ilo.length > 1) {
+                key_value_pairs['IMPOUNDED_LOT'] = ilo[0]
+                key_value_pairs['IMPOUNDED_ADDRESS'] = ilo[1]
+                key_value_pairs['IMPOUNDED_CITY'] = ilo[2]
+                key_value_pairs['IMPOUNDED_PHONE_AREA_CODE'] = ilo[3].substr(0, 3)
+                key_value_pairs['IMPOUNDED_PHONE_NUMBER'] = ilo[3].substr(4)
+            }
 
-        let ilo = getters.getXfdfValue(form_object,'impound_lot_operator').split(", ")
-        key_value_pairs['IMPOUNDED_LOT'] = ilo[0]
-        key_value_pairs['IMPOUNDED_ADDRESS'] = ilo[1]
-        key_value_pairs['IMPOUNDED_CITY'] = ilo[2]
-        key_value_pairs['IMPOUNDED_PHONE_AREA_CODE'] = ilo[3].substr(0,3)
-        key_value_pairs['IMPOUNDED_PHONE_NUMBER'] = ilo[3].substr(4)
-
-        key_value_pairs['RELEASE_LOCATION_KEYS'] = getters.getXfdfValue(form_object,'location_of_keys')
-        key_value_pairs['RELEASE_PERSON'] = getters.getXfdfValue(form_object,'vehicle_released_to')
+            key_value_pairs['RELEASE_LOCATION_KEYS'] = getters.getXfdfValue(form_object, 'location_of_keys')
+            key_value_pairs['RELEASE_PERSON'] = getters.getXfdfValue(form_object, 'vehicle_released_to')
+        }
 
 
         if (document_type === 'ilo') {
@@ -350,6 +353,26 @@ export const getters = {
             key_value_pairs['DRIVER_CITY'] = getters.getXfdfValue(form_object,'city')
             key_value_pairs['DRIVER_PROVINCE'] = getters.getXfdfValue(form_object,'province')
             key_value_pairs['DRIVER_POSTAL_CODE'] = getters.getXfdfValue(form_object,'postal')
+        }
+
+        if (document_type === 'report') {
+            key_value_pairs['DRIVER_WITNESSED_BY_OFFICER'] = getters.getXfdfCheckedValue(
+                form_object, 'operating_grounds', "Witnessed by officer")
+            key_value_pairs['DRIVER_INDEPENDENT_WITNESS'] = getters.getXfdfCheckedValue(
+                form_object, 'operating_grounds', "Independent witness")
+            key_value_pairs['DRIVER_ADMISSION_BY_DRIVER'] = getters.getXfdfCheckedValue(
+                form_object, 'operating_grounds', "Admission by driver")
+
+            let operating_grounds_other = getters.getXfdfCheckedValue(
+                form_object, 'operating_grounds', "Other")
+            key_value_pairs['DRIVER_OTHER'] = operating_grounds_other
+
+            if (operating_grounds_other === 'Yes') {
+                key_value_pairs['DRIVER_ADDITIONAL_INFORMATION_1'] = getters.getXfdfValue(
+                    form_object, 'operating_ground_other')
+            } else {
+                key_value_pairs['DRIVER_ADDITIONAL_INFORMATION_1'] = ''
+            }
         }
 
         return key_value_pairs;
@@ -402,6 +425,17 @@ export const getters = {
             return "Yes";
         }
         return "";
+    },
+
+    getXfdfCheckedValue: state => (form_object, attribute, checked_value) => {
+        let root = state.forms[form_object.form_type][form_object.form_id].data;
+        if (!(attribute in root)) {
+            return '';
+        }
+        if (root[attribute].includes(checked_value)) {
+            return "Yes";
+        }
+        return '';
     },
 
     getXfdfListValues: state => (form_object, attribute) => {

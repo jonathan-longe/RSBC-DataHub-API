@@ -26,25 +26,29 @@ export const store = new Vuex.Store ({
         "12Hour": {
           "component": "TwelveHourProhibition",
           "form_type": "12Hour",
-          "steps": ["Prohibition" ,"Validate & Serve", "Download Documents"],
+          "steps": ["Prohibition" ,"Review", "Download Documents"],
           "description": "12 Hour Driving Suspension",
           "full_name": "MV2906",
           "documents": {
             "notice": {
-              "name": "Notice for driver",
+              "name": "Driver Copy",
+              "pdf": "MV2906_12h_Suspension_2021-04-27.pdf"
+            },
+            "police": {
+              "name": "Police Copy",
               "pdf": "MV2906_12h_Suspension_2021-04-27.pdf"
             }
           }
         },
         "24Hour": {
           "component": "TwentyFourHourProhibition",
-          "steps": ["Prohibition" ,"Validate & Serve", "Download Documents"],
+          "steps": ["Prohibition" ,"Review", "Download Documents"],
           "form_type": "24Hour",
           "description": "24-Hour Prohibition",
           "full_name": "MV2634",
           "documents": {
             "notice": {
-              "name": "Notice",
+              "name": "Driver Copy",
               "pdf": "MV2634_102018_Notice.pdf",
             },
             "ilo": {
@@ -52,9 +56,13 @@ export const store = new Vuex.Store ({
               "pdf": "MV2634_102018_Notice.pdf",
             },
             "report": {
-              "name": "Officer Report",
+              "name": "Police Copy",
               "pdf": "MV2634_102018_Report.pdf",
             },
+            "all": {
+              "name": "All Copies",
+              "pdf": "MV2634_102018_Report.pdf",
+            }
           }
         },
         "IRP": {

@@ -72,7 +72,7 @@ export const actions = {
     },
 
     async getFormIdsFromApiByType (context, form_type) {
-        const url = "/api/v1/forms/" + form_type
+        const url = constants.API_ROOT_URL + "/api/v1/forms/" + form_type
         return await fetch(url, {
             "method": "POST",
             headers: context.getters.apiHeader,
@@ -93,7 +93,7 @@ export const actions = {
 
     async renewFormFromApiById (context, form_type, form_id) {
         console.log("inside renewFormFromApiById()")
-        const url = "/api/v1/forms/" + form_type + "/" + form_id
+        const url = constants.API_ROOT_URL + "/api/v1/forms/" + form_type + "/" + form_id
         return await fetch(url, {
             "method": "PATCH",
             headers: context.getters.apiHeader,
@@ -115,7 +115,7 @@ export const actions = {
     async lookupDriverFromICBC(context, icbcPayload) {
         console.log("inside actions.js lookupDriverFromICBC(): " + icbcPayload)
         let dlNumber = icbcPayload['dlNumber']
-        const url = "/api/v1/icbc/drivers/" + dlNumber
+        const url = constants.API_ROOT_URL + "/api/v1/icbc/drivers/" + dlNumber
         return await new Promise((resolve, reject) => {
              fetch(url, {
                 "method": 'GET',
@@ -139,7 +139,7 @@ export const actions = {
         console.log("inside actions.js lookupPlateFromICBC(): ")
         console.log("icbcPayload", icbcPayload)
         let plate_number = icbcPayload['plateNumber']
-        const url = "/api/v1/icbc/vehicles/" + plate_number
+        const url = constants.API_ROOT_URL + "/api/v1/icbc/vehicles/" + plate_number
         return await new Promise((resolve, reject) => {
             fetch(url, {
             "method": 'GET',
@@ -161,7 +161,7 @@ export const actions = {
     },
 
     fetchDynamicLookupTables(context, type) {
-        const url = "/api/v1/" + type
+        const url = constants.API_ROOT_URL + "/api/v1/" + type
         let networkDataRetrieved = false
 
         // trigger request for fresh data from API
@@ -196,7 +196,7 @@ export const actions = {
     },
 
     async fetchStaticLookupTables(context, type) {
-        const url = "/api/v1/" + type
+        const url = constants.API_ROOT_URL + "/api/v1/" + type
 
         caches.match(url).then( response => {
             if (!response) throw Error("No cached data");

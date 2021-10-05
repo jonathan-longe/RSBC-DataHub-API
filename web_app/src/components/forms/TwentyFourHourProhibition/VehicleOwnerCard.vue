@@ -25,9 +25,6 @@
             <text-field id="owners_address1" fg_class="col-sm-12" placeholder="Address" rules="required">Address Line 1</text-field>
           </form-row>
           <form-row>
-            <text-field id="owners_address2" fg_class="col-sm-12" placeholder="Address">Address Line 2</text-field>
-          </form-row>
-          <form-row>
             <type-ahead-field id="owners_city" fg_class="col-sm-4" :suggestions="getArrayOfBCCityNames" rules="required">City</type-ahead-field>
             <province-field id="owners_province" fg_class="col-sm-2">Province</province-field>
             <text-field id="owners_postal" fg_class="col-sm-2">Postal</text-field>
@@ -42,7 +39,6 @@
       <read-only-element id="owners_last_name">Last name</read-only-element>
       <read-only-element id="owners_first_name">First name</read-only-element>
       <read-only-element id="owners_address1">Address 1</read-only-element>
-      <read-only-element id="owners_address2">Address 2</read-only-element>
       <read-only-element id="owners_city">City</read-only-element>
       <read-only-element id="owners_province">Province</read-only-element>
       <read-only-element id="owners_postal">Postal code</read-only-element>

@@ -10,6 +10,7 @@ import "@/config/custom_stylesheet.scss";
 import {store} from "@/store/store.js"
 
 import './registerServiceWorker'
+import constants from "@/config/constants";
 
 
 Vue.use(Vuex)
@@ -28,7 +29,7 @@ Vue.config.productionTip = false
 
 Vue.use(VueKeyCloak, {
   onLoad: 'login-required',
-  config: '/api/v1/keycloak',
+  config: constants.API_ROOT_URL + '/api/v1/keycloak',
   onReady: () => {
     new Vue({
       store: store,

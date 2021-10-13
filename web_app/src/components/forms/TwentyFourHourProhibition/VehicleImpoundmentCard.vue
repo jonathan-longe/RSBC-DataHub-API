@@ -1,6 +1,5 @@
 <template>
   <form-card title="Vehicle Impoundment or Disposition">
-    <div v-if="! isReadOnly">
       <form-row>
         <radio-field id="vehicle_impounded" fg_class="col-sm-6" :options='["Yes", "No"]'>Vehicle Impounded?</radio-field>
       </form-row>
@@ -23,15 +22,6 @@
         <type-ahead-field id="impound_lot_operator" fg_class="col-sm-12" :visible="showVehicleImpounded"
                           :suggestions="getArrayOfImpoundLotOperators">Impound Lot Operator (name, lot address, city & phone)</type-ahead-field>
       </form-row>
-    </div>
-    <div v-if="isReadOnly">
-      <read-only-element id="vehicle_impounded">Vehicle Impounded</read-only-element>
-      <read-only-element id="reason_for_not_impounding">Reason for not impounding</read-only-element>
-      <read-only-element id="vehicle_released_to">Vehicle released to</read-only-element>
-      <read-only-element id="datetime_released">Datetime released</read-only-element>
-      <read-only-element id="location_of_keys">Location of keys</read-only-element>
-      <read-only-element id="impound_lot_operator">Impound lot operator</read-only-element>
-    </div>
   </form-card>
 </template>
 

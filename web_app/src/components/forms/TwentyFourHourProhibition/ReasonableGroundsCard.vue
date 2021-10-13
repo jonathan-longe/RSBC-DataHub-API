@@ -1,6 +1,5 @@
 <template>
 <form-card title="Reasonable Grounds">
-  <div v-if="! isReadOnly">
     <div v-if="isProhibitionTypeSelected">
       <form-row>
         <check-field id="operating_grounds" fg_class="col-sm-12" rules="required"
@@ -25,12 +24,6 @@
                      "No, refused by driver" -->
       </form-row>
     </div>
-  </div>
-  <div v-if="isReadOnly">
-    <read-only-element id="operating_grounds">Grounds</read-only-element>
-    <read-only-element id="operating_ground_other">Grounds other</read-only-element>
-    <read-only-element id="prescribed_device">Prescribed device</read-only-element>
-  </div>
 </form-card>
 </template>
 

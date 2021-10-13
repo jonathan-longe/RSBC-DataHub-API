@@ -1,6 +1,5 @@
 <template>
 <form-card title="Prohibition">
-  <div v-if="! isReadOnly">
     <form-row>
       <radio-field id="prohibition_type" fg_class="col-sm-6" rules="required"
                    :options='["Alcohol 215(2)", "Drugs 215(3)"]'>Type of Prohibition (select one)</radio-field>
@@ -15,14 +14,6 @@
         Time of driving, care or control
       </date-time>
     </form-row>
-  </div>
-  <div v-if="isReadOnly">
-    <read-only-element id="prohibition_type">Prohibition Type</read-only-element>
-    <read-only-element id="offence_address">Location of offence</read-only-element>
-    <read-only-element id="offence_city">Offence City</read-only-element>
-    <read-only-element id="file_number">File number</read-only-element>
-    <read-only-element id="prohibition_start_time">Time of driving, care or control</read-only-element>
-  </div>
 </form-card>
 </template>
 

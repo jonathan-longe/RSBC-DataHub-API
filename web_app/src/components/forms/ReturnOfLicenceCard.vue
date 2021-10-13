@@ -1,6 +1,5 @@
 <template>
   <div>
-    <div v-if="! isReadOnly">
       <form-card title="Return of driver's licence">
         <form-row>
           <radio-field id="licence_surrendered" fg_class="col-sm-12" :options='["Yes", "No"]'>Licence surrendered at roadside?</radio-field>
@@ -19,14 +18,6 @@
             Email {{ getRoadSafetyEmailAddress }} to have pickup addresses added or removed from the list.</p>
         </form-row>
       </form-card>
-    </div>
-    <div v-if="isReadOnly">
-      <form-card title="Return of driver's licence">
-        <read-only-element id="licence_surrendered">Licence surrendered</read-only-element>
-        <read-only-element id="return_of_licence">How will licence be returned</read-only-element>
-        <read-only-element id="pickup_address">Pickup Address</read-only-element>
-      </form-card>
-    </div>
   </div>
 
 

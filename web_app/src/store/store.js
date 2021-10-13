@@ -42,7 +42,6 @@ export const store = new Vuex.Store ({
         },
         "24Hour": {
           "component": "TwentyFourHourProhibition",
-          "steps": ["Prohibition" ,"Review", "Download Documents"],
           "form_type": "24Hour",
           "description": "24-Hour Prohibition",
           "full_name": "MV2634",

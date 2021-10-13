@@ -1,6 +1,5 @@
 <template>
 <form-card title="Test Administered - Alcohol 215(2)">
-  <div v-if="! isReadOnly">
     <shadow-box>
       <form-row>
         <check-field :show_label="false"  id="test_administered_asd" fg_class="col-sm-6"
@@ -31,16 +30,6 @@
         <text-field v-if="isTestAdministeredApprovedInstrument" id="test_result_bac" fg_class="col-sm-12"></text-field>
       </form-row>
     </shadow-box>
-  </div>
-  <div v-if="isReadOnly">
-      <read-only-element id="test_administered_asd">Test Administered ASD</read-only-element>
-      <read-only-element id="asd_expiry_date">ASD expiry date</read-only-element>
-      <read-only-element id="result_alcohol">Result Alcohol</read-only-element>
-
-      <read-only-element id="test_administered_instrument">Test Administered Approved Instrument</read-only-element>
-      <read-only-element id="result_alcohol_approved_instrument">Approved instrument</read-only-element>
-      <read-only-element  id="test_result_bac">BAC Result</read-only-element>
-  </div>
 </form-card>
 </template>
 

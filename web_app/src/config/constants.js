@@ -1,7 +1,8 @@
 import moment from "moment";
 export default {
 
-    // If required for local development, set API_ROOT_URL below.
+    // If required for local development, set API_ROOT_URL below otherwise set to an empty string.
+    // The API_ROOT_URL must be set to at least an empty string.cl
     // API_ROOT_URL: "http://localhost:5002",
     API_ROOT_URL: "",
 

@@ -1,6 +1,5 @@
 <template>
 <form-card title="Test Administered - Drugs 215(3)">
-  <div v-if="! isReadOnly">
     <shadow-box>
       <form-row>
         <check-field :show_label="false" id="test_administered_adse" fg_class="col-sm-6"
@@ -44,23 +43,7 @@
     <form-row>
         <check-field id="result_drug" fg_class="col-sm-12"
                      :options='["Ability to drive affected by a drug"]'><strong>Result</strong></check-field>
-      </form-row>
-  </div>
-  <div v-if="isReadOnly">
-        <read-only-element id="test_administered_adse">Test ADSE</read-only-element>
-        <read-only-element id="positive_adse">Result ADSE</read-only-element>
-        <read-only-element id="time_of_physical_test_adse">Time of ADSE</read-only-element>
-
-        <read-only-element id="test_administered_sfst">Test SFST</read-only-element>
-        <read-only-element id="time_of_physical_test_sfst">Time of SFST</read-only-element>
-
-        <read-only-element  id="test_administered_dre" >Test DRE</read-only-element>
-        <read-only-element id="start_time_of_physical_test_dre">Time of DRE</read-only-element>
-        <read-only-element id="positive_dre">DRE Notes</read-only-element>
-
-        <read-only-element id="result_drug">Conclusion</read-only-element>
-
-  </div>
+    </form-row>
 </form-card>
 </template>
 

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div @click="saveAndPrint" class="btn btn-outline-primary">
+    <div @click="saveAndPrint" class="btn btn-primary">
       {{ document.name }}
       <b-spinner v-if="display_spinner" small label="Loading..."></b-spinner>
     </div>

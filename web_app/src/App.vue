@@ -2,7 +2,7 @@
   <div id="app" class="card border-0 ml-4 mr-4">
     <div id="roadsafety-header" class="card-header">
             <div class="d-flex justify-content-between">
-              <img width="300px" src="@/assets/BCID_RoadSafetyBC_logo_transparent.png" >
+              <img width="300px" src="/assets/BCID_RoadSafetyBC_logo_transparent.png" >
               <div class="d-flex align-items-end flex-column">
                 <div class="font-weight-bold text-warning">DRAFT <span class="text-light small">{{ getAppVersion }}</span></div>
                 <div class="mt-auto small">User: {{ getKeycloakUsername }}</div>

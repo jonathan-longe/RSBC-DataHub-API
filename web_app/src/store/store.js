@@ -30,13 +30,13 @@ export const store = new Vuex.Store ({
           "description": "12 Hour Driving Suspension",
           "full_name": "MV2906",
           "documents": {
-            "notice": {
+            "driver": {
               "name": "Driver Copy",
-              "pdf": "MV2906_12h_Suspension_2021-04-27.pdf"
+             "variants": ['driver'],
             },
             "police": {
               "name": "Police Copy",
-              "pdf": "MV2906_12h_Suspension_2021-04-27.pdf"
+              "variants": ['police'],
             }
           }
         },
@@ -47,21 +47,21 @@ export const store = new Vuex.Store ({
           "description": "24-Hour Prohibition",
           "full_name": "MV2634",
           "documents": {
-            "notice": {
+            "driver": {
               "name": "Driver Copy",
-              "pdf": "MV2634_102018_Notice.pdf",
+              "variants": ['driver'],
             },
             "ilo": {
               "name": "ILO Copy",
-              "pdf": "MV2634_102018_Notice.pdf",
+              "variants": ['ilo']
             },
             "report": {
               "name": "Police Copy",
-              "pdf": "MV2634_102018_Report.pdf",
+              "variants": ['police']
             },
             "all": {
               "name": "All Copies",
-              "pdf": "MV2634_102018_Report.pdf",
+              "variants": ['driver', 'ilo', 'police']
             }
           }
         },

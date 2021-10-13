@@ -60,8 +60,8 @@ export default {
     PrintConfirmationModal
   },
   computed: {
-    ...mapGetters(["getXdfFileNameString", "getPDFTemplateFileName",
-      "getXFDF", "getAttributeValue", "getCurrentlyEditedFormObject"]),
+    ...mapGetters(["getPdfFileNameString", "getPDFTemplateFileName",
+      "createPDF", "getAttributeValue", "getCurrentlyEditedFormObject"]),
   },
   methods: {
     ...mapMutations(["stopEditingCurrentForm"]),
@@ -76,7 +76,7 @@ export default {
       const href = window.URL.createObjectURL(xml_file); //create the download url
       const downloadElement = document.createElement("a");
       downloadElement.href = href;
-      downloadElement.download =  this.getXdfFileNameString(form_object);
+      downloadElement.download =  this.getPdfFileNameString(form_object);
       document.body.appendChild(downloadElement);
       downloadElement.click(); //click to file
       document.body.removeChild(downloadElement); //remove the element

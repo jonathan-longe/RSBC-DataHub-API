@@ -1,5 +1,8 @@
 import constants from "@/config/constants";
 import persistence from "@/helpers/persistence";
+import pdfMerge from "@/helpers/pdfMerge";
+import print_layout from "@/config/print_layout.json";
+import moment from "moment";
 
 
 export const actions = {
@@ -124,7 +127,12 @@ export const actions = {
                 .then(response => response.json())
                 .then(data => {
                     console.log("data", data)
-                    resolve(context.commit("populateDriverFromICBC", data ))
+                    if ("error" in data) {
+                        reject("message" in data['error'] ? {"description": data['error'].message }: {"description": "No valid response"})
+                    } else {
+                        resolve(context.commit("populateDriverFromICBC", data ))
+                    }
+
                 })
                 .catch( (error) => {
                     if (error) {
@@ -148,12 +156,16 @@ export const actions = {
                     .then(response => response.json())
                     .then(data => {
                         console.log("data", data)
-                        resolve(context.commit("populateVehicleFromICBC", data))
+                        if ("error" in data) {
+                            reject("description" in data['error'] ? {"description": data['error'].description }: {"description": "No valid response"})
+                        } else {
+                            resolve(context.commit("populateVehicleFromICBC", data))
+                        }
                     })
                     .catch((error) => {
                         console.log("error", error)
                         if (error) {
-                            reject("error" in error ? error.error : {"description": "No valid response"})
+                            reject("message" in error ? {"description": error.message }: {"description": "No valid response"})
                         }
                         reject({"description": "Server did not respond"})
                         });
@@ -245,5 +257,157 @@ export const actions = {
         await persistence.updateOrCreate(form_object.form_id, form_object_to_save)
     },
 
+    async createPDF (context, payload) {
+        return new Promise(resolve => {
+            context.dispatch("getPrintMappings", payload.form_object)
+            .then((key_value_pairs) => {
+                resolve(pdfMerge.generatePDF(print_layout[payload.form_object.form_type],
+                       payload.variants,
+                       key_value_pairs,
+                       payload.filename))
 
+            })
+        })
+
+    },
+
+        // the print templates use different field names from the form
+    async getPrintMappings(context, form_object) {
+        return new Promise(resolve => {
+            let key_value_pairs = Array();
+
+            key_value_pairs['VIOLATION_NUMBER'] = form_object.form_id.substring(3)
+
+            key_value_pairs['REASON_ALCOHOL'] = context.getters.getFormPrintRadioValue(form_object, 'prohibition_type', 'Alcohol 215(2)')
+            key_value_pairs['REASON_DRUGS'] = context.getters.getFormPrintRadioValue(form_object, 'prohibition_type', 'Drugs 215(3)')
+
+            let prohibition_start_time = moment(context.getters.getFormPrintValue(form_object, 'prohibition_start_time'))
+            key_value_pairs['NOTICE_TIME'] = prohibition_start_time.format("HH:mm")
+            key_value_pairs['NOTICE_DAY'] = prohibition_start_time.format("Do")
+            key_value_pairs['NOTICE_MONTH'] = prohibition_start_time.format("MMMM")
+            key_value_pairs['NOTICE_YEAR'] = prohibition_start_time.format("YYYY")
+
+            key_value_pairs['DL_SURRENDER_LOCATION'] = context.getters.getFormPrintValue(form_object, 'offence_city')
+            key_value_pairs['OFFICER_BADGE_NUMBER'] = context.getters.getFormPrintValue(form_object, 'badge_number')
+            key_value_pairs['AGENCY_NAME'] = context.getters.getFormPrintValue(form_object, 'agency')
+            key_value_pairs['AGENCY_FILE_NUMBER'] = context.getters.getFormPrintValue(form_object, 'file_number')
+
+            key_value_pairs['OWNER_NAME'] = context.getters.getFormPrintValue(form_object, 'owners_last_name')
+                + ", " + context.getters.getFormPrintValue(form_object, 'owners_first_name')
+
+            key_value_pairs['OWNER_ADDRESS'] = context.getters.getFormPrintValue(form_object, 'owners_address1')
+                    + ", " + context.getters.getFormPrintValue(form_object, 'owners_city')
+            key_value_pairs['OWNER_PROVINCE'] = context.getters.getFormPrintValue(form_object, 'owners_province')
+            key_value_pairs['OWNER_POSTAL_CODE'] = context.getters.getFormPrintValue(form_object, 'owners_postal')
+            key_value_pairs['OWNER_PHONE_AREA_CODE'] = context.getters.getFormPrintValue(form_object, 'owners_phone').substr(0, 3)
+
+            let phone_number = context.getters.getFormPrintValue(form_object, 'owners_phone')
+            key_value_pairs['OWNER_PHONE_NUMBER'] = phone_number.substr(3, 3) + '-' + phone_number.substr(6, 9)
+
+            key_value_pairs['VEHICLE_LICENSE_NUMBER'] = context.getters.getFormPrintValue(form_object, 'plate_number')
+            key_value_pairs['VEHICLE_PROVINCE'] = context.getters.getFormPrintJurisdiction(form_object, 'plate_province')
+            key_value_pairs['VEHICLE_LICENSE_YEAR'] = context.getters.getFormPrintValue(form_object, 'plate_year')
+            key_value_pairs['VEHICLE_TAG_NUMBER'] = context.getters.getFormPrintValue(form_object, 'plate_val_tag')
+            key_value_pairs['VEHICLE_REGISTRATION_NUMBER'] = context.getters.getFormPrintValue(form_object, 'registration_number')
+            key_value_pairs['VEHICLE_TYPE'] = context.getters.getFormPrintValue(form_object, 'vehicle_type')
+            key_value_pairs['VEHICLE_MAKE'] = context.getters.getFormPrintValue(form_object, 'vehicle_make')
+            key_value_pairs['VEHICLE_MODEL'] = context.getters.getFormPrintValue(form_object, 'vehicle_model')
+            key_value_pairs['VEHICLE_YEAR'] = context.getters.getFormPrintValue(form_object, 'vehicle_year')
+            key_value_pairs['VEHICLE_COLOR'] = context.getters.getFormPrintValue(form_object, 'vehicle_color')
+            key_value_pairs['VEHICLE_NSC_PUJ'] = context.getters.getFormPrintValue(form_object, 'puj_code')
+            key_value_pairs['VEHICLE_NSC_NUMBER'] = context.getters.getFormPrintValue(form_object, 'nsc_number')
+            key_value_pairs['VEHICLE_VIN'] = context.getters.getFormPrintValue(form_object, 'vin_number')
+
+            key_value_pairs['NOT_IMPOUNDED'] = context.getters.getFormPrintRadioValue(form_object, 'vehicle_impounded', 'No')
+            key_value_pairs['IMPOUNDED'] = context.getters.getFormPrintRadioValue(form_object, 'vehicle_impounded', 'Yes')
+
+            // TODO - don't print the following if the vehicle is impounded
+            key_value_pairs['NOT_IMPOUNDED_REASON'] = context.getters.getFormPrintValue(form_object, 'reason_for_not_impounding')
+
+            let ilo = context.getters.getFormPrintValue(form_object, 'impound_lot_operator').split(", ")
+            if (ilo.length > 1) {
+                key_value_pairs['IMPOUNDED_LOT'] = ilo[0]
+                key_value_pairs['IMPOUNDED_ADDRESS'] = ilo[1] + ", " + ilo[2]
+                key_value_pairs['IMPOUNDED_PHONE_AREA_CODE'] = ilo[3].substr(0, 3)
+                key_value_pairs['IMPOUNDED_PHONE_NUMBER'] = ilo[3].substr(4)
+            }
+
+            key_value_pairs['RELEASE_LOCATION_KEYS'] = context.getters.getFormPrintValue(form_object, 'location_of_keys')
+            key_value_pairs['RELEASE_PERSON'] = context.getters.getFormPrintValue(form_object, 'vehicle_released_to')
+
+            key_value_pairs['DRIVER_SURNAME'] = context.getters.getFormPrintValue(form_object,"last_name")
+            key_value_pairs['DRIVER_GIVEN'] = context.getters.getFormPrintValue(form_object,'first_name')
+            key_value_pairs['DRIVER_DL_NUMBER'] = context.getters.getFormPrintValue(form_object,'drivers_number')
+            key_value_pairs['DRIVER_DL_PROVINCE'] = context.getters.getFormPrintJurisdiction(form_object,'drivers_licence_jurisdiction')
+
+            let dob = moment(context.getters.getFormPrintValue(form_object,'dob'))
+            key_value_pairs['DRIVER_DOB'] = dob.format("YYYY MM DD")
+
+            key_value_pairs['DRIVER_ADDRESS'] =
+                context.getters.getFormPrintValue(form_object,'address1') + ", " +
+                context.getters.getFormPrintValue(form_object,'city') + ", " +
+                context.getters.getFormPrintValue(form_object,'province') + ", " +
+                context.getters.getFormPrintValue(form_object,'postal')
+
+            key_value_pairs['DRIVER_WITNESSED_BY_OFFICER'] = context.getters.getFormPrintCheckedValue(
+                form_object, 'operating_grounds', "Witnessed by officer")
+            key_value_pairs['DRIVER_INDEPENDENT_WITNESS'] = context.getters.getFormPrintCheckedValue(
+                form_object, 'operating_grounds', "Independent witness")
+            key_value_pairs['DRIVER_ADMISSION_BY_DRIVER'] = context.getters.getFormPrintCheckedValue(
+                form_object, 'operating_grounds', "Admission by driver")
+
+            let operating_grounds_other = context.getters.getFormPrintCheckedValue(
+                form_object, 'operating_grounds', "Other")
+            key_value_pairs['DRIVER_OTHER'] = operating_grounds_other
+
+            if (operating_grounds_other === 'Yes') {
+                key_value_pairs['DRIVER_ADDITIONAL_INFORMATION'] = context.getters.getFormPrintValue(
+                    form_object, 'operating_ground_other')
+            } else {
+                key_value_pairs['DRIVER_ADDITIONAL_INFORMATION'] = ''
+            }
+
+            key_value_pairs['REASONABLE_GROUNDS_YES'] = context.getters.getFormPrintCheckedValue(
+                form_object, 'prescribed_device', "Yes")
+            key_value_pairs['REASONABLE_GROUNDS_NO'] = context.getters.getFormPrintCheckedValue(
+                form_object, 'prescribed_device', "No")
+
+
+            // Alcohol - Alco-Sensor FST
+            key_value_pairs['REASONABLE_GROUNDS_TEST_ALCO_SENSOR'] = context.getters.getFormPrintCheckedValue(
+                form_object, 'test_administered_asd', 'Alco-Sensor FST (ASD)')
+
+            key_value_pairs['REASONABLE_GROUNDS_TEST_ASD_EXPIRY_DATE'] = context.getters.getFormPrintValue(
+                form_object, 'asd_expiry_date')
+
+            key_value_pairs['REASONABLE_GROUNDS_TEST_TIME'] = context.getters.getFormPrintValue(
+                form_object, 'time_asd_test')
+
+            key_value_pairs['REASONABLE_GROUNDS_ALCOHOL_51-99'] = context.getters.getFormPrintCheckedValue(
+                form_object, 'result_alcohol', '51-99 mg%')
+
+            key_value_pairs['REASONABLE_GROUNDS_ALCOHOL_OVER_99'] = context.getters.getFormPrintCheckedValue(
+                form_object, 'result_alcohol', 'Over 99 mg%')
+
+
+            key_value_pairs['REASONABLE_GROUNDS_TEST_APPROVED_INSTRUMENT'] = context.getters.getFormPrintCheckedValue(
+                form_object, 'test_administered_instrument', 'Approved Instrument')
+
+            key_value_pairs['REASONABLE_GROUNDS_ALCOHOL_BAC'] = context.getters.getFormPrintCheckedValue(
+                form_object, 'result_alcohol_approved_instrument', "BAC")
+
+            key_value_pairs['REASONABLE_GROUNDS_ALCOHOL_BAC_VALUE'] = context.getters.getFormPrintValue(
+                form_object, 'test_result_bac')
+
+
+
+            // Drugs
+            key_value_pairs['REASONABLE_GROUNDS_TEST_PHYSICAL_COORDINATION'] = context.getters.getFormPrintValue(
+                form_object, 'test_result_bac')
+
+            resolve(key_value_pairs);
+
+        })
+
+    },
 }

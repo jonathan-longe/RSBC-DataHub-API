@@ -19,10 +19,10 @@
       </form-row>
       <form-row>
         <radio-field id="prescribed_device" fg_class="col-sm-12"
-                     :options='["Yes",
-                     "No, opinion formed the driver was affected by alcohol and/or drugs",
-                     "No, refused by driver"]'>Was a prescribed test used to form reasonable grounds?
+                     :options='["Yes", "No"]'>Was a prescribed test used to form reasonable grounds?
         </radio-field>
+        <!-- "No, opinion formed the driver was affected by alcohol and/or drugs",
+                     "No, refused by driver" -->
       </form-row>
     </div>
   </div>

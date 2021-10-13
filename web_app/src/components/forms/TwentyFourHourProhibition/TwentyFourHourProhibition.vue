@@ -31,7 +31,7 @@
 
     </form-step>
     <form-step :step_number=3>
-      <document-download></document-download>
+      <document-download-container></document-download-container>
     </form-step>
     <print-confirmation-modal id="printConfirmationModal" title="printConfirmation"></print-confirmation-modal>
     <supplementary-modal id="SupplementaryModal" title="SupplementaryModal"></supplementary-modal>
@@ -55,7 +55,7 @@ import SupplementaryModal from "@/components/forms/TwentyFourHourProhibition/Sup
 import OfficerDetailsCard from "@/components/forms/TwentyFourHourProhibition/OfficerDetailsCard";
 import VehicleOwnerCard from "@/components/forms/TwentyFourHourProhibition/VehicleOwnerCard";
 import PrintConfirmationModal from "@/components/forms/TwentyFourHourProhibition/PrintConfirmationModal";
-import DocumentDownload from "@/components/forms/TwentyFourHourProhibition/DocumentDownload";
+import DocumentDownloadContainer from "@/components/forms/TwentyFourHourProhibition/DocumentDownloadContainer";
 
 
 export default {
@@ -70,12 +70,12 @@ export default {
     VehicleImpoundmentCard, VehicleInformationCard,
     DriversInformationCard, ReturnOfLicenceCard,
     OfficerDetailsCard, PrintConfirmationModal,
-    DocumentDownload
+    DocumentDownloadContainer
   },
   mixins: [FormsCommon],
   computed: {
     ...mapGetters(["getAttributeValue", "isPlateJurisdictionBC", "getCurrentlyEditedFormObject",
-      "corporateOwner", "getXdfFileNameString", "getPDFTemplateFileName", "getXFDF", "getCurrentFormData"]),
+      "corporateOwner", "getPdfFileNameString", "createPDF", "getCurrentFormData"]),
     isProhibitionTypeDrugs() {
       return this.getAttributeValue('prohibition_type') === "Drugs 215(3)";
     },

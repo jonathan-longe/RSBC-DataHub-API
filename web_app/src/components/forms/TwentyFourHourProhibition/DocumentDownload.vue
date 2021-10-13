@@ -1,44 +1,48 @@
 <template>
-  <form-card title="Download Documents">
-    <div class="d-flex justify-content-between">
-      <div v-for="(document, kid) in documentObjects" :key="kid"
-          @click="saveAndPrint(kid)"
-          class="btn btn-outline-primary">
-        {{ document.name }}
-      </div>
+  <div>
+    <div @click="saveAndPrint" class="btn btn-outline-primary">
+      {{ document.name }}
+      <b-spinner v-if="display_spinner" small label="Loading..."></b-spinner>
     </div>
-  </form-card>
+  </div>
 </template>
 
 <script>
-import CardsCommon from "@/components/forms/CardsCommon";
-import {mapGetters, mapActions, mapMutations} from "vuex";
+import {mapGetters, mapActions} from "vuex";
 
 export default {
   name: "DocumentDownload",
-  mixins: [CardsCommon],
+  props: {
+    document: {},
+    kid: {}
+  },
+  data() {
+    return {
+      display_spinner: false,
+    }
+  },
   computed: {
-    ...mapGetters(["getCurrentlyEditedFormObject", "documentObjects", "getXdfFileNameString", "getPDFTemplateFileName", "getXFDF"]),
+    ...mapGetters(["getCurrentlyEditedFormObject", "getPdfFileNameString"]),
   },
   methods: {
 
-    ...mapActions(["saveDoNotPrint", "fetchStaticLookupTables", "saveCurrentFormToDB"]),
-    ...mapMutations(["stopEditingCurrentForm"]),
+    ...mapActions(["saveCurrentFormToDB", "createPDF"]),
 
-    saveAndPrint(document_type) {
-      console.log("inside saveAndPrint()")
-      let pdf_template_filepath = this.getPDFTemplateFileName(document_type)
-      let form_object = this.getCurrentlyEditedFormObject
-      this.saveCurrentFormToDB(form_object)
-      const xml_file = this.getXFDF(pdf_template_filepath, form_object, document_type);
-      const href = window.URL.createObjectURL(xml_file); //create the download url
-      const downloadElement = document.createElement("a");
-      downloadElement.href = href;
-      downloadElement.download =  this.getXdfFileNameString(form_object, document_type);
-      document.body.appendChild(downloadElement);
-      downloadElement.click(); //click to file
-      document.body.removeChild(downloadElement); //remove the element
-      window.URL.revokeObjectURL(href); //release the object  of the blob
+    async saveAndPrint() {
+      this.display_spinner = true;
+      console.log("inside saveAndPrint()", this.display_spinner)
+      let payload = {}
+      payload['form_object'] = this.getCurrentlyEditedFormObject;
+      payload['filename'] = this.getPdfFileNameString(payload.form_object, this.kid);
+      payload['variants'] = this.document.variants;
+      await this.saveCurrentFormToDB(payload.form_object)
+      await this.createPDF(payload)
+        .then( () => {
+          this.display_spinner = false;
+          console.log("saveAndPrint() complete", this.display_spinner)
+
+        })
+
     }
   }
 

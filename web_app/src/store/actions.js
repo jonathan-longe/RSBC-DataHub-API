@@ -265,10 +265,8 @@ export const actions = {
                        payload.variants,
                        key_value_pairs,
                        payload.filename))
-
             })
         })
-
     },
 
         // the print templates use different field names from the form

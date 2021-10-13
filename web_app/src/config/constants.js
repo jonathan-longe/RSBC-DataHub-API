@@ -2,7 +2,7 @@ import moment from "moment";
 export default {
 
     // If required for local development, set API_ROOT_URL below.
-    API_ROOT_URL: "http://localhost:5002",
+    // API_ROOT_URL: "http://localhost:5002",
 
     // Number of days before this app will refresh unique prohibition ids.  The unique
     // id expiry date is set by the prohibition web service (currently set to 30 days),

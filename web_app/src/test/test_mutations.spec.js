@@ -238,7 +238,7 @@ test('test when form is served, served status is updated', () => {
                 "AA-111111": {
                     "form_id": "AA-111111",
                     "form_type": "12Hour",
-                    "served_timestamp": null,
+                    "printed_timestamp": null,
                     "data": {
                         "some_attribute": "some value",
                     }
@@ -250,5 +250,5 @@ test('test when form is served, served status is updated', () => {
     mutations.markFormStatusAsServed(state, current_timestamp)
     // assert result
     const root = state.forms["12Hour"]["AA-111111"]
-    expect(root.served_timestamp).toEqual(current_timestamp)
+    expect(root.printed_timestamp).toEqual(current_timestamp)
 })

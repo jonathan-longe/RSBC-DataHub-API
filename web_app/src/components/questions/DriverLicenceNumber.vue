@@ -1,12 +1,12 @@
 <template>
   <div v-if="visible" class="form-group">
     <validation-provider :rules="rules" :name="id" v-slot="{ errors, required }">
-      <label v-if="show_label" class="small" :for="id"><slot></slot>
+      <label v-if="show_label" :for="id"><slot></slot>
         <span v-if="required" class="text-danger"> *</span>
       </label>
       <div class="input-group mb-3">
         <input :disabled="disabled" type=text
-             class="form-control form-control-sm"
+             class="form-control"
              :id="id"
              placeholder="Driver's Licence Number"
              :value="getAttributeValue(id)"

@@ -13,7 +13,7 @@ let state = {
             "AA-111111": {
                 "form_id": "AA-111111",
                 "form_type": "24Hour",
-                "served_timestamp": "2021-08-15",
+                "printed_timestamp": "2021-08-15",
                 "lease_expiry": "2021-09-02",
                 "data": {}
             }

@@ -1,7 +1,7 @@
 <template>
 <div v-if="visible" class="form-group" :class="fg_class">
-  <label class="small" :for="id"><slot></slot></label>
-  <vue-typeahead-bootstrap @input="typeAheadUpdate" :value="getAttributeValue(id)" size="sm" :data=suggestions :disabled="disabled" />
+  <label :for="id"><slot></slot></label>
+  <vue-typeahead-bootstrap @input="typeAheadUpdate" :value="getAttributeValue(id)" :data=suggestions :disabled="disabled" />
 </div>
 </template>
 

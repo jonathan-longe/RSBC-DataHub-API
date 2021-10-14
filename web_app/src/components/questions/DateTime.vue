@@ -1,7 +1,7 @@
 <template>
 <div v-if="visible" class="form-group" :class="fg_class">
   <validation-provider :rules="rules" :name="id" v-slot="{ errors, required }">
-    <label class="small" :for="id"><slot></slot>
+    <label :for="id"><slot></slot>
       <span v-if="! required" class="text-muted"> (optional)</span>
       <span class="text-muted" v-if="displayTimeAgoString"> ({{ timeAgoString }})</span>
       <span v-if="displayNotValidWarning" class="text-danger"> (date and/or time not valid)</span>
@@ -9,13 +9,13 @@
     <div class="col-xs-10">
       <div class="input-group mb-3">
         <input type="text"
-           class="form-control form-control-sm" :disabled="disabled"
+           class="form-control" :disabled="disabled"
                placeholder="YYYYMMDD"
            :id="id"
            :value="dateSegment"
            @input="updateDateSegment">
         <input type="text"
-           class="form-control form-control-sm" :disabled="disabled"
+           class="form-control" :disabled="disabled"
             placeholder="HHMM"
             :value="timeSegment"
             @input="updateTimeSegment">

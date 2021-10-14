@@ -142,14 +142,14 @@ export const getters = {
     },
 
     isFormEditable: state => form_object => {
-        return state.forms[form_object.form_type][form_object.form_id].served_timestamp == null;
+        return state.forms[form_object.form_type][form_object.form_id].printed_timestamp == null;
     },
 
     getServedStatus: state => form_object => {
-        if (state.forms[form_object.form_type][form_object.form_id].served_timestamp) {
-            return "Served";
+        if (state.forms[form_object.form_type][form_object.form_id].printed_timestamp) {
+            return "Printed";
         }
-        return "Not Served"
+        return "Not Printed"
     },
 
     getRoadSafetyEmailAddress: state => {
@@ -258,7 +258,7 @@ export const getters = {
             for (let form_id in state.forms[form_type]) {
                 let form_object = state.forms[form_type][form_id]
                 let days_to_expiry = moment(form_object.lease_expiry).diff(moment(), 'days')
-                if (! form_object.served_timestamp && days_to_expiry < constants.UNIQUE_ID_REFRESH_DAYS) {
+                if (! form_object.printed_timestamp && days_to_expiry < constants.UNIQUE_ID_REFRESH_DAYS) {
                     forms.push(form_object)
                 }
             }

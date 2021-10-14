@@ -80,7 +80,7 @@ export const actions = {
                     form_id: data.id,
                     form_type: data.form_type,
                     lease_expiry: data.lease_expiry,
-                    served_timestamp: data.served_timestamp
+                    printed_timestamp: data.printed_timestamp
                 }
             })
             .catch(function (error) {
@@ -101,12 +101,34 @@ export const actions = {
                     form_id: data.id,
                     form_type: data.form_type,
                     lease_expiry: data.lease_expiry,
-                    served_timestamp: data.served_timestamp
+                    printed_timestamp: data.printed_timestamp
                 }
             })
             .catch(function (error) {
                 console.log(error)
             });
+    },
+
+    async tellApiFormIsPrinted (context, payload) {
+        console.log("inside tellApiFormIsPrinted()", payload)
+        const url = constants.API_ROOT_URL + "/api/v1/forms/" +
+            payload.form_type + "/" + payload.form_id
+        return await new Promise((resolve, reject) => {
+            fetch(url, {
+                "method": "PATCH",
+                headers: context.getters.apiHeader,
+                credentials: "same-origin",
+                body: JSON.stringify(context.state.forms[payload.form_type][payload.form_id])})
+                .then(response => response.json())
+                .then((data) => {
+                    resolve(data)
+                })
+                .catch(function (error) {
+                    console.log(error)
+                    reject({error: error})
+                });
+            }
+        )
     },
 
     async lookupDriverFromICBC(context, icbcPayload) {
@@ -164,41 +186,6 @@ export const actions = {
                         reject({"description": "Server did not respond"})
                         });
                 })
-    },
-
-    fetchDynamicLookupTables(context, type) {
-        const url = constants.API_ROOT_URL + "/api/v1/" + type
-        let networkDataRetrieved = false
-
-        // trigger request for fresh data from API
-        var networkUpdate = fetch(url, {
-            "method": 'GET',
-            "headers": context.getters.apiHeader
-        })
-            .then( response => {
-                return response.json()
-            })
-            .then( data => {
-                networkDataRetrieved = true
-                context.commit("populateStaticLookupTables", { "type": type, "data": data })
-            })
-            .catch(function (error) {
-                console.log('network request failed', error)
-            });
-
-        caches.match(url).then( response => {
-            if (!response) throw Error("No cached data");
-            return response.json();
-        }).then ( data => {
-            // don't overwrite newer network data
-            if(!networkDataRetrieved) {
-                context.commit("populateStaticLookupTables", { "type": type, "data": data })
-                return data;
-            }
-        }).catch( function() {
-            // we didn't get cached data, the API is our last hope
-            return networkUpdate;
-        })
     },
 
     async fetchStaticLookupTables(context, type) {

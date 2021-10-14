@@ -1,10 +1,10 @@
 <template>
 <div v-if="visible" class="form-group" :class="fg_class">
   <validation-provider :rules="rules" :name="id" v-slot="{ errors, required }">
-    <label v-if="show_label" class="small" :for="id"><slot></slot>
+    <label v-if="show_label" :for="id"><slot></slot>
       <span v-if="required" class="text-danger"> *</span>
     </label>
-    <select :disabled="disabled" class="form-control form-control-sm" :id="id" @input="updateFormField">
+    <select :disabled="disabled" class="form-control" :id="id" @input="updateFormField">
       <option v-for="jurisdiction in getArrayOfJurisdictions"
               :key="jurisdiction.objectCd"
               :selected="jurisdiction.objectDsc === getAttributeValue(id)">

@@ -1,7 +1,7 @@
 <template>
 <div class="form-group" :class="fg_class">
   <validation-provider :rules="rules" :name="id" v-slot="{ errors, required }">
-    <label v-if="show_label" class="small" :for="id">
+    <label v-if="show_label" :for="id">
       Date of Birth
       <span v-if="! required" class="text-danger"> (optional)</span>
       <span class="text-muted" v-if="isValidDate"> ({{ yearsOld }} yrs)</span>
@@ -10,7 +10,7 @@
       <input type="text"
            :disabled="disabled"
            :id="id"
-           class="form-control form-control-sm"
+           class="form-control"
            placeholder="YYYYMMDD"
            :value="getAttributeValue(id)"
             @input="updateDateField">

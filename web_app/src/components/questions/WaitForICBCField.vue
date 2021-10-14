@@ -1,8 +1,8 @@
 <template>
 <div v-if="visible" class="form-group" :class="fg_class">
-    <label v-if="show_label" class="small" :for="id"><slot></slot></label>
+    <label v-if="show_label" :for="id"><slot></slot></label>
     <input type="text"
-         class="form-control form-control-sm"
+         class="form-control"
          :id="id"
          :disabled=true
          placeholder="seeking ICBC approval">

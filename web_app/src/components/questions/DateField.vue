@@ -1,14 +1,14 @@
 <template>
 <div v-if="visible" class="form-group" :class="fg_class">
   <validation-provider :rules="rules" :name="id" v-slot="{ errors, required }">
-    <label class="small" :for="id"><slot></slot>
+    <label :for="id"><slot></slot>
       <span v-if="required" class="text-danger"> *</span>
       <span class="text-muted" v-if="isValidDate"> ({{ timeAgo }})</span>
     </label>
     <div class="col-xs-10">
       <div class="input-group mb-1">
         <input type="text"
-           class="form-control form-control-sm " :disabled="disabled"
+           class="form-control " :disabled="disabled"
            placeholder="YYYYMMDD"
            :id="id"
            :value="getAttributeValue(id)"

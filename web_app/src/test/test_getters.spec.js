@@ -66,7 +66,7 @@ test('test arrayOfFormsRequiringRenewal() returns an array of forms requiring le
                "AA-111111": {
                    "form_id": "AA-111111",
                    "form_type": "12Hour",
-                   "served_timestamp": "2021-09-02",
+                   "printed_timestamp": "2021-09-02",
                    "lease_expiry": "2021-09-02",
                    "data": {
                        "driver_last_name": "Smith"
@@ -75,7 +75,7 @@ test('test arrayOfFormsRequiringRenewal() returns an array of forms requiring le
                "AA-111112": {
                    "form_id":  "AA-111112",
                    "form_type": "12Hour",
-                   "served_timestamp": null,
+                   "printed_timestamp": null,
                    "lease_expiry": future_date,
                }
            },
@@ -83,14 +83,14 @@ test('test arrayOfFormsRequiringRenewal() returns an array of forms requiring le
                "BB-111112": {
                    "form_id":  "BB-111112",
                    "form_type": "24Hour",
-                   "served_timestamp": null,
+                   "printed_timestamp": null,
                    "lease_expiry": future_date,
                },
                "BB-111113": {
                    "form_id":  "BB-111113",
                    "form_type": "24Hour",
                    "lease_expiry": "2021-09-17",
-                   "served_timestamp": null,
+                   "printed_timestamp": null,
                }
 
            }
@@ -113,7 +113,7 @@ test('test isFormEditable() returns true when form has not been served', () => {
                 "AA-111111": {
                     "form_id": "AA-111111",
                     "form_type": "12Hour",
-                    "served_timestamp": null,
+                    "printed_timestamp": null,
                     "lease_expiry": "2021-09-02",
                     "data": {
                         "driver_last_name": "Smith"
@@ -139,7 +139,7 @@ test('test isFormEditable() returns false when form has been served', () => {
                 "AA-111111": {
                     "form_id": "AA-111111",
                     "form_type": "12Hour",
-                    "served_timestamp": "2021-08-15",
+                    "printed_timestamp": "2021-08-15",
                     "lease_expiry": "2021-09-02",
                     "data": {
                         "driver_last_name": "Smith"

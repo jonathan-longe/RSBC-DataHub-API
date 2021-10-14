@@ -10,14 +10,8 @@
     <td><span class="text-muted text-secondary">{{ prohibition.form_id }}</span></td>
     <td>
       <h6>
-        <b-icon-trash v-if="isFormEditable(prohibition)" variant="danger" @click="deleteSpecificForm(prohibition)"></b-icon-trash>&nbsp;
-        <b-icon-pen v-if="isFormEditable(prohibition)" variant="primary" @click="editExistingForm(prohibition)"></b-icon-pen>
-
-
-        <span v-if=" ! isFormEditable(prohibition)" class="text-muted text-secondary">
-          <b-icon-clock variant="primary" @click="deleteSpecificForm(prohibition)"></b-icon-clock>
-          <span> Sending ...</span>
-        </span>
+        <b-icon-trash variant="danger" @click="deleteSpecificForm(prohibition)"></b-icon-trash>&nbsp;
+        <b-icon-pen variant="primary" @click="editExistingForm(prohibition)"></b-icon-pen>
       </h6>
     </td>
   </tr>

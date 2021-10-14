@@ -75,9 +75,8 @@ export default {
     display: flex;
     align-items: center;
 }
-.form-check label {
+.form-check-label {
     margin-left: 10px;
-    font-weight: 500;
 }
 .form-check .form-check-input[type=checkbox] {
     border-radius: .25em;
@@ -93,6 +92,11 @@ export default {
     border-radius: 1.3em;
     height: 1.3em;
     width: 1.3em;
+}
+
+.form-group label {
+  font-size: medium;
+  color: #343a40;
 }
 
 #roadsafety-header {

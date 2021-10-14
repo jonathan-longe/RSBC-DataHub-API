@@ -1,6 +1,6 @@
 <template>
 <div v-if="visible" class="form-group" :class="fg_class">
-    <label v-if="show_label" class="small" :for="id"><slot></slot>
+    <label v-if="show_label" :for="id"><slot></slot>
 <!--      <span v-if="required" class="text-danger"> *</span>-->
     </label>
     <div class="form-check" v-for="(option) in options" :key="option">

@@ -47,7 +47,7 @@ export const mutations = {
 
     markFormStatusAsServed(state, date) {
         let form_object = state.currently_editing_form_object
-        Vue.set(state.forms[form_object.form_type][form_object.form_id], "served_timestamp", date)
+        Vue.set(state.forms[form_object.form_type][form_object.form_id], "printed_timestamp", date)
     },
 
     networkBackOnline(state) {
@@ -144,6 +144,11 @@ export const mutations = {
 
     setKeycloak(state, keycloak_object) {
         Vue.set(state, "keycloak", keycloak_object)
+    },
+
+    setFormAsPrinted(state, payload) {
+        let root = state.forms[payload.form_object.form_type][payload.form_object.form_id]
+        Vue.set(root, "printed_timestamp", payload.timestamp)
     }
 }
 

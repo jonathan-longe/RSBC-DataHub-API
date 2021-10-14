@@ -3,7 +3,7 @@
     <label v-if="show_label" class="small" :for="id"><slot></slot>
 <!--      <span v-if="required" class="text-danger"> *</span>-->
     </label>
-    <div class="form-check small" v-for="(option) in options" :key="option">
+    <div class="form-check" v-for="(option) in options" :key="option">
       <input class="form-check-input" :id="id" @change="updateCheckBox" type="checkbox"
              :checked="checkBoxStatus(id,option)"
              :value="option" :name="id" :disabled="disabled">

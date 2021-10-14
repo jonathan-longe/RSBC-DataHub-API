@@ -63,11 +63,36 @@ export default {
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-size: large;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: lightgray;
   margin-top: 60px;
+}
+
+.form-check {
+    display: flex;
+    align-items: center;
+}
+.form-check label {
+    margin-left: 10px;
+    font-weight: 500;
+}
+.form-check .form-check-input[type=checkbox] {
+    border-radius: .25em;
+    height: 1.3em;
+    width: 1.3em;
+}
+.form-check .form-check-input[type=radio] {
+    border-radius: 25%;
+    height: 1.3em;
+    width: 1.3em;
+}
+.form-switch .form-check-input[type=checkbox] {
+    border-radius: 1.3em;
+    height: 1.3em;
+    width: 1.3em;
 }
 
 #roadsafety-header {

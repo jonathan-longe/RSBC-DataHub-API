@@ -1,6 +1,6 @@
 <template>
   <form-card title="Vehicle Disposition">
-    <div v-if="! isReadOnly">
+    <div>
       <form-row>
         <radio-field id="vehicle_towed" fg_class="col-sm-6" :options='["Yes", "No"]'>Vehicle Towed?</radio-field>
       </form-row>
@@ -23,13 +23,6 @@
         <type-ahead-field id="impound_lot_operator" fg_class="col-sm-12" :visible="showVehicleImpounded"
                      :suggestions="getArrayOfImpoundLotOperators">Tow Operator (name, lot address, city & phone)</type-ahead-field>
       </form-row>
-    </div>
-    <div v-if="isReadOnly">
-      <read-only-element id="vehicle_towed">Vehicle Impounded</read-only-element>
-      <read-only-element id="vehicle_released_to">Vehicle released to</read-only-element>
-      <read-only-element id="datetime_released">Datetime released</read-only-element>
-      <read-only-element id="location_of_keys">Location of keys</read-only-element>
-      <read-only-element id="impound_lot_operator">Impound lot operator</read-only-element>
     </div>
   </form-card>
 </template>

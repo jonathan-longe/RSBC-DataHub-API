@@ -1,6 +1,6 @@
 <template>
 <form-card title="Driver's Information">
-  <div v-if="! isReadOnly">
+  <div>
     <form-row>
       <jurisdiction-field id="drivers_licence_jurisdiction" fg_class="col-sm-3">Jurisdiction</jurisdiction-field>
       <driver-licence-number id="drivers_number">Driver's Licence Number</driver-licence-number>
@@ -21,18 +21,6 @@
       <province-field :disabled=true id="province" fg_class="col-sm-2">Province</province-field>
       <text-field id="postal" fg_class="col-sm-4">Postal</text-field>
     </form-row>
-  </div>
-  <div v-if="isReadOnly">
-    <read-only-element id="drivers_licence_jurisdiction">Jurisdiction</read-only-element>
-    <read-only-element id="drivers_number">Driver's licence number</read-only-element>
-    <read-only-element id="last_name">Last name</read-only-element>
-    <read-only-element id="first_name">First name</read-only-element>
-    <read-only-element id="dob">Date of birth</read-only-element>
-    <read-only-element id="address1">Address 1</read-only-element>
-    <read-only-element id="address2">Address 2</read-only-element>
-    <read-only-element id="city">City</read-only-element>
-    <read-only-element id="province">Province</read-only-element>
-    <read-only-element id="postal">Postal code</read-only-element>
   </div>
 </form-card>
 </template>

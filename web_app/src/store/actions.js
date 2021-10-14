@@ -7,12 +7,6 @@ import moment from "moment";
 
 export const actions = {
 
-    saveDoNotPrint (context) {
-        console.log("inside actions.js saveDoNotPrint()");
-        let form_object = context.getters.getCurrentlyEditedFormObject;
-        context.commit('stopEditingCurrentForm');
-        context.dispatch('saveCurrentFormToDB', context.state.forms[form_object.form_type][form_object.form_id]);
-    },
 
     deleteSpecificForm(context, form_object ) {
         context.dispatch('deleteFormFromDB', form_object.form_id)
@@ -259,6 +253,7 @@ export const actions = {
 
     async createPDF (context, payload) {
         return new Promise(resolve => {
+            console.log("inside createPDF()", payload)
             context.dispatch("getPrintMappings", payload.form_object)
             .then((key_value_pairs) => {
                 resolve(pdfMerge.generatePDF(print_layout[payload.form_object.form_type],
@@ -276,8 +271,11 @@ export const actions = {
 
             key_value_pairs['VIOLATION_NUMBER'] = form_object.form_id.substring(3)
 
-            key_value_pairs['REASON_ALCOHOL'] = context.getters.getFormPrintRadioValue(form_object, 'prohibition_type', 'Alcohol 215(2)')
-            key_value_pairs['REASON_DRUGS'] = context.getters.getFormPrintRadioValue(form_object, 'prohibition_type', 'Drugs 215(3)')
+            key_value_pairs['REASON_ALCOHOL_215'] = context.getters.getFormPrintRadioValue(form_object, 'prohibition_type', 'Alcohol 215(2)')
+            key_value_pairs['REASON_DRUGS_215'] = context.getters.getFormPrintRadioValue(form_object, 'prohibition_type', 'Drugs 215(3)')
+
+            key_value_pairs['REASON_ALCOHOL_90'] = context.getters.getFormPrintRadioValue(form_object, 'prohibition_type_12hr', 'Alcohol 90.3(2)')
+            key_value_pairs['REASON_DRUGS_90'] = context.getters.getFormPrintRadioValue(form_object, 'prohibition_type_12hr', 'Drugs 90.3(2.1)')
 
             let prohibition_start_time = moment(context.getters.getFormPrintValue(form_object, 'prohibition_start_time'))
             key_value_pairs['NOTICE_TIME'] = prohibition_start_time.format("HH:mm")
@@ -285,7 +283,8 @@ export const actions = {
             key_value_pairs['NOTICE_MONTH'] = prohibition_start_time.format("MMMM")
             key_value_pairs['NOTICE_YEAR'] = prohibition_start_time.format("YYYY")
 
-            key_value_pairs['DL_SURRENDER_LOCATION'] = context.getters.getFormPrintValue(form_object, 'offence_city')
+            key_value_pairs['DL_SURRENDER_LOCATION'] = context.getters.getFormPrintValue(form_object, 'offence_address') +
+                ", " + context.getters.getFormPrintValue(form_object, 'offence_city')
             key_value_pairs['OFFICER_BADGE_NUMBER'] = context.getters.getFormPrintValue(form_object, 'badge_number')
             key_value_pairs['AGENCY_NAME'] = context.getters.getFormPrintValue(form_object, 'agency')
             key_value_pairs['AGENCY_FILE_NUMBER'] = context.getters.getFormPrintValue(form_object, 'file_number')
@@ -402,6 +401,8 @@ export const actions = {
             // Drugs
             key_value_pairs['REASONABLE_GROUNDS_TEST_PHYSICAL_COORDINATION'] = context.getters.getFormPrintValue(
                 form_object, 'test_result_bac')
+
+
 
             resolve(key_value_pairs);
 

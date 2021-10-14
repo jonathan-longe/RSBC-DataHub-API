@@ -30,7 +30,7 @@ import TestAdministeredAlcoholCard from "@/components/forms/TwentyFourHourProhib
 import TestAdministeredDrugsCard from "@/components/forms/TwentyFourHourProhibition/TestAdministeredDrugsCard";
 import OfficerDetailsCard from "@/components/forms/TwentyFourHourProhibition/OfficerDetailsCard";
 import VehicleOwnerCard from "@/components/forms/TwentyFourHourProhibition/VehicleOwnerCard";
-import DocumentDownloadContainer from "@/components/forms/TwentyFourHourProhibition/DocumentDownloadContainer";
+import DocumentDownloadContainer from "@/components/forms/DocumentDownloadContainer";
 
 
 export default {
@@ -49,7 +49,7 @@ export default {
   mixins: [FormsCommon],
   computed: {
     ...mapGetters(["getAttributeValue", "isPlateJurisdictionBC", "getCurrentlyEditedFormObject",
-      "corporateOwner", "getPdfFileNameString", "createPDF", "getCurrentFormData"]),
+      "corporateOwner", "getPdfFileNameString", "getCurrentFormData"]),
     isProhibitionTypeDrugs() {
       return this.getAttributeValue('prohibition_type') === "Drugs 215(3)";
     },

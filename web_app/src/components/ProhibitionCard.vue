@@ -32,7 +32,7 @@ export default {
   computed: {
     ...mapGetters(["getFormTypeCount"]),
     isFormAvailable() {
-      return this.getFormTypeCount[this.form.form_type] > 0
+      return this.getFormTypeCount[this.form.form_type] > 0 && ! this.form.disabled
     }
   }
 }

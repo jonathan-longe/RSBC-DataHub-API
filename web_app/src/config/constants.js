@@ -3,8 +3,8 @@ export default {
 
     // If required for local development, set API_ROOT_URL below otherwise set to an empty string.
     // The API_ROOT_URL must be set to at least an empty string.cl
-    // API_ROOT_URL: "http://localhost:5002",
-    API_ROOT_URL: "",
+    API_ROOT_URL: "http://localhost:5002",
+    // API_ROOT_URL: "",
 
     // Number of days before this app will refresh unique prohibition ids.  The unique
     // id expiry date is set by the prohibition web service (currently set to 30 days),

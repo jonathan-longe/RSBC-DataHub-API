@@ -26,7 +26,6 @@ export const store = new Vuex.Store ({
         "12Hour": {
           "component": "TwelveHourProhibition",
           "form_type": "12Hour",
-          "steps": ["Prohibition" ,"Review", "Download Documents"],
           "description": "12 Hour Driving Suspension",
           "full_name": "MV2906",
           "documents": {
@@ -37,8 +36,13 @@ export const store = new Vuex.Store ({
             "police": {
               "name": "Police Copy",
               "variants": ['police'],
+            },
+            "all": {
+              "name": "All Copies",
+              "variants": ['driver', 'police']
             }
-          }
+          },
+          "disabled": false
         },
         "24Hour": {
           "component": "TwentyFourHourProhibition",
@@ -62,16 +66,16 @@ export const store = new Vuex.Store ({
               "name": "All Copies",
               "variants": ['driver', 'ilo', 'police']
             }
-          }
+          },
+          "disabled": false
         },
         "IRP": {
           "component": "ImmediateRoadsideProhibition",
           "form_type": "IRP",
           "description": "Immediate Roadside Prohibition",
           "full_name": "MV2723",
-          "documents": {
-            "notice": "MV2906_12h_Suspension_2021-04-27.pdf"
-          }
+          "documents": {},
+          "disabled": true
         }
       }
     },

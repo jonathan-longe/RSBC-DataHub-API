@@ -6,7 +6,7 @@ export default {
 
     async generatePDF(print_definitions, document_types_to_print, form_data, filename) {
         return await new Promise((resolve) => {
-          console.log("inside createPDF()", filename)
+          console.log("inside generatePDF()", filename)
           const doc = new jsPDF(
               print_definitions['orientation'],
               print_definitions['units'],

@@ -9,13 +9,13 @@ class Form(db.Model):
     id = db.Column('id', db.String(20), primary_key=True)
     form_type = db.Column(db.String(20), nullable=False)
     lease_expiry = db.Column(db.Date, nullable=True)
-    served_timestamp = db.Column(db.DateTime, nullable=True)
+    printed_timestamp = db.Column(db.DateTime, nullable=True)
     username = db.Column(db.String(25), nullable=True)
 
-    def __init__(self, form_id, form_type, served=None, lease_expiry=None, username=None):
+    def __init__(self, form_id, form_type, printed=None, lease_expiry=None, username=None):
         self.id = form_id
         self.form_type = form_type
-        self.served_timestamp = served
+        self.printed_timestamp = printed
         self.lease_expiry = lease_expiry
         self.username = username
 
@@ -25,7 +25,7 @@ class Form(db.Model):
             "id": form.id,
             "form_type": form.form_type,
             "lease_expiry": Form._format_lease_expiry(form.lease_expiry),
-            "served_timestamp": form.served_timestamp
+            "printed_timestamp": form.printed_timestamp
         }
 
     def lease(self, username):
@@ -33,7 +33,8 @@ class Form(db.Model):
         lease_expiry = today + timedelta(days=30)
         self.lease_expiry = lease_expiry
         self.username = username
-        logging.info("{} leased until {}".format(self.id, self.lease_expiry.strftime("%Y-%m-%d")))
+        logging.info("{} leased {} until {}".format(
+            self.username, self.id, self.lease_expiry.strftime("%Y-%m-%d")))
 
     @staticmethod
     def _format_lease_expiry(lease_expiry):

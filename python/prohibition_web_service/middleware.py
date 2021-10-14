@@ -1,10 +1,18 @@
 import logging
 import json
 import datetime
+import pytz
 from python.prohibition_web_service.models import db, Form
 
 
 def validate_update(**kwargs) -> tuple:
+    return True, kwargs
+
+
+def log_payload_to_splunk(**kwargs) -> tuple:
+    request = kwargs.get('request')
+    # TODO - remove before flight - not authorized to log form data yet
+    logging.info("payload: | {}".format(request.get_data()))
     return True, kwargs
 
 
@@ -36,7 +44,7 @@ def renew_form_id_lease(**kwargs) -> tuple:
     form = db.session.query(Form) \
         .filter(Form.form_type == form_type) \
         .filter(Form.username == username) \
-        .filter(Form.served_timestamp == None) \
+        .filter(Form.printed_timestamp == None) \
         .filter(Form.id == form_id) \
         .first()
     if form is None:
@@ -51,7 +59,7 @@ def renew_form_id_lease(**kwargs) -> tuple:
     return True, kwargs
 
 
-def mark_form_as_served(**kwargs) -> tuple:
+def mark_form_as_printed(**kwargs) -> tuple:
     logging.debug('inside mark_form_as_served()')
     form_type = kwargs.get('form_type')
     username = kwargs.get('username')
@@ -59,13 +67,14 @@ def mark_form_as_served(**kwargs) -> tuple:
     form = db.session.query(Form) \
         .filter(Form.form_type == form_type) \
         .filter(Form.username == username) \
-        .filter(Form.served_timestamp == None) \
         .filter(Form.id == form_id) \
         .first()
     if form is None:
-        logging.warning('User, {}, cannot update {} as served'.format(username, form_id))
+        logging.warning('{}, cannot update {} - {} as printed'.format(
+            username, form_type, form_id))
         return False, kwargs
-    form.served_timestamp = datetime.datetime.now()
+    tz = pytz.timezone('America/Vancouver')
+    form.printed_timestamp = datetime.datetime.now(tz)
     try:
         db.session.commit()
     except Exception as e:

@@ -21,3 +21,8 @@ def server_error_response(**kwargs) -> tuple:
 def bad_request_response(**kwargs) -> tuple:
     kwargs['response'] = make_response({'error': 'bad request'}, 400)
     return True, kwargs
+
+
+def record_not_found(**kwargs) -> tuple:
+    kwargs['response'] = make_response({'error': 'record not found'}, 400)
+    return True, kwargs

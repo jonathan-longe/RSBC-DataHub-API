@@ -71,7 +71,6 @@ def update(form_type, form_id):
     otherwise, the payload is received as a form submission.
     """
     if request.method == 'PATCH':
-        logging.info("updated() invoked: {} | {}".format(request.remote_addr, request.get_data()))
         username = 'usr'  # TODO - remove before flight
         # invoke business logic
         kwargs = helper.middle_logic(rules.update_a_form(),

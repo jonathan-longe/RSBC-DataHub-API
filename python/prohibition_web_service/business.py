@@ -24,8 +24,10 @@ def update_a_form() -> list:
             {"try": http_responses.successful_update_response, "fail": []},
         ]},
         # Request contains a payload - process submitted form
-        {"try": middleware.mark_form_as_served, "fail": [
+        {"try": middleware.log_payload_to_splunk, "fail": []},
+        {"try": middleware.mark_form_as_printed, "fail": [
             # TODO - Write to RabbitMQ fail queue
+            {"try": http_responses.record_not_found, "fail": []},
         ]},
         # TODO - Write to RabbitMQ ingested queue
         {"try": http_responses.successful_update_response, "fail": []}

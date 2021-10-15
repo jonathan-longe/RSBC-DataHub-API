@@ -1388,7 +1388,7 @@
                 "field_type": "text",
                 "font_size": 14,
                 "start": {
-                  "x": 30,
+                  "x": 31,
                   "y": 162
                 }
               },
@@ -1435,6 +1435,24 @@
                 "start": {
                   "x": 12,
                   "y": 188
+                }
+              },
+              {
+                "name": "ADSE_RESULTS",
+                "field_type": "text",
+                "font_size": 14,
+                "start": {
+                  "x": 70,
+                  "y": 188
+                }
+              },
+              {
+                "name": "PHYSICAL_TEST_SPECIFICS",
+                "field_type": "text",
+                "font_size": 14,
+                "start": {
+                  "x": 80,
+                  "y": 157
                 }
               },
               {

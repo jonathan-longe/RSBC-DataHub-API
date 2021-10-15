@@ -10,7 +10,7 @@
         <check-field v-if="isTestAdministeredADSE" id="positive_adse" fg_class="col-sm-6"
                      :options='["THC", "Cocaine"]'>Test result</check-field>
         <date-time v-if="isTestAdministeredADSE"
-                   id="time_of_physical_test_adse"
+                   id="time_of_test"
                    rules="required|notFutureDt"
                    fg_class="col-sm-6">Time of test</date-time>
       </form-row>
@@ -21,7 +21,7 @@
                      :options='["Prescribed Physical Coordination Test (SFST)"]'>&nbsp;
         </check-field>
         <date-time v-if="isTestAdministeredSFST"
-                   id="time_of_physical_test_sfst"
+                   id="time_of_test"
                    rules="required|notFutureDt"
                    fg_class="col-sm-6">Time of test</date-time>
       </form-row>
@@ -31,13 +31,13 @@
         <check-field :show_label="false" id="test_administered_dre" fg_class="col-sm-6"
                      :options='["Prescribed Physical Coordination Test (DRE)"]'>&nbsp;
         </check-field>
+        <date-time v-if="isTestAdministeredDRE" id="time_of_test"
+                   rules="required|notFutureDt"
+                   fg_class="col-sm-6">Time of test</date-time>
       </form-row>
       <form-row v-if="isTestAdministeredDRE">
-        <date-time id="start_time_of_physical_test_dre"
-                   rules="required|notFutureDt"
-                   fg_class="col-sm-6">Time of opinion</date-time>
-        <text-field id="positive_dre" fg_class="col-sm-12">Notes (expand to 3 lines)</text-field>
-
+        <wait-for-icbc-field id="positive_dre" fg_class="col-sm-12">Notes</wait-for-icbc-field>
+        <!-- make this a memo field above -->
       </form-row>
     </shadow-box>
     <form-row>

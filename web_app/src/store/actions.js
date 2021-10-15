@@ -345,7 +345,7 @@ export const actions = {
                 form_object, 'operating_grounds', "Other")
             key_value_pairs['DRIVER_OTHER'] = operating_grounds_other
 
-            if (operating_grounds_other === 'Yes') {
+            if (operating_grounds_other) {
                 key_value_pairs['DRIVER_ADDITIONAL_INFORMATION'] = context.getters.getFormPrintValue(
                     form_object, 'operating_ground_other')
             } else {
@@ -358,39 +358,72 @@ export const actions = {
                 form_object, 'prescribed_device', "No")
 
 
-            // Alcohol - Alco-Sensor FST
-            key_value_pairs['REASONABLE_GROUNDS_TEST_ALCO_SENSOR'] = context.getters.getFormPrintCheckedValue(
-                form_object, 'test_administered_asd', 'Alco-Sensor FST (ASD)')
+            // Alcohol - 215
+            if (key_value_pairs['REASON_ALCOHOL_215']) {
 
-            key_value_pairs['REASONABLE_GROUNDS_TEST_ASD_EXPIRY_DATE'] = context.getters.getFormPrintValue(
-                form_object, 'asd_expiry_date')
+                key_value_pairs['REASONABLE_GROUNDS_TEST_ALCO_SENSOR'] = context.getters.getFormPrintCheckedValue(
+                    form_object, 'test_administered_asd', 'Alco-Sensor FST (ASD)')
 
-            key_value_pairs['REASONABLE_GROUNDS_TEST_TIME'] = context.getters.getFormPrintValue(
-                form_object, 'time_asd_test')
+                key_value_pairs['REASONABLE_GROUNDS_TEST_ASD_EXPIRY_DATE'] = context.getters.getFormPrintValue(
+                    form_object, 'asd_expiry_date')
 
-            key_value_pairs['REASONABLE_GROUNDS_ALCOHOL_51-99'] = context.getters.getFormPrintCheckedValue(
-                form_object, 'result_alcohol', '51-99 mg%')
+                key_value_pairs['REASONABLE_GROUNDS_TEST_TIME'] = context.getters.getFormPrintValue(
+                    form_object, 'time_of_test').split(" ")[1]
 
-            key_value_pairs['REASONABLE_GROUNDS_ALCOHOL_OVER_99'] = context.getters.getFormPrintCheckedValue(
-                form_object, 'result_alcohol', 'Over 99 mg%')
+                key_value_pairs['REASONABLE_GROUNDS_ALCOHOL_51-99'] = context.getters.getFormPrintCheckedValue(
+                    form_object, 'result_alcohol', '51-99 mg%')
 
-
-            key_value_pairs['REASONABLE_GROUNDS_TEST_APPROVED_INSTRUMENT'] = context.getters.getFormPrintCheckedValue(
-                form_object, 'test_administered_instrument', 'Approved Instrument')
-
-            key_value_pairs['REASONABLE_GROUNDS_ALCOHOL_BAC'] = context.getters.getFormPrintCheckedValue(
-                form_object, 'result_alcohol_approved_instrument', "BAC")
-
-            key_value_pairs['REASONABLE_GROUNDS_ALCOHOL_BAC_VALUE'] = context.getters.getFormPrintValue(
-                form_object, 'test_result_bac')
+                key_value_pairs['REASONABLE_GROUNDS_ALCOHOL_OVER_99'] = context.getters.getFormPrintCheckedValue(
+                    form_object, 'result_alcohol', 'Over 99 mg%')
 
 
+                key_value_pairs['REASONABLE_GROUNDS_TEST_APPROVED_INSTRUMENT'] = context.getters.getFormPrintCheckedValue(
+                    form_object, 'test_administered_instrument', 'Approved Instrument')
 
-            // Drugs
-            key_value_pairs['REASONABLE_GROUNDS_TEST_PHYSICAL_COORDINATION'] = context.getters.getFormPrintValue(
-                form_object, 'test_result_bac')
+                key_value_pairs['REASONABLE_GROUNDS_ALCOHOL_BAC'] = context.getters.getFormPrintCheckedValue(
+                        form_object, 'result_alcohol_approved_instrument', "BAC")
+
+                if (key_value_pairs['REASONABLE_GROUNDS_ALCOHOL_BAC']) {
+
+                    key_value_pairs['REASONABLE_GROUNDS_ALCOHOL_BAC_VALUE'] = context.getters.getFormPrintValue(
+                        form_object, 'test_result_bac')
+
+                    key_value_pairs['REASONABLE_GROUNDS_TEST_APPROVED_INSTRUMENT_SPECIFY'] = 'BAC'
+                }
+            }
+
+            // Drugs - 215
+            if (key_value_pairs['REASON_DRUGS_215']) {
+
+                let prescribed_test = []
+
+                key_value_pairs['REASONABLE_GROUNDS_TEST_TIME'] = context.getters.getFormPrintValue(
+                    form_object, 'time_of_test').split(" ")[1]
+
+                if (context.getters.getFormPrintCheckedValue(
+                        form_object, 'test_administered_adse', "Approved Drug Screening Equipment")) {
+                    key_value_pairs['REASONABLE_GROUNDS_TEST_APPROVED_INSTRUMENT'] = true
+                    key_value_pairs['REASONABLE_GROUNDS_TEST_APPROVED_INSTRUMENT_SPECIFY'] = 'ADSE'
+                    key_value_pairs['ADSE_RESULTS'] = context.getters.getFormPrintValue(form_object,"positive_adse").join(" and ")
+                }
+
+                if (context.getters.getFormPrintCheckedValue(form_object, "test_administered_sfst", "Prescribed Physical Coordination Test (SFST)")) {
+                    prescribed_test.push("SFST")
+                    key_value_pairs['REASONABLE_GROUNDS_TEST_PHYSICAL_COORDINATION'] = true
+                }
+
+                if (context.getters.getFormPrintCheckedValue(form_object, "test_administered_dre", "Prescribed Physical Coordination Test (DRE)")) {
+                    prescribed_test.push("DRE")
+                    key_value_pairs['REASONABLE_GROUNDS_TEST_PHYSICAL_COORDINATION'] = true
+                }
+
+                key_value_pairs['PHYSICAL_TEST_SPECIFICS'] = prescribed_test.join(" and ")
+
+                key_value_pairs['REASONABLE_GROUNDS_DRUG_ABILITY_TO_DRIVE_AFFECTED'] = context.getters.getFormPrintCheckedValue(
+                    form_object, "result_drug", "Ability to drive affected by a drug")
 
 
+            }
 
             resolve(key_value_pairs);
 

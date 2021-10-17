@@ -1,6 +1,5 @@
 <template>
-  <form-container title="Notice of 24 Hour Licence Prohibition">
-
+  <form-container title="Notice of 24 Hour Licence Prohibition" v-if="isMounted">
       <drivers-information-card></drivers-information-card>
       <vehicle-information-card></vehicle-information-card>
       <vehicle-owner-card></vehicle-owner-card>
@@ -48,8 +47,8 @@ export default {
   },
   mixins: [FormsCommon],
   computed: {
-    ...mapGetters(["getAttributeValue", "isPlateJurisdictionBC", "getCurrentlyEditedFormObject",
-      "corporateOwner", "getPdfFileNameString", "getCurrentFormData"]),
+    ...mapGetters(["getAttributeValue", "isPlateJurisdictionBC", "getCurrentlyEditedFormData",
+      "corporateOwner", "getPdfFileNameString"]),
     isProhibitionTypeDrugs() {
       return this.getAttributeValue('prohibition_type') === "Drugs 215(3)";
     },
@@ -58,9 +57,21 @@ export default {
     },
     isPrescribedTestUsed() {
       return this.getAttributeValue('prescribed_device').substr(0,3) === "Yes";
-    },
-
+    }
   },
+  props: {
+    name: {
+      type: String,
+      default: '24Hour'
+    }
+  },
+  mounted() {
+    let payload = {form_type: this.name, form_id: this.id}
+    this.editExistingForm(payload)
+    this.setNewFormDefaults(payload)
+    this.data = this.getCurrentlyEditedFormData
+    this.isMounted = true
+  }
 }
 </script>
 

@@ -10,8 +10,13 @@
           Prohibition IDs available: {{ getFormTypeCount[form.form_type] }}
         </small>
       </p>
-        <button @click="setNewFormToEdit(form.form_type)" type="submit" class="btn btn-primary" :disabled="! isFormAvailable">
-          New {{ form.form_type }} Form
+        <button type="submit" class="btn btn-primary" :disabled="! isFormAvailable">
+          <router-link class="text-white" v-if="isFormAvailable" :to="{
+            name: form.form_type,
+            params: { id: getNextAvailableUniqueIdByType(form.form_type)}}">
+            New {{ form.form_type }} Form
+          </router-link>
+          <span v-if="! isFormAvailable">New {{ form.form_type }} Form</span>
         </button>
     </div>
     </div>
@@ -19,18 +24,15 @@
 
 <script>
 
-import {mapActions, mapGetters} from "vuex";
+import {mapGetters} from "vuex";
 
 export default {
   name: "ProhibitionCard",
   props: {
       form: {}
   },
-  methods: {
-    ...mapActions(["setNewFormToEdit"])
-  },
   computed: {
-    ...mapGetters(["getFormTypeCount"]),
+    ...mapGetters(["getFormTypeCount", "getNextAvailableUniqueIdByType"]),
     isFormAvailable() {
       return this.getFormTypeCount[this.form.form_type] > 0 && ! this.form.disabled
     }

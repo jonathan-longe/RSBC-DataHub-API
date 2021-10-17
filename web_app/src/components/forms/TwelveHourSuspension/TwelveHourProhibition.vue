@@ -1,5 +1,5 @@
 <template>
-  <form-container title="Notice of 12 Hour Licence Suspension">
+  <form-container title="Notice of 12 Hour Licence Suspension" v-if="isMounted">
 
       <drivers-information-card></drivers-information-card>
       <vehicle-information-card></vehicle-information-card>
@@ -34,7 +34,19 @@ export default {
     VehicleImpoundmentCard,
     DocumentDownloadContainer
   },
-
+  props: {
+    name: {
+      type: String,
+      default: '12Hour'
+    }
+  },
+  mounted() {
+    let payload = {form_type: this.name, form_id: this.id}
+    this.editExistingForm(payload)
+    this.setNewFormDefaults(payload)
+    this.data = this.getCurrentlyEditedFormData
+    this.isMounted = true
+  },
 }
 </script>
 

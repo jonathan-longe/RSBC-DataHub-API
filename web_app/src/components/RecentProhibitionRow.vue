@@ -11,7 +11,9 @@
     <td>
       <h6>
         <b-icon-trash variant="danger" @click="deleteSpecificForm(prohibition)"></b-icon-trash>&nbsp;
-        <b-icon-pen variant="primary" @click="editExistingForm(prohibition)"></b-icon-pen>
+        <router-link :to="{ name: prohibition.form_type, params: { id: prohibition.form_id}}">
+          <b-icon-pen variant="primary"></b-icon-pen>
+        </router-link>
       </h6>
     </td>
   </tr>

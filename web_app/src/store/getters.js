@@ -23,10 +23,6 @@ export const getters = {
         return edited_forms;
     },
 
-    isFormBeingEdited: state => {
-        return state.currently_editing_form_object.form_id !== null
-    },
-
     getCurrentlyEditedFormObject: state => {
         return state.currently_editing_form_object;
     },
@@ -35,17 +31,14 @@ export const getters = {
         return state.currently_editing_form_object.form_id;
     },
 
-    getSelectedFormComponent: state => {
-        let form_object = state.currently_editing_form_object;
-        if (form_object.form_id == null) {
-            return null;
-        }
-        return state.forms[form_object.form_type][form_object.form_id].component;
+    getFormData: state => (form_type, form_id) => {
+        return state.forms[form_type][form_id].data;
     },
 
     getCurrentlyEditedFormData: state => {
         let form_object = state.currently_editing_form_object;
-        return state.forms[form_object.form_type][form_object.form_id].data;
+        let root = state.forms[form_object.form_type][form_object.form_id]
+        return root.data;
     },
 
     getFormSteps: state => {
@@ -211,11 +204,6 @@ export const getters = {
         return root['corporate_owner'].includes("Owned by corporate entity")
     },
 
-    getCurrentFormData: state => {
-        let form_object = state.currently_editing_form_object;
-        return state.forms[form_object.form_type][form_object.form_id].data;
-    },
-
     areNewUniqueIdsRequiredByType: (state, getters) => form_type => {
         // Business rules state that X number of forms must be available to use offline
         if (getters.getFormTypeCount[form_type] < constants.MINIMUM_NUMBER_OF_UNIQUE_IDS_PER_TYPE) {
@@ -243,12 +231,8 @@ export const getters = {
         console.log("inside getNextAvailableUniqueIdByType()", form_type)
         for (let form_id in state.forms[form_type]) {
             if( ! ("data" in state.forms[form_type][form_id])) {
-                return {
-                    "form_id": form_id,
-                    "form_type": form_type
-                }
+                return form_id
             }
-
         }
     },
 
@@ -314,15 +298,7 @@ export const getters = {
         let filteredObject = state.jurisdictions.filter( j => j['objectDsc'] === root[attribute]);
         console.log('filteredObject', filteredObject)
         return filteredObject[0]['objectCd']
-    },
-
-    getXfdfListValues: state => (form_object, attribute) => {
-        let root = state.forms[form_object.form_type][form_object.form_id].data;
-        if (!(attribute in root)) {
-            return '';
-        }
-        return root[attribute].join(" ")
-    },
+    }
 
 }
 

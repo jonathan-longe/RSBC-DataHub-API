@@ -1,23 +1,16 @@
 <template>
   <div id="app" class="card border-0 ml-4 mr-4">
     <div id="roadsafety-header" class="card-header">
-            <div class="d-flex justify-content-between">
-              <img width="300px" src="/assets/BCID_RoadSafetyBC_logo_transparent.png" >
-              <div class="d-flex align-items-end flex-column">
-                <div class="font-weight-bold text-warning">DRAFT <span class="text-light small">{{ getAppVersion }}</span></div>
-                <div class="mt-auto small">User: {{ getKeycloakUsername }}</div>
-              </div>
-            </div>
+      <div class="d-flex justify-content-between">
+        <img width="300px" src="/assets/BCID_RoadSafetyBC_logo_transparent.png" >
+        <div class="d-flex align-items-end flex-column">
+          <div class="font-weight-bold text-warning">DRAFT <span class="text-light small">{{ getAppVersion }}</span></div>
+          <div class="mt-auto small">User: {{ getKeycloakUsername }}</div>
+        </div>
+      </div>
     </div>
     <div class="card-body">
-      <offline-banner v-if="isNetworkOnline"></offline-banner>
-      <component v-if="isFormBeingEdited" :data="getCurrentlyEditedFormData"
-                 :is="getSelectedFormComponent" :name="getCurrentlyEditedFormObject.form_type">
-      </component>
-      <recent-prohibitions v-if="isRecentProhibitions && ! isFormBeingEdited"></recent-prohibitions>
-      <issue-prohibitions v-if=" ! isFormBeingEdited"></issue-prohibitions>
-      <prohibition-search v-if=" ! isFormBeingEdited"></prohibition-search>
-      <feedback-welcome v-if=" ! isFormBeingEdited"></feedback-welcome>
+      <router-view></router-view>
       <div class="card-footer bg-transparent border-0 text-muted small">Version: {{ getAppVersion }}</div>
     </div>
   </div>
@@ -25,36 +18,12 @@
 
 <script>
 
-import OfflineBanner from "./components/OffineBanner.vue"
-import IssueProhibitions from "@/components/IssueProhibitions";
-import TwelveHourProhibition from "@/components/forms/TwelveHourSuspension/TwelveHourProhibition";
-import TwentyFourHourProhibition from "@/components/forms/TwentyFourHourProhibition/TwentyFourHourProhibition";
-import ImmediateRoadsideProhibition from "@/components/forms/ImmediateRoadsideProhibition";
-import FeedbackWelcome from "@/components/FeedbackWelcome";
-import ProhibitionSearch from "@/components/ProhibitionSearch";
-import RecentProhibitions from "@/components/RecentProhibitions";
-import {mapGetters, mapMutations} from 'vuex';
+import {mapGetters} from 'vuex';
 
 export default {
   name: 'App',
-  components: {
-    RecentProhibitions,
-    ProhibitionSearch,
-    FeedbackWelcome,
-    OfflineBanner,
-    IssueProhibitions,
-    TwelveHourProhibition,
-    TwentyFourHourProhibition,
-    ImmediateRoadsideProhibition
-  },
   computed: {
-    ...mapGetters(['getAppVersion', 'isFormBeingEdited',"getSelectedFormComponent",
-      "getCurrentlyEditedFormObject","isRecentProhibitions","isNetworkOnline",
-      "getCurrentlyEditedFormData", "getKeycloakUsername"]),
-  },
-
-  methods: {
-    ...mapMutations(["networkOffline","networkBackOnline"])
+    ...mapGetters(['getAppVersion', "getKeycloakUsername"]),
   },
 
 }

@@ -16,22 +16,25 @@ import PlateNumber from "@/components/questions/PlateNumber";
 import RadioField from "@/components/questions/RadioField";
 import CheckField from "@/components/questions/CheckField";
 import ShadowBox from "@/components/forms/ShadowBox";
-import { mapGetters } from "vuex";
+import {mapGetters, mapMutations} from "vuex";
 
 
 export default {
   name: "FormsCommon",
     props: {
-      data: {},
-      name: null
+      id: {},
   },
   data() {
     return {
-      xml_file: null
+      data: {},
+      isMounted: false
     }
   },
   computed: {
-    ...mapGetters(["getArrayOfBCCityNames"]),
+    ...mapGetters(["getArrayOfBCCityNames", "getFormData"]),
+  },
+  methods: {
+    ...mapMutations(["editExistingForm", "setNewFormDefaults"])
   },
   components: {
     FormContainer,

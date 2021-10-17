@@ -4,6 +4,7 @@ import App from './App.vue'
 import { BootstrapVue, BootstrapVueIcons, ModalPlugin } from 'bootstrap-vue'
 import { ValidationProvider } from 'vee-validate';
 import VueKeyCloak from '@dsb-norge/vue-keycloak-js'
+import router from '@/router'
 
 
 import "@/config/custom_stylesheet.scss";
@@ -20,6 +21,7 @@ Vue.use(BootstrapVue)
 Vue.use(ModalPlugin)
 Vue.use(BootstrapVueIcons)
 
+
 // import custom validation rules
 require("@/helpers/validators");
 Vue.component('ValidationProvider', ValidationProvider);
@@ -32,6 +34,7 @@ Vue.use(VueKeyCloak, {
   config: constants.API_ROOT_URL + '/api/v1/keycloak',
   onReady: () => {
     new Vue({
+      router,
       store: store,
       async created() {
         store.commit("setKeycloak", Vue.prototype.$keycloak)

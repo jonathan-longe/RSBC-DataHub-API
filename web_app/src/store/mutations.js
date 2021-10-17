@@ -3,10 +3,10 @@ import Vue from 'vue'
 export const mutations = {
 
     editExistingForm (state, payload) {
-       state.currently_editing_form_object = {
-           form_id: payload.form_id,
-           form_type: payload.form_type
-       };
+        console.log("editExistingForm()", state.currently_editing_form_object, payload)
+        Vue.set(state.currently_editing_form_object, "form_id", payload.form_id)
+        Vue.set(state.currently_editing_form_object, "form_type", payload.form_type)
+
     },
 
     updateFormField (state, payload) {
@@ -36,7 +36,7 @@ export const mutations = {
     },
 
     deleteForm(state, payload) {
-        // TODO - add business logic to ensure user can delete a form
+        // TODO - add business logic to ensure user is permitted to delete a form
         Vue.delete(state.forms[payload.form_type][payload.form_id], "data")
     },
 
@@ -48,14 +48,6 @@ export const mutations = {
     markFormStatusAsServed(state, date) {
         let form_object = state.currently_editing_form_object
         Vue.set(state.forms[form_object.form_type][form_object.form_id], "printed_timestamp", date)
-    },
-
-    networkBackOnline(state) {
-        state.isOnline = true;
-    },
-
-    networkOffline(state) {
-        state.isOnline = false;
     },
 
     nextStep(state) {
@@ -73,13 +65,16 @@ export const mutations = {
     setNewFormDefaults(state, form_object) {
         console.log("inside setNewFormDefaults()", form_object)
         let root = state.forms[form_object.form_type][form_object.form_id]
-        Vue.set( root, "data", Object())
-        Vue.set( root.data, "current_step", 1);
-        Vue.set( root.data, "submitted", false);
+        if(! ("data" in root)) {
+            Vue.set( root, "data", Object())
+            Vue.set( root.data, "current_step", 1);
+            Vue.set( root.data, "submitted", false);
 
-        for (let form_property in state.form_schemas.forms[form_object.form_type]) {
-            Vue.set(root, form_property, state.form_schemas.forms[form_object.form_type][form_property])
+            for (let form_property in state.form_schemas.forms[form_object.form_type]) {
+                Vue.set(root, form_property, state.form_schemas.forms[form_object.form_type][form_property])
+            }
         }
+
 
     },
 

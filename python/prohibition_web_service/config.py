@@ -22,8 +22,10 @@ class Config(BaseConfig):
     KEYCLOAK_REALM                      = os.getenv("KEYCLOAK_REALM", "some-realm")
     KEYCLOAK_AUTH_URL                   = os.getenv("KEYCLOAK_AUTH_URL", "http://localhost/auth/")
     KEYCLOAK_CLIENT_ID                  = os.getenv("KEYCLOAK_CLIENT_ID", 'my-client')
+    KEYCLOAK_ALGORITHM                  = os.getenv("KEYCLOAK_ALGORITHM", "RS256")
 
     KEYCLOAK_CERTS_URL = "{}realms/{}/protocol/openid-connect/certs".format(KEYCLOAK_AUTH_URL, KEYCLOAK_REALM)
+
     MAX_RECORDS_RETURNED = 200
 
 

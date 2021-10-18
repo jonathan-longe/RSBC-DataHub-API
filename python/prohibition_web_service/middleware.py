@@ -133,7 +133,7 @@ def decode_keycloak_access_token(**kwargs) -> tuple:
     try:
         kwargs['decoded_access_token'] = jwt.decode(access_token,
                                                     signing_key,
-                                                    algorithms=["RSA256"],
+                                                    algorithms=[Config.KEYCLOAK_ALGORITHM],
                                                     audience=Config.KEYCLOAK_CLIENT_ID)
     except Exception as e:
         logging.warning(str(e))

@@ -1,7 +1,8 @@
 import pytest
 import logging
-import base64
 import json
+import responses
+import python.prohibition_web_service.middleware as middleware
 from datetime import datetime, timedelta
 from python.prohibition_web_service.models import Form
 from python.prohibition_web_service.app import db, create_app
@@ -44,10 +45,12 @@ def forms(database):
     db.session.commit()
 
 
-def test_index_method_only_returns_current_users_form_records(as_guest, forms):
+def test_index_method_only_returns_current_users_form_records(as_guest, monkeypatch, forms):
+    monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
+    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _mock_decode_token)
     resp = as_guest.get("/api/v1/forms/24Hour",
                         content_type="application/json",
-                        headers=_get_basic_authentication_header(Config))
+                        headers=_get_keycloak_auth_header(_get_keycloak_access_token()))
     assert len(resp.json) == 2
     assert resp.json == [
         {'id': 'AA-123332', 'form_type': '24Hour', 'lease_expiry': '2021-07-21', 'printed_timestamp': None},
@@ -55,16 +58,21 @@ def test_index_method_only_returns_current_users_form_records(as_guest, forms):
     ]
     assert resp.status_code == 200
 
-# def test_unauthorized_users_cannot_get_forms(as_guest, forms):
-#     resp = as_guest.get("/api/v1/forms/24Hour",
-#                         content_type="application/json")
-#     assert resp.status_code == 401
+
+def test_unauthorized_users_cannot_get_forms(as_guest, monkeypatch, forms):
+    monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
+    resp = as_guest.get("/api/v1/forms/24Hour",
+                        content_type="application/json",
+                        headers=_get_keycloak_auth_header("invalid"))
+    assert resp.status_code == 401
 
 
-def test_when_form_created_user_receives_unique_form_id_for_later_use(as_guest, forms):
+def test_when_form_created_user_receives_unique_form_id_for_later_use(as_guest, monkeypatch, forms):
+    monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
+    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _mock_decode_token)
     resp = as_guest.post("/api/v1/forms/24Hour",
                          content_type="application/json",
-                         headers=_get_basic_authentication_header(Config))
+                         headers=_get_keycloak_auth_header(_get_keycloak_access_token()))
     today = datetime.now()
     expected_lease_expiry = datetime.strftime(today + timedelta(days=30), "%Y-%m-%d")
 
@@ -74,13 +82,17 @@ def test_when_form_created_user_receives_unique_form_id_for_later_use(as_guest, 
     }
 
 
-# def test_unauthorized_users_cannot_create_forms(as_guest, forms):
-#     resp = as_guest.post("/api/v1/forms/24Hour",
-#                          content_type="application/json")
-#     assert resp.status_code == 401
+def test_unauthorized_users_cannot_create_forms(as_guest, monkeypatch, forms):
+    monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
+    resp = as_guest.post("/api/v1/forms/24Hour",
+                         content_type="application/json",
+                         headers=_get_keycloak_auth_header("invalid"))
+    assert resp.status_code == 401
 
 
-def test_if_no_unique_ids_available_user_receives_a_500_response(as_guest, database):
+def test_if_no_unique_ids_available_user_receives_a_500_response(as_guest, database, monkeypatch):
+    monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
+    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _mock_decode_token)
     today = datetime.strptime("2021-07-21", "%Y-%m-%d")
     forms = [
         Form(form_id='AA-123332', form_type='24Hour', username='other_user', lease_expiry=today, printed=None),
@@ -90,19 +102,24 @@ def test_if_no_unique_ids_available_user_receives_a_500_response(as_guest, datab
 
     resp = as_guest.post("/api/v1/forms/24Hour",
                          content_type="application/json",
-                         headers=_get_basic_authentication_header(Config))
+                         headers=_get_keycloak_auth_header(_get_keycloak_access_token()))
     assert resp.status_code == 500
 
 
-def test_users_cannot_submit_payloads_to_the_create_endpoint(as_guest, database):
+@responses.activate
+def test_users_cannot_submit_payloads_to_the_create_endpoint(as_guest, monkeypatch, database):
+    monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
+    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _mock_decode_token)
     resp = as_guest.post("/api/v1/forms/24Hour",
                          content_type="application/json",
                          data=json.dumps({"attribute": "value"}),
-                         headers=_get_basic_authentication_header(Config))
+                         headers=_get_keycloak_auth_header(_get_keycloak_access_token()))
     assert resp.status_code == 400
 
 
-def test_user_cannot_renew_lease_on_form_that_has_been_printed(as_guest, database):
+def test_user_cannot_renew_lease_on_form_that_has_been_printed(as_guest, database, monkeypatch):
+    monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
+    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _mock_decode_token)
     today = datetime.strptime("2021-07-21", "%Y-%m-%d")
     forms = [
         Form(form_id='AA-123332', form_type='24Hour', username='usr', lease_expiry=today, printed=today),
@@ -112,20 +129,24 @@ def test_user_cannot_renew_lease_on_form_that_has_been_printed(as_guest, databas
 
     resp = as_guest.patch("/api/v1/forms/24Hour/{}".format('AA-123332'),
                           content_type="application/json",
-                          headers=_get_basic_authentication_header(Config))
+                          headers=_get_keycloak_auth_header(_get_keycloak_access_token()))
     assert resp.status_code == 400
 
 
-# def test_unauthorized_users_cannot_update_forms_or_renew_lease_on_form(as_guest, forms):
-#     resp = as_guest.patch("/api/v1/forms/24Hour/{}".format("AA-123332"),
-#                           content_type="application/json")
-#     assert resp.status_code == 401
+def test_unauthorized_users_cannot_update_forms_or_renew_lease_on_form(as_guest, monkeypatch, forms):
+    monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
+    resp = as_guest.patch("/api/v1/forms/24Hour/{}".format("AA-123332"),
+                          content_type="application/json",
+                          headers=_get_keycloak_auth_header("invalid"))
+    assert resp.status_code == 401
 
 
-def test_when_form_updated_without_payload_user_receives_updated_lease_date(as_guest, forms):
+def test_when_form_updated_without_payload_user_receives_updated_lease_date(as_guest, monkeypatch, forms):
+    monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
+    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _mock_decode_token)
     resp = as_guest.patch("/api/v1/forms/24Hour/{}".format('AA-123332'),
                           content_type="application/json",
-                          headers=_get_basic_authentication_header(Config))
+                          headers=_get_keycloak_auth_header(_get_keycloak_access_token()))
     today = datetime.now()
     expected_lease_expiry = datetime.strftime(today + timedelta(days=30), "%Y-%m-%d")
 
@@ -138,7 +159,7 @@ def test_when_form_updated_without_payload_user_receives_updated_lease_date(as_g
 def test_form_delete_method_not_implemented(as_guest):
     resp = as_guest.delete("/api/v1/forms/24Hour/{}".format('AA-123332'),
                            content_type="application/json",
-                           headers=_get_basic_authentication_header(Config))
+                           headers=_get_keycloak_auth_header(Config))
     assert resp.status_code == 405
     assert resp.json == {"error": "method not implemented"}
 
@@ -162,12 +183,22 @@ def test_form_delete_method_not_implemented(as_guest):
 #     assert b"AA-123332" not in resp.data
 
 
-def _get_basic_authentication_header(config) -> dict:
-    username = config.ADMIN_USERNAME
-    password = config.ADMIN_PASSWORD
-    credentials = base64.b64encode((username + ":" + password).encode('utf-8')).decode('utf-8')
-    headers = dict({
-        'Authorization': 'Basic {}'.format(credentials)
+def _get_keycloak_access_token() -> str:
+    return 'some-secret-access-token'
+
+
+def _get_keycloak_auth_header(access_token) -> dict:
+    return dict({
+        'Authorization': 'Bearer {}'.format(access_token)
     })
-    logging.debug(headers)
-    return headers
+
+
+def _mock_keycloak_certificates(**kwargs) -> tuple:
+    logging.warning("inside _mock_keycloak_certificates()")
+    return True, kwargs
+
+
+def _mock_decode_token(**kwargs) -> tuple:
+    logging.warning("inside _mock_decode_token()")
+    kwargs['decoded_access_token'] = {'preferred_username': 'usr'}  # keycloak username
+    return True, kwargs

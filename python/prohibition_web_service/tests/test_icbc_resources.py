@@ -1,5 +1,6 @@
 import pytest
 import responses
+import python.prohibition_web_service.middleware as middleware
 from python.prohibition_web_service.app import create_app
 from python.prohibition_web_service.config import Config
 import logging
@@ -19,25 +20,36 @@ def as_guest(application):
 
 
 @responses.activate
-def test_get_driver(as_guest):
-
+def test_authorized_user_can_get_driver(as_guest, monkeypatch):
+    monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
+    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _mock_decode_token)
     responses.add(responses.GET,
                   '{}/drivers/{}'.format(Config.ICBC_API_ROOT, "5120503"),
                   json=_sample_driver_response(),
                   status=200)
-
     resp = as_guest.get("/api/v1/icbc/drivers/5120503",
                         follow_redirects=True,
-                        content_type="application/json")
+                        content_type="application/json",
+                        headers=_get_keycloak_auth_header(_get_keycloak_access_token()))
     assert resp.status_code == 200
     assert 'dlNumber' in resp.json
     assert resp.json['dlNumber'] == "5120503"
     assert responses.calls[0].request.headers['loginUserId'] == 'usr'
 
 
-@responses.activate
-def test_get_driver_not_found(as_guest):
+def test_unauthorized_user_cannot_get_driver(as_guest, monkeypatch):
+    monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
+    resp = as_guest.get("/api/v1/icbc/drivers/5120503",
+                        follow_redirects=True,
+                        content_type="application/json",
+                        headers=_get_keycloak_auth_header("invalid-token"))
+    assert resp.status_code == 401
 
+
+@responses.activate
+def test_authorized_user_gets_driver_not_found(as_guest, monkeypatch):
+    monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
+    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _mock_decode_token)
     responses.add(responses.GET,
                    '{}/drivers/{}'.format(Config.ICBC_API_ROOT, "1234"),
                   json=_driver_not_found(),
@@ -45,7 +57,8 @@ def test_get_driver_not_found(as_guest):
 
     resp = as_guest.get("/api/v1/icbc/drivers/1234",
                         follow_redirects=True,
-                        content_type="application/json")
+                        content_type="application/json",
+                        headers=_get_keycloak_auth_header(_get_keycloak_access_token()))
     assert resp.status_code == 400
     assert 'error' in resp.json
     assert resp.json['error']['message'] == "Not Found"
@@ -54,16 +67,17 @@ def test_get_driver_not_found(as_guest):
 
 
 @responses.activate
-def test_get_vehicle_not_found(as_guest):
-
+def test_authorized_user_gets_vehicle_not_found(as_guest, monkeypatch):
+    monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
+    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _mock_decode_token)
     responses.add(responses.GET,
                   '{}/vehicles?plateNumber={}'.format(Config.ICBC_API_ROOT, "AAAAA"),
                   json=_vehicle_not_found(),
                   status=400)
-
     resp = as_guest.get("/api/v1/icbc/vehicles/AAAAA",
                         follow_redirects=True,
-                        content_type="application/json")
+                        content_type="application/json",
+                        headers=_get_keycloak_auth_header(_get_keycloak_access_token()))
     logging.warning(json.dumps(resp.json))
     assert resp.status_code == 400
     assert 'error' in resp.json
@@ -73,20 +87,30 @@ def test_get_vehicle_not_found(as_guest):
 
 
 @responses.activate
-def test_get_vehicle(as_guest):
-
+def test_authorized_user_gets_vehicle(as_guest, monkeypatch):
+    monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
+    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _mock_decode_token)
     responses.add(responses.GET,
                   '{}/vehicles?plateNumber={}'.format(Config.ICBC_API_ROOT, "LD626J"),
                   json=_sample_vehicle_response(),
                   status=200)
-
     resp = as_guest.get("/api/v1/icbc/vehicles/LD626J",
                         follow_redirects=True,
-                        content_type="application/json")
+                        content_type="application/json",
+                        headers=_get_keycloak_auth_header(_get_keycloak_access_token()))
     assert resp.status_code == 200
     assert 'plateNumber' in resp.json[0]
     assert resp.json[0]['plateNumber'] == "LD626J"
     assert responses.calls[0].request.headers['loginUserId'] == 'usr'
+
+
+def test_unauthorized_user_cannot_get_vehicle(as_guest, monkeypatch):
+    monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
+    resp = as_guest.get("/api/v1/icbc/vehicles/5120503",
+                        follow_redirects=True,
+                        content_type="application/json",
+                        headers=_get_keycloak_auth_header("invalid-token"))
+    assert resp.status_code == 401
 
 
 def _sample_driver_response() -> dict:
@@ -216,3 +240,23 @@ def _driver_not_found() -> dict:
       }
     }
 
+
+def _get_keycloak_access_token() -> str:
+    return 'some-secret-access-token'
+
+
+def _get_keycloak_auth_header(access_token) -> dict:
+    return dict({
+        'Authorization': 'Bearer {}'.format(access_token)
+    })
+
+
+def _mock_keycloak_certificates(**kwargs) -> tuple:
+    logging.warning("inside _mock_keycloak_certificates()")
+    return True, kwargs
+
+
+def _mock_decode_token(**kwargs) -> tuple:
+    logging.warning("inside _mock_decode_token()")
+    kwargs['decoded_access_token'] = {'preferred_username': 'usr'}  # keycloak username
+    return True, kwargs

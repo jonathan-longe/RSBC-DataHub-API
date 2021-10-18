@@ -3,8 +3,7 @@ import python.common.helper as helper
 from flask import request, Blueprint, make_response, jsonify
 from flask_cors import CORS
 import logging.config
-import python.prohibition_web_service.business as rules
-from python.prohibition_web_service.models import db, Form
+import python.prohibition_web_service.business.forms_logic as rules
 
 
 logging.config.dictConfig(Config.LOGGING)
@@ -20,12 +19,11 @@ def index(form_type):
     List all forms for a user
     """
     if request.method == 'GET':
-        username = 'usr'
-        all_forms = db.session.query(Form) \
-            .filter(Form.form_type == form_type) \
-            .filter(Form.username == username) \
-            .all()
-        return jsonify(Form.collection_to_dict(all_forms))
+        kwargs = helper.middle_logic(rules.list_all_forms(),
+                                     request=request,
+                                     form_type=form_type,
+                                     config=Config)
+        return kwargs.get('response')
 
 
 @bp.route('/forms/<string:form_type>/<string:form_id>', methods=['GET'])
@@ -34,13 +32,11 @@ def get(form_type, form_id):
     Get a specific form
     """
     if request.method == 'GET':
-        username = 'usr'
-        form = db.session.query(Form) \
-            .filter(Form.form_type == form_type) \
-            .filter(Form.id == form_id) \
-            .filter(Form.username == username) \
-            .first()
-        return make_response(jsonify(form), 200)
+        kwargs = helper.middle_logic(rules.get_a_form(),
+                                     request=request,
+                                     form_type=form_type,
+                                     config=Config)
+        return kwargs.get('response')
 
 
 @bp.route('/forms/<string:form_type>', methods=['POST'])
@@ -48,16 +44,13 @@ def create(form_type):
     """
     Save a new form.  The web_app uses this endpoint to lease a unique form_id
     for 30 days and save the user's name in the form table. This endpoint is not
-    used to submit a new form.  All payloads to this endpoint are ignored.
+    used to submit a new form.  Any payload to this endpoint is ignored.
     """
     if request.method == 'POST':
-        logging.info("created() invoked: {} | {}".format(request.remote_addr, request.get_data()))
-        username = 'usr'  # TODO - remove before flight
-        # invoke business logic
+        logging.info("created() invoked: | {}".format(request.get_data()))
         kwargs = helper.middle_logic(rules.create_a_form(),
                                      request=request,
                                      form_type=form_type,
-                                     username=username,
                                      config=Config)
         return kwargs.get('response')
 
@@ -71,13 +64,10 @@ def update(form_type, form_id):
     otherwise, the payload is received as a form submission.
     """
     if request.method == 'PATCH':
-        username = 'usr'  # TODO - remove before flight
-        # invoke business logic
         kwargs = helper.middle_logic(rules.update_a_form(),
                                      form_type=form_type,
                                      form_id=form_id,
                                      request=request,
-                                     username=username,
                                      config=Config)
         return kwargs.get('response')
 

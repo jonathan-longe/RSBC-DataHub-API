@@ -14,17 +14,6 @@ export const actions = {
         context.commit('stopEditingCurrentForm');
     },
 
-
-    setNewFormToEdit (context, form_type) {
-        console.log('inside setNewFormToEdit()')
-        let form_object = context.getters.getNextAvailableUniqueIdByType(form_type)
-
-        // copy form boilerplate to form
-        context.commit("setNewFormDefaults", form_object)
-        context.commit("editExistingForm", form_object)
-        context.dispatch("saveCurrentFormToDB", context.state.forms[form_object.form_type][form_object.form_id])
-    },
-
     async renewFormLeasesFromApiIfNecessary (context) {
         console.log("inside renewFormLeasesFromApiIfNecessary()")
         for( let form in context.getters.arrayOfFormsRequiringRenewal) {
@@ -218,6 +207,7 @@ export const actions = {
     },
 
     async getAllFormsFromDB(context) {
+        // TODO - Remove before flight - replace hardcoded form types below
         context.state.forms = {
             "IRP": {},
             "12Hour": {},

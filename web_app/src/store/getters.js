@@ -254,7 +254,7 @@ export const getters = {
         const headers = new Headers();
         headers.set('Content-Type', 'application/json')
         if (state.keycloak) {
-            headers.set('Authorization', 'Basic ' + state.keycloak.token)
+            headers.set('Authorization', 'Bearer ' + state.keycloak.token)
         }
         return headers
     },

@@ -26,7 +26,7 @@ def get_driver(dl_number):
 def get_vehicle(plate_number):
     if request.method == 'GET':
         kwargs = middle_logic(rules.get_vehicle(),
-                              plate_number=plate_number,
+                              plate_number=plate_number.upper(),
                               request=request,
                               config=Config)
         return kwargs.get('response')

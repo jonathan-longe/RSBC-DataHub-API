@@ -104,6 +104,24 @@ def test_authorized_user_gets_vehicle(as_guest, monkeypatch):
     assert responses.calls[0].request.headers['loginUserId'] == 'usr'
 
 
+@responses.activate
+def test_request_for_licence_plate_using_lowercase_automatically_converted_to_upper(as_guest, monkeypatch):
+    monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
+    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _mock_decode_token)
+    responses.add(responses.GET,
+                  '{}/vehicles?plateNumber={}'.format(Config.ICBC_API_ROOT, "LD626J"),
+                  json=_sample_vehicle_response(),
+                  status=200)
+    resp = as_guest.get("/api/v1/icbc/vehicles/ld626j",
+                        follow_redirects=True,
+                        content_type="application/json",
+                        headers=_get_keycloak_auth_header(_get_keycloak_access_token()))
+    assert resp.status_code == 200
+    assert 'plateNumber' in resp.json[0]
+    assert resp.json[0]['plateNumber'] == "LD626J"
+    assert responses.calls[0].request.headers['loginUserId'] == 'usr'
+
+
 def test_unauthorized_user_cannot_get_vehicle(as_guest, monkeypatch):
     monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
     resp = as_guest.get("/api/v1/icbc/vehicles/5120503",

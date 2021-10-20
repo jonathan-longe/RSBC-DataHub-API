@@ -420,4 +420,27 @@ export const actions = {
         })
 
     },
+
+    async applyToUnlockApplication(context) {
+        console.log("inside actions.js applyToUnlockApplication(): ")
+        const url = constants.API_ROOT_URL + "/api/v1/roles"
+        let payload = { "username": context.getters.getKeycloakUsername }
+        return await new Promise((resolve, reject) => {
+            fetch(url, {
+            "method": 'POST',
+            "headers": context.getters.apiHeader,
+            "body": JSON.stringify(payload),
+                })
+                    .then(response => {
+                        resolve(response.json())
+                    })
+                    .catch((error) => {
+                        console.log("error", error)
+                        if (error) {
+                            reject("message" in error ? {"description": error.message }: {"description": "No valid response"})
+                        }
+                        reject({"description": "Server did not respond"})
+                        });
+                })
+    },
 }

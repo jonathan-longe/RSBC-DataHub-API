@@ -16,6 +16,7 @@ CORS(bp, resources={"/api/v1/icbc/*": {"origins": Config.ACCESS_CONTROL_ALLOW_OR
 def get_driver(dl_number):
     if request.method == 'GET':
         kwargs = middle_logic(rules.get_driver(),
+                              required_permission='driver-get',
                               dl_number=dl_number,
                               request=request,
                               config=Config)
@@ -26,6 +27,7 @@ def get_driver(dl_number):
 def get_vehicle(plate_number):
     if request.method == 'GET':
         kwargs = middle_logic(rules.get_vehicle(),
+                              required_permission='vehicle-get',
                               plate_number=plate_number.upper(),
                               request=request,
                               config=Config)

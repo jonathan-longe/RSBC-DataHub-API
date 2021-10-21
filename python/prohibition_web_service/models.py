@@ -49,3 +49,52 @@ class Form(db.Model):
         for row in all_rows:
             result_list.append(Form.serialize(row))
         return result_list
+
+
+class UserRole(db.Model):
+    role_name = db.Column(db.String(20), primary_key=True)
+    username = db.Column(db.String(25), primary_key=True)
+    submitted_dt = db.Column(db.DateTime, nullable=True)
+    approved_dt = db.Column(db.DateTime, nullable=True)
+
+    def __init__(self, role_name, username, submitted_dt=None, approved_dt=None):
+        self.role_name = role_name
+        self.username = username
+        self.submitted_dt = submitted_dt
+        self.approved_dt = approved_dt
+
+    @staticmethod
+    def serialize(role):
+        return {
+            "role_name": role.role_name,
+            "username": role.username,
+            "submitted_dt": role.submitted_dt,
+            "approved_dt": role.approved_dt
+        }
+
+    @staticmethod
+    def collection_to_dict(all_rows):
+        result_list = []
+        for row in all_rows:
+            result_list.append(UserRole.serialize(row))
+        return result_list
+
+    @staticmethod
+    def collection_to_simple_list(all_rows):
+        result_list = []
+        for row in all_rows:
+            result_list.append(row.role_name)
+        return result_list
+
+    @staticmethod
+    def get_roles(username):
+        rows = db.session.query(UserRole.role_name) \
+            .filter(UserRole.username == username) \
+            .filter(UserRole.approved_dt != None) \
+            .all()
+        if len(rows) > 0:
+            return rows[0]
+        else:
+            return []
+
+

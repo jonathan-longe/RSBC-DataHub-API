@@ -1,11 +1,11 @@
 from flask_api import FlaskAPI
 import logging
-from python.prohibition_web_service.models import db
-from python.prohibition_web_service.models import Form
+from datetime import datetime
+from python.prohibition_web_service.models import db, Form, UserRole
 from python.prohibition_web_service.config import Config
 from python.prohibition_web_service.blueprints import impound_lot_operators, jurisdictions, forms, admin_forms
 from python.prohibition_web_service.blueprints import provinces, countries, cities, colors, vehicles, icbc, keycloak
-from python.prohibition_web_service.blueprints import vehicle_styles
+from python.prohibition_web_service.blueprints import vehicle_styles, user_roles, admin_user_roles
 
 
 application = FlaskAPI(__name__)
@@ -24,6 +24,8 @@ application.register_blueprint(icbc.bp)
 application.register_blueprint(admin_forms.bp)
 application.register_blueprint(keycloak.bp)
 application.register_blueprint(vehicle_styles.bp)
+application.register_blueprint(user_roles.bp)
+application.register_blueprint(admin_user_roles.bp)
 
 
 db.init_app(application)
@@ -45,12 +47,13 @@ def initialize_app(app):
         if len(tables) == 0:
             logging.warning('Sqlite database does not exist - creating new file')
             db.create_all()
-            _seed_database_for_development(db)
+            _seed_forms_for_development(db)
+            seed_initial_administrator(db)
         else:
             logging.info("database already exists - no need to recreate")
 
 
-def _seed_database_for_development(database):
+def _seed_forms_for_development(database):
     # TODO - Remove before flight
     seed_records = []
     prefix = ["J", "AA", "40"]
@@ -61,6 +64,16 @@ def _seed_database_for_development(database):
                 form_id=unique_id,
                 form_type=form_type))
     database.session.bulk_save_objects(seed_records)
+    user_role = UserRole("officer", "jonathan-longe@github", datetime.now(), datetime.now())
+    database.session.add(user_role)
+    database.session.commit()
+    logging.warning("database seeded")
+    return
+
+
+def seed_initial_administrator(database):
+    user_role = UserRole("administrator", Config.ADMIN_USERNAME, datetime.now(), datetime.now())
+    database.session.add(user_role)
     database.session.commit()
     logging.warning("database seeded")
     return

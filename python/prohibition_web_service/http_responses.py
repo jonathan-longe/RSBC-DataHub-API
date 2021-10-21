@@ -50,3 +50,14 @@ def keycloak_no_username(**kwargs) -> tuple:
     logging.warning("decoded keycloak token has no username")
     kwargs['response'] = make_response({'error': 'server error'}, 500)
     return True, kwargs
+
+
+def role_already_exists(**kwargs) -> tuple:
+    logging.warning("role for {} already exists".format(kwargs.get('username')))
+    kwargs['response'] = make_response({'error': 'role already exists'}, 400)
+    return True, kwargs
+
+
+def payload_missing(**kwargs) -> tuple:
+    kwargs['response'] = make_response({'error': 'missing payload'}, 403)
+    return True, kwargs

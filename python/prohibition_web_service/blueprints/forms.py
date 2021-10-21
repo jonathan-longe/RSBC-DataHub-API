@@ -20,6 +20,7 @@ def index(form_type):
     """
     if request.method == 'GET':
         kwargs = helper.middle_logic(rules.list_all_forms(),
+                                     required_permission='forms-index',
                                      request=request,
                                      form_type=form_type,
                                      config=Config)
@@ -33,6 +34,7 @@ def get(form_type, form_id):
     """
     if request.method == 'GET':
         kwargs = helper.middle_logic(rules.get_a_form(),
+                                     required_permission='forms-get',
                                      request=request,
                                      form_type=form_type,
                                      config=Config)
@@ -49,6 +51,7 @@ def create(form_type):
     if request.method == 'POST':
         logging.info("created() invoked: | {}".format(request.get_data()))
         kwargs = helper.middle_logic(rules.create_a_form(),
+                                     required_permission='forms-create',
                                      request=request,
                                      form_type=form_type,
                                      config=Config)
@@ -65,6 +68,7 @@ def update(form_type, form_id):
     """
     if request.method == 'PATCH':
         kwargs = helper.middle_logic(rules.update_a_form(),
+                                     required_permission='forms-update',
                                      form_type=form_type,
                                      form_id=form_id,
                                      request=request,

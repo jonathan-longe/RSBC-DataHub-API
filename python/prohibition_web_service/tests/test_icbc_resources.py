@@ -1,6 +1,8 @@
 import pytest
 import responses
-import python.prohibition_web_service.middleware as middleware
+from datetime import datetime
+import python.prohibition_web_service.middleware.keycloak_middleware as middleware
+from python.prohibition_web_service.models import db, UserRole
 from python.prohibition_web_service.app import create_app
 from python.prohibition_web_service.config import Config
 import logging
@@ -19,10 +21,31 @@ def as_guest(application):
         yield client
 
 
+@pytest.fixture
+def database(application):
+    with application.app_context():
+        db.init_app(application)
+        db.create_all()
+        yield db
+        db.drop_all()
+        db.session.commit()
+
+
+@pytest.fixture
+def roles(database):
+    today = datetime.strptime("2021-07-21", "%Y-%m-%d")
+    user_role = [
+        UserRole(username='john@idir', role_name='officer', submitted_dt=today),
+        UserRole(username='larry@idir', role_name='officer', submitted_dt=today, approved_dt=today)
+    ]
+    db.session.bulk_save_objects(user_role)
+    db.session.commit()
+
+
 @responses.activate
-def test_authorized_user_can_get_driver(as_guest, monkeypatch):
+def test_authorized_user_can_get_driver(as_guest, monkeypatch, roles):
     monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
-    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _mock_decode_token)
+    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _get_authorized_user)
     responses.add(responses.GET,
                   '{}/drivers/{}'.format(Config.ICBC_API_ROOT, "5120503"),
                   json=_sample_driver_response(),
@@ -34,11 +57,12 @@ def test_authorized_user_can_get_driver(as_guest, monkeypatch):
     assert resp.status_code == 200
     assert 'dlNumber' in resp.json
     assert resp.json['dlNumber'] == "5120503"
-    assert responses.calls[0].request.headers['loginUserId'] == 'usr'
+    assert responses.calls[0].request.headers['loginUserId'] == 'larry@idir'
 
 
-def test_unauthorized_user_cannot_get_driver(as_guest, monkeypatch):
+def test_unauthorized_user_cannot_get_driver(as_guest, monkeypatch, roles):
     monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
+    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _get_unauthorized_user)
     resp = as_guest.get("/api/v1/icbc/drivers/5120503",
                         follow_redirects=True,
                         content_type="application/json",
@@ -46,10 +70,18 @@ def test_unauthorized_user_cannot_get_driver(as_guest, monkeypatch):
     assert resp.status_code == 401
 
 
-@responses.activate
-def test_authorized_user_gets_driver_not_found(as_guest, monkeypatch):
+def test_user_without_keycloak_login_cannot_get_driver(as_guest, monkeypatch):
     monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
-    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _mock_decode_token)
+    resp = as_guest.get("/api/v1/icbc/drivers/5120503",
+                        follow_redirects=True,
+                        content_type="application/json",
+                        headers=_get_keycloak_auth_header("invalid-token"))
+    assert resp.status_code == 401
+
+@responses.activate
+def test_authorized_user_gets_driver_not_found(as_guest, monkeypatch, roles):
+    monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
+    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _get_authorized_user)
     responses.add(responses.GET,
                    '{}/drivers/{}'.format(Config.ICBC_API_ROOT, "1234"),
                   json=_driver_not_found(),
@@ -63,13 +95,13 @@ def test_authorized_user_gets_driver_not_found(as_guest, monkeypatch):
     assert 'error' in resp.json
     assert resp.json['error']['message'] == "Not Found"
     assert resp.json['error']['description'] == "The resource specified in the request was not found"
-    assert responses.calls[0].request.headers['loginUserId'] == 'usr'
+    assert responses.calls[0].request.headers['loginUserId'] == 'larry@idir'
 
 
 @responses.activate
-def test_authorized_user_gets_vehicle_not_found(as_guest, monkeypatch):
+def test_authorized_user_gets_vehicle_not_found(as_guest, monkeypatch, roles):
     monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
-    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _mock_decode_token)
+    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _get_authorized_user)
     responses.add(responses.GET,
                   '{}/vehicles?plateNumber={}'.format(Config.ICBC_API_ROOT, "AAAAA"),
                   json=_vehicle_not_found(),
@@ -83,13 +115,13 @@ def test_authorized_user_gets_vehicle_not_found(as_guest, monkeypatch):
     assert 'error' in resp.json
     assert resp.json['error']['message'] == "Not Found"
     assert resp.json['error']['description'] == "vehicle not found"
-    assert responses.calls[0].request.headers['loginUserId'] == 'usr'
+    assert responses.calls[0].request.headers['loginUserId'] == 'larry@idir'
 
 
 @responses.activate
-def test_authorized_user_gets_vehicle(as_guest, monkeypatch):
+def test_authorized_user_gets_vehicle(as_guest, monkeypatch, roles):
     monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
-    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _mock_decode_token)
+    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _get_authorized_user)
     responses.add(responses.GET,
                   '{}/vehicles?plateNumber={}'.format(Config.ICBC_API_ROOT, "LD626J"),
                   json=_sample_vehicle_response(),
@@ -101,13 +133,13 @@ def test_authorized_user_gets_vehicle(as_guest, monkeypatch):
     assert resp.status_code == 200
     assert 'plateNumber' in resp.json[0]
     assert resp.json[0]['plateNumber'] == "LD626J"
-    assert responses.calls[0].request.headers['loginUserId'] == 'usr'
+    assert responses.calls[0].request.headers['loginUserId'] == 'larry@idir'
 
 
 @responses.activate
-def test_request_for_licence_plate_using_lowercase_automatically_converted_to_upper(as_guest, monkeypatch):
+def test_request_for_licence_plate_using_lowercase_automatically_converted_to_upper(as_guest, monkeypatch, roles):
     monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
-    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _mock_decode_token)
+    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _get_authorized_user)
     responses.add(responses.GET,
                   '{}/vehicles?plateNumber={}'.format(Config.ICBC_API_ROOT, "LD626J"),
                   json=_sample_vehicle_response(),
@@ -119,10 +151,20 @@ def test_request_for_licence_plate_using_lowercase_automatically_converted_to_up
     assert resp.status_code == 200
     assert 'plateNumber' in resp.json[0]
     assert resp.json[0]['plateNumber'] == "LD626J"
-    assert responses.calls[0].request.headers['loginUserId'] == 'usr'
+    assert responses.calls[0].request.headers['loginUserId'] == 'larry@idir'
 
 
-def test_unauthorized_user_cannot_get_vehicle(as_guest, monkeypatch):
+def test_unauthorized_user_cannot_get_vehicle(as_guest, monkeypatch, roles):
+    monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
+    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _get_unauthorized_user)
+    resp = as_guest.get("/api/v1/icbc/vehicles/5120503",
+                        follow_redirects=True,
+                        content_type="application/json",
+                        headers=_get_keycloak_auth_header("invalid-token"))
+    assert resp.status_code == 401
+
+
+def test_user_without_keycloak_login_cannot_get_vehicle(as_guest, monkeypatch):
     monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
     resp = as_guest.get("/api/v1/icbc/vehicles/5120503",
                         follow_redirects=True,
@@ -274,7 +316,13 @@ def _mock_keycloak_certificates(**kwargs) -> tuple:
     return True, kwargs
 
 
-def _mock_decode_token(**kwargs) -> tuple:
-    logging.warning("inside _mock_decode_token()")
-    kwargs['decoded_access_token'] = {'preferred_username': 'usr'}  # keycloak username
+def _get_unauthorized_user(**kwargs) -> tuple:
+    logging.warning("inside _get_unauthorized_user()")
+    kwargs['decoded_access_token'] = {'preferred_username': 'john@idir'}  # keycloak username
+    return True, kwargs
+
+
+def _get_authorized_user(**kwargs) -> tuple:
+    logging.warning("inside _get_authorized_user()")
+    kwargs['decoded_access_token'] = {'preferred_username': 'larry@idir'}  # keycloak username
     return True, kwargs

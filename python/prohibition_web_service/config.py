@@ -16,8 +16,8 @@ class Config(BaseConfig):
 
     DATABASE_URI                        = os.getenv('DATABASE_URI', 'sqlite:///:memory:')
 
-    ADMIN_USERNAME                      = os.getenv('ADMIN_USERNAME', 'admin')
-    ADMIN_PASSWORD                      = os.getenv('ADMIN_PASSWORD', 'secret')
+    # This user has the ability to add, edit and delete other users
+    ADMIN_USERNAME                      = os.getenv('ADMIN_USERNAME')
 
     KEYCLOAK_REALM                      = os.getenv("KEYCLOAK_REALM", "some-realm")
     KEYCLOAK_AUTH_URL                   = os.getenv("KEYCLOAK_AUTH_URL", "http://localhost/auth/")

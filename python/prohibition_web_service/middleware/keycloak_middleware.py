@@ -70,7 +70,7 @@ def check_user_is_authorized(**kwargs) -> tuple:
     required_permission = kwargs.get('required_permission', None)
     permissions = kwargs.get('permissions')
     user_roles = kwargs.get('user_roles')
-    logging.debug("inside check_user_is_authorized() {} {}".format(username, required_permission))
+    logging.debug("inside check_user_is_authorized() {} {} {}".format(username, required_permission, "|".join(user_roles)))
     for role in user_roles:
         logging.debug("if {} in {}".format(required_permission, json.dumps(permissions[role])))
         if required_permission in permissions[role]['permissions']:
@@ -83,7 +83,7 @@ def query_database_for_users_permissions(**kwargs) -> tuple:
     try:
         kwargs['user_roles'] = UserRole.get_roles(kwargs.get('username'))
     except Exception as e:
-        logging.warning("error while querying database for user permissons: " + str(e))
+        logging.warning("error while querying database for user permissions: " + str(e))
         return False, kwargs
     return True, kwargs
 

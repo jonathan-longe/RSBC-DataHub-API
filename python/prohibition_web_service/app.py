@@ -65,16 +65,18 @@ def _seed_forms_for_development(database):
                 form_id=unique_id,
                 form_type=form_type))
     database.session.bulk_save_objects(seed_records)
-    user_role = UserRole("officer", "jonathan-longe@github", datetime.now(), datetime.now())
-    database.session.add(user_role)
     database.session.commit()
-    logging.warning("database seeded")
+    logging.warning("seed temporary unique form_ids")
     return
 
 
 def seed_initial_administrator(database):
-    user_role = UserRole("administrator", Config.ADMIN_USERNAME, datetime.now(), datetime.now())
-    database.session.add(user_role)
+    current_dt = datetime.now()
+    users = [
+        UserRole(username=Config.ADMIN_USERNAME, role_name='officer', submitted_dt=current_dt, approved_dt=current_dt),
+        UserRole(username=Config.ADMIN_USERNAME, role_name='administrator', submitted_dt=current_dt, approved_dt=current_dt)
+    ]
+    database.session.bulk_save_objects(users)
     database.session.commit()
-    logging.warning("database seeded")
+    logging.warning("seed initial administrator: " + Config.ADMIN_USERNAME)
     return

@@ -36,7 +36,8 @@ def roles(database):
     user_role = [
         UserRole(username='john@idir', role_name='officer', submitted_dt=today),
         UserRole(username='larry@idir', role_name='officer', submitted_dt=today, approved_dt=today),
-        UserRole(username='mo@idir', role_name='administrator', submitted_dt=today, approved_dt=today)
+        UserRole(username='mo@idir', role_name='administrator', submitted_dt=today, approved_dt=today),
+        UserRole(username='mo@idir', role_name='officer', submitted_dt=today, approved_dt=today)
     ]
     db.session.bulk_save_objects(user_role)
     db.session.commit()
@@ -45,14 +46,14 @@ def roles(database):
 def test_administrator_can_get_all_users(as_guest, monkeypatch, roles):
     monkeypatch.setattr(Config, 'ADMIN_USERNAME', 'administrator@idir')
     monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
-    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _get_administrative_user_from_database)
+    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _get_administrative_user)
     resp = as_guest.get("/api/v1/admin/users",
                          follow_redirects=True,
                          content_type="application/json",
                          headers=_get_keycloak_auth_header(_get_keycloak_access_token()))
     logging.debug(json.dumps(resp.json))
     assert resp.status_code == 200
-    assert len(resp.json) == 3
+    assert len(resp.json) == 4
     assert resp.json[0]['username'] == 'john@idir'
 
 
@@ -89,6 +90,6 @@ def _get_authorized_user(**kwargs) -> tuple:
     return True, kwargs
 
 
-def _get_administrative_user_from_database(**kwargs) -> tuple:
+def _get_administrative_user(**kwargs) -> tuple:
     kwargs['decoded_access_token'] = {'preferred_username': 'mo@idir'}
     return True, kwargs

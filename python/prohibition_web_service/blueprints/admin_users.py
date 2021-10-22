@@ -20,7 +20,7 @@ def index():
     """
     if request.method == 'GET':
         kwargs = helper.middle_logic(rules.list_all_users(),
-                                     required_permission='users-index',
+                                     required_permission='admin_users-index',
                                      request=request,
                                      config=Config)
         return kwargs.get('response')

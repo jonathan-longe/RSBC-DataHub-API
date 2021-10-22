@@ -80,14 +80,18 @@ class UserRole(db.Model):
         return result_list
 
     @staticmethod
+    def collection_to_list_roles(all_rows):
+        result_list = []
+        for row in all_rows:
+            result_list.append(row.role_name)
+        return result_list
+
+    @staticmethod
     def get_roles(username):
-        rows = db.session.query(UserRole.role_name) \
+        rows = db.session.query(UserRole) \
             .filter(UserRole.username == username) \
             .filter(UserRole.approved_dt != None) \
             .all()
-        if len(rows) > 0:
-            return rows[0]
-        else:
-            return []
+        return UserRole.collection_to_list_roles(rows)
 
 

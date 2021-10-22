@@ -49,7 +49,7 @@ def create(form_type):
     used to submit a new form.  Any payload to this endpoint is ignored.
     """
     if request.method == 'POST':
-        logging.info("created() invoked: | {}".format(request.get_data()))
+        logging.info("new {} form_id requested".format(form_type))
         kwargs = helper.middle_logic(rules.create_a_form(),
                                      required_permission='forms-create',
                                      request=request,

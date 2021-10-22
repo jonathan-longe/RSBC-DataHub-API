@@ -15,7 +15,8 @@
             "admin_user_roles-index",
             "admin_user_roles-update",
             "admin_user_roles-delete",
-            "admin_user_roles-create"
+            "admin_user_roles-create",
+            "users-index"
         ]
     }
 }

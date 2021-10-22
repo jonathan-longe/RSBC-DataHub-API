@@ -80,13 +80,6 @@ class UserRole(db.Model):
         return result_list
 
     @staticmethod
-    def collection_to_simple_list(all_rows):
-        result_list = []
-        for row in all_rows:
-            result_list.append(row.role_name)
-        return result_list
-
-    @staticmethod
     def get_roles(username):
         rows = db.session.query(UserRole.role_name) \
             .filter(UserRole.username == username) \

@@ -42,7 +42,7 @@ def roles(database):
     db.session.commit()
 
 
-def test_administrator_set_via_database_can_get_all_roles_for_specific_user(as_guest, monkeypatch, roles):
+def test_administrator_can_get_all_roles_for_specific_user(as_guest, monkeypatch, roles):
     monkeypatch.setattr(Config, 'ADMIN_USERNAME', 'administrator@idir')
     monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
     monkeypatch.setattr(middleware, "decode_keycloak_access_token", _get_administrative_user_from_database)
@@ -68,7 +68,7 @@ def test_non_administrators_cannot_get_all_roles_for_specific_user(as_guest, mon
     assert resp.status_code == 401
 
 
-def test_administrator_set_via_database_can_approve_a_specific_user_role(as_guest, monkeypatch, roles):
+def test_administrator_can_approve_a_specific_user_role(as_guest, monkeypatch, roles):
     monkeypatch.setattr(Config, 'ADMIN_USERNAME', 'administrator@idir')
     monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
     monkeypatch.setattr(middleware, "decode_keycloak_access_token", _get_administrative_user_from_database)
@@ -93,7 +93,7 @@ def test_non_administrators_cannot_approve_a_user_role(as_guest, monkeypatch, ro
     assert resp.status_code == 401
 
 
-def test_administrator_set_via_database_can_delete_a_specific_user_role(as_guest, monkeypatch, roles, database):
+def test_administrator_can_delete_a_specific_user_role(as_guest, monkeypatch, roles, database):
     monkeypatch.setattr(Config, 'ADMIN_USERNAME', 'administrator@idir')
     monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
     monkeypatch.setattr(middleware, "decode_keycloak_access_token", _get_administrative_user_from_database)
@@ -120,7 +120,7 @@ def test_non_administrators_cannot_delete_a_user_role(as_guest, monkeypatch, rol
     assert resp.status_code == 401
 
 
-def test_administrator_set_via_database_can_give_another_user_administrative_permissions(as_guest, monkeypatch, roles, database):
+def test_administrator_can_give_another_user_administrative_permissions(as_guest, monkeypatch, roles, database):
     monkeypatch.setattr(Config, 'ADMIN_USERNAME', 'administrator@idir')
     monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
     monkeypatch.setattr(middleware, "decode_keycloak_access_token", _get_administrative_user_from_database)

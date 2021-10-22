@@ -50,6 +50,7 @@ def create_a_role() -> list:
         {"try": role_middleware.create_a_role, "fail": [
             {"try": http_responses.server_error_response, "fail": []},
         ]}
+        # TODO - email admin with notice that user has applied
     ]
 
 
@@ -114,6 +115,27 @@ def delete_a_role() -> list:
             {"try": http_responses.unauthorized, "fail": []},
         ]},
         {"try": role_middleware.delete_a_role, "fail": [
+            {"try": http_responses.server_error_response, "fail": []},
+        ]},
+    ]
+
+
+def list_all_users() -> list:
+    """
+    Only administrators list all users
+    :return:
+    """
+    return keycloak_logic.get_keycloak_user() + [
+        {"try": keycloak_middleware.load_roles_and_permissions_from_static_file, "fail": [
+            {"try": http_responses.server_error_response, "fail": []},
+        ]},
+        {"try": keycloak_middleware.query_database_for_users_permissions, "fail": [
+            {"try": http_responses.server_error_response, "fail": []},
+        ]},
+        {"try": keycloak_middleware.check_user_is_authorized, "fail": [
+            {"try": http_responses.unauthorized, "fail": []},
+        ]},
+        {"try": role_middleware.query_all_users, "fail": [
             {"try": http_responses.server_error_response, "fail": []},
         ]},
     ]

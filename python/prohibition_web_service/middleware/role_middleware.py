@@ -12,7 +12,7 @@ def query_current_users_roles(**kwargs) -> tuple:
             .filter(UserRole.username == kwargs['username']) \
             .filter(UserRole.approved_dt != None) \
             .all()
-        kwargs['response'] = make_response(jsonify(UserRole.collection_to_simple_list(my_roles)))
+        kwargs['response'] = make_response(jsonify(UserRole.collection_to_dict(my_roles)))
     except Exception as e:
         logging.warning(str(e))
         return False, kwargs
@@ -45,8 +45,9 @@ def officer_has_not_applied_previously(**kwargs) -> tuple:
 
 
 def create_a_role(**kwargs) -> tuple:
+    tz = pytz.timezone('America/Vancouver')
     try:
-        role_user = UserRole("officer", kwargs.get('username'))
+        role_user = UserRole("officer", kwargs.get('username'), datetime.now(tz))
         db.session.add(role_user)
         db.session.commit()
         kwargs['response'] = make_response(jsonify(UserRole.serialize(role_user)), 201)
@@ -99,6 +100,16 @@ def admin_create_role(**kwargs) -> tuple:
         db.session.add(role_user)
         db.session.commit()
         kwargs['response'] = make_response(jsonify(UserRole.serialize(role_user)), 201)
+    except Exception as e:
+        logging.warning(str(e))
+        return False, kwargs
+    return True, kwargs
+
+
+def query_all_users(**kwargs) -> tuple:
+    try:
+        user_role = db.session.query(UserRole).limit(Config.MAX_RECORDS_RETURNED).all()
+        kwargs['response'] = make_response(jsonify(UserRole.collection_to_dict(user_role)))
     except Exception as e:
         logging.warning(str(e))
         return False, kwargs

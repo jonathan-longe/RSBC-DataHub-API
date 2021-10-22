@@ -5,7 +5,7 @@ from python.prohibition_web_service.models import db, Form, UserRole
 from python.prohibition_web_service.config import Config
 from python.prohibition_web_service.blueprints import impound_lot_operators, jurisdictions, forms, admin_forms
 from python.prohibition_web_service.blueprints import provinces, countries, cities, colors, vehicles, icbc, keycloak
-from python.prohibition_web_service.blueprints import vehicle_styles, user_roles, admin_user_roles
+from python.prohibition_web_service.blueprints import vehicle_styles, user_roles, admin_user_roles, admin_users
 
 
 application = FlaskAPI(__name__)
@@ -26,6 +26,7 @@ application.register_blueprint(keycloak.bp)
 application.register_blueprint(vehicle_styles.bp)
 application.register_blueprint(user_roles.bp)
 application.register_blueprint(admin_user_roles.bp)
+application.register_blueprint(admin_users.bp)
 
 
 db.init_app(application)

@@ -80,7 +80,7 @@ def test_user_with_authorization_can_view_see_their_own_user_roles(as_guest, mon
                         headers=_get_keycloak_auth_header(_get_keycloak_access_token()))
     logging.debug(json.dumps(resp.json))
     assert len(resp.json) == 1
-    assert resp.json[0] == 'officer'
+    assert resp.json[0]['role_name'] == 'officer'
     assert resp.status_code == 200
 
 

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <user-not-permitted-banner></user-not-permitted-banner>
+    <user-not-permitted-banner v-if="isUserWithoutRole"></user-not-permitted-banner>
     <recent-prohibitions v-if="isRecentProhibitions"></recent-prohibitions>
     <issue-prohibitions></issue-prohibitions>
     <prohibition-search></prohibition-search>
@@ -27,7 +27,7 @@ export default {
      IssueProhibitions
   },
   computed: {
-    ...mapGetters(['isRecentProhibitions', 'getFormData', 'getCurrentlyEditedFormObject']),
+    ...mapGetters(['isRecentProhibitions', 'getFormData', 'getCurrentlyEditedFormObject', 'isUserWithoutRole']),
   },
 }
 </script>

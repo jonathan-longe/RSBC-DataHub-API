@@ -298,7 +298,47 @@ export const getters = {
         let filteredObject = state.jurisdictions.filter( j => j['objectDsc'] === root[attribute]);
         console.log('filteredObject', filteredObject)
         return filteredObject[0]['objectCd']
-    }
+    },
+
+    isUserWithoutRole: state => {
+        if (Array.isArray(state.user_roles)) {
+            for (const role of state.user_roles) {
+                if ('approved_dt' in role) {
+                    if (role.approved_dt) {
+                        return false
+                    }
+                }
+            }
+        }
+        return true
+    },
+
+    isUserAnAdmin: state => {
+        if (Array.isArray(state.user_roles)) {
+            for (const role of state.user_roles) {
+                if ('role_name' in role) {
+                    if (role.role_name === 'administrator') {
+                        return true
+                    }
+                }
+            }
+        }
+        return false
+    },
+
+    getAllUsers: state => {
+        return state.users
+    },
+
+
+    hasUserApplied: state => {
+        if (Array.isArray(state.user_roles)) {
+            if (state.user_roles[0].approved_dt === null) {
+                return true
+            }
+        }
+        return false
+    },
 
 }
 

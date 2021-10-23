@@ -41,6 +41,7 @@ Vue.use(VueKeyCloak, {
         await store.dispatch("getAllFormsFromDB");
 
         await store.dispatch("getMoreFormsFromApiIfNecessary")
+        await store.dispatch("fetchStaticLookupTables", "user_roles")
 
         await store.dispatch("fetchStaticLookupTables", "impound_lot_operators")
         await store.dispatch("fetchStaticLookupTables", "countries")

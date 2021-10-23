@@ -90,7 +90,9 @@ export const store = new Vuex.Store ({
     pickup_locations: [],
     ROADSAFETY_EMAIL: '[to_be_determined@gov.bc.ca]',
     icbc_vehicle_lookup: [],
-    keycloak: {}
+    keycloak: {},
+    user_roles: {},
+    users: {}
   },
 
   getters: getters,

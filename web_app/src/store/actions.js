@@ -178,7 +178,8 @@ export const actions = {
     },
 
     async fetchStaticLookupTables(context, type) {
-        const url = constants.API_ROOT_URL + "/api/v1/" + type
+        const admin = type === 'users' ? 'admin/' : ''
+        const url = constants.API_ROOT_URL + "/api/v1/" + admin + type
 
         caches.match(url).then( response => {
             if (!response) throw Error("No cached data");
@@ -190,7 +191,7 @@ export const actions = {
             return await fetch(url, {
                 "method": 'GET',
                 "headers": context.getters.apiHeader
-        }).then( response => {
+            }).then( response => {
                 return response.json()
             })
             .then( data => {
@@ -220,7 +221,6 @@ export const actions = {
                     context.commit("pushFormToStore", form)
                 });
             })
-
     },
 
     async saveCurrentFormToDB(context, form_object) {
@@ -423,16 +423,42 @@ export const actions = {
 
     async applyToUnlockApplication(context) {
         console.log("inside actions.js applyToUnlockApplication(): ")
-        const url = constants.API_ROOT_URL + "/api/v1/roles"
-        let payload = { "username": context.getters.getKeycloakUsername }
+        const url = constants.API_ROOT_URL + "/api/v1/user_roles"
         return await new Promise((resolve, reject) => {
             fetch(url, {
             "method": 'POST',
             "headers": context.getters.apiHeader,
-            "body": JSON.stringify(payload),
                 })
                     .then(response => {
-                        resolve(response.json())
+                        return response.json()
+                    })
+                    .then( (data) => {
+                        console.log("applyToUnlockApplication()", data)
+                        resolve(context.commit("pushInitialUserRole", data))
+                    })
+                    .catch((error) => {
+                        console.log("error", error)
+                        if (error) {
+                            reject("message" in error ? {"description": error.message }: {"description": "No valid response"})
+                        }
+                        reject({"description": "Server did not respond"})
+                        });
+                })
+    },
+
+    async adminApproveUserRole(context, username) {
+        console.log("inside actions.js adminApproveUserRole(): ")
+        const url = constants.API_ROOT_URL + "/api/v1/admin/users/" + username + "/roles/officer"
+        return await new Promise((resolve, reject) => {
+            fetch(url, {
+            "method": 'PATCH',
+            "headers": context.getters.apiHeader,
+                })
+                    .then(response => {
+                        return response.json()
+                    })
+                    .then( data => {
+                        resolve(context.commit("updateUsers", data))
                     })
                     .catch((error) => {
                         console.log("error", error)

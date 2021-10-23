@@ -3,8 +3,8 @@
       <div class="card-body text-dark">
         <span class="font-weight-bold">Welcome!</span>
         it looks like you haven't used this app before.<br />
-        <span class="small">Until you're authorized, some features of this app are disabled.
-          <span @click="showApplication = ! showApplication" class="text-secondary">
+        <span class="small">Until you're authorized, this app is disabled.
+          <span v-if="! hasUserApplied" @click="showApplication = ! showApplication" class="text-secondary">
             {{ this.showApplicationLabel }}
           </span>
         </span>
@@ -17,12 +17,15 @@
                    id="keycloak_username"
                    :value=getKeycloakUsername
                    :disabled=true>
-              <button @click="dispatchUnlock" class="btn btn-secondary">
+              <button @click="dispatchUnlock" class="btn btn-secondary btn-sm">
                 Apply
-                <b-spinner v-if="showSpinner"></b-spinner>
+                <b-spinner v-if="showSpinner" small></b-spinner>
               </button>
             </div>
           </div>
+        </div>
+        <div v-if="hasUserApplied" class="text-muted small">
+          Waiting for the administrator to unlock
         </div>
     </div>
   </div>
@@ -55,12 +58,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getKeycloakUsername']),
+    ...mapGetters(['getKeycloakUsername', 'hasUserApplied']),
     showApplicationLabel() {
       if (this.showApplication) {
         return 'Hide'
       } else {
-        return 'Unlock this app'
+        return 'Unlock'
       }
     }
   }

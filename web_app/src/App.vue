@@ -2,10 +2,18 @@
   <div id="app" class="card border-0 ml-4 mr-4">
     <div id="roadsafety-header" class="card-header">
       <div class="d-flex justify-content-between">
-        <img width="300px" src="/assets/BCID_RoadSafetyBC_logo_transparent.png" >
+        <a href="/"><img width="300px" src="/assets/BCID_RoadSafetyBC_logo_transparent.png" ></a>
         <div class="d-flex align-items-end flex-column">
-          <div class="font-weight-bold text-warning">DRAFT <span class="text-light small">{{ getAppVersion }}</span></div>
-          <div class="mt-auto small">User: {{ getKeycloakUsername }}</div>
+          <div class="font-weight-bold text-warning">
+            DRAFT <span class="text-light small">{{ getAppVersion }}</span>
+          </div>
+
+          <div class="mt-auto small">
+            <router-link to="/admin" v-if="isUserAnAdmin" class="text-white font-weight-bold">
+              <span>Admin</span>
+            </router-link>
+            <span v-if="! isUserAnAdmin">User</span> {{ getKeycloakUsername }}
+          </div>
         </div>
       </div>
     </div>
@@ -23,7 +31,7 @@ import {mapGetters} from 'vuex';
 export default {
   name: 'App',
   computed: {
-    ...mapGetters(['getAppVersion', "getKeycloakUsername"]),
+    ...mapGetters(['getAppVersion', "getKeycloakUsername", "isUserAnAdmin"]),
   },
 
 }

@@ -15,7 +15,6 @@ parameters:
 - name: ICBC_API_USERNAME
 - name: ICBC_API_PASSWORD
 - name: ADMIN_USERNAME
-- name: ADMIN_PASSWORD
 - name: KEYCLOAK_REALM
 - name: KEYCLOAK_AUTH_URL
 - name: KEYCLOAK_CLIENT_ID
@@ -118,11 +117,6 @@ objects:
                 secretKeyRef:
                   name: ${NAME}${SUFFIX}
                   key: prohibition-admin-username
-            - name: ADMIN_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: ${NAME}${SUFFIX}
-                  key: prohibition-admin-password
             - name: DATABASE_URI
               valueFrom:
                 secretKeyRef:

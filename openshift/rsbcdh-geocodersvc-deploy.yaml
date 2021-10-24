@@ -182,17 +182,3 @@ objects:
       name: ${NAME}-${COMPONENT}${SUFFIX}
       weight: 100
     wildcardPolicy: None
-- apiVersion: v1
-  kind: PersistentVolumeClaim
-  metadata:
-    name: "${NAME}-${COMPONENT}${SUFFIX}"
-  labels:
-    name: "${NAME}-${COMPONENT}${SUFFIX}"
-    template: "${NAME}-persistent-template"
-  spec:
-    accessModes:
-    - ReadWriteOnce
-    resources:
-      requests:
-        storage: "20Mi"
-

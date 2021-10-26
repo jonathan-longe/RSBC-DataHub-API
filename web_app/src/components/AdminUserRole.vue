@@ -8,9 +8,11 @@
             <b-icon-check variant="success"></b-icon-check> Approved
           </h2>
           <button class="btn-secondary btn btn-sm" v-if="! isApproved" @click="triggerApproveUserRole">
-            Approve <b-spinner v-if="showSpinner" small></b-spinner>
+            Approve <b-spinner v-if="approveSpinner" small></b-spinner>
           </button>
-
+          <button class="btn-secondary btn btn-sm" v-if="isApproved">
+            Delete <b-spinner v-if="deleteSpinner" small></b-spinner>
+          </button>
         </td>
     </tr>
 </template>
@@ -23,7 +25,8 @@ export default {
   name: "AdminUserRole",
   data() {
     return {
-      showSpinner: false
+      approveSpinner: false,
+      deleteSpinner: false
     }
   },
   props: {
@@ -43,13 +46,13 @@ export default {
   methods: {
     ...mapActions(['fetchStaticLookupTables', 'adminApproveUserRole']),
     triggerApproveUserRole() {
-      this.showSpinner = true;
+      this.approveSpinner = true;
       this.adminApproveUserRole(this.user.username)
         .then( () => {
-          this.showSpinner = false;
+          this.approveSpinner = false;
         })
         .catch( () => {
-          this.showSpinner = false;
+          this.approveSpinner = false;
         })
 
     }

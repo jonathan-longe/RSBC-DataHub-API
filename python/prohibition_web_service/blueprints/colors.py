@@ -1,7 +1,7 @@
 from python.prohibition_web_service.config import Config
 from flask import request, make_response, Blueprint
 from flask_cors import CORS
-from python.prohibition_web_service.blueprints.common import basic_auth_required
+
 import logging.config
 import python.common.helper as helper
 from flask import jsonify
@@ -24,7 +24,6 @@ def index():
 
 
 @bp.route('/colors/<string:color_id>', methods=['GET'])
-@basic_auth_required
 def get(color_id):
     """
     Get a specific color
@@ -34,7 +33,6 @@ def get(color_id):
 
 
 @bp.route('/colors', methods=['POST'])
-@basic_auth_required
 def create():
     """
     Save a new color

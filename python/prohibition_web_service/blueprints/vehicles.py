@@ -1,7 +1,7 @@
 from python.prohibition_web_service.config import Config
 from flask import request, make_response, Blueprint
 from flask_cors import CORS
-from python.prohibition_web_service.blueprints.common import basic_auth_required
+
 import logging.config
 import python.common.helper as helper
 
@@ -26,7 +26,6 @@ def index():
 
 
 @bp.route('/vehicles/<string:vehicle_id>', methods=['GET'])
-@basic_auth_required
 def get(vehicle_id):
     """
     Get a specific vehicle
@@ -36,7 +35,6 @@ def get(vehicle_id):
 
 
 @bp.route('/vehicles', methods=['POST'])
-@basic_auth_required
 def create():
     """
     Save a new vehicle

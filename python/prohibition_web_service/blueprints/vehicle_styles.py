@@ -1,7 +1,7 @@
 from python.prohibition_web_service.config import Config
 from flask import request, make_response, Blueprint
 from flask_cors import CORS
-from python.prohibition_web_service.blueprints.common import basic_auth_required
+
 import logging.config
 import python.common.helper as helper
 
@@ -24,7 +24,6 @@ def index():
 
 
 @bp.route('/vehicle_styles/<string:city_id>', methods=['GET'])
-@basic_auth_required
 def get(city_id):
     """
     Get a specific city
@@ -34,7 +33,6 @@ def get(city_id):
 
 
 @bp.route('/vehicle_styles', methods=['POST'])
-@basic_auth_required
 def create():
     """
     Save a new city
@@ -44,7 +42,6 @@ def create():
 
 
 @bp.route('/vehicle_styles/<string:city_id>', methods=['PATCH'])
-@basic_auth_required
 def update(city_id):
     """
     Update a city

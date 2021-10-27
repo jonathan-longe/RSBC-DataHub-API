@@ -447,13 +447,15 @@ def transform_receipt_date_from_pay_bc_format(**args) -> tuple:
 
 
 def save_payment_to_vips(**args) -> tuple:
+    logging.debug("inside save_payment_to_vips()")
     payload = args.get('payload')
     config = args.get('config')
     # PayBC has the ability to pay multiple invoices in a single transaction
     # however we can assume there is only one transaction because this API only
     # returns a single invoice per prohibition number.
+    application_id = args.get('application_id')
     prohibition_number = args.get('prohibition_number')
-    is_successful, data = vips.payment_patch(prohibition_number,
+    is_successful, data = vips.payment_patch(application_id,
                                              config,
                                              prohibition_number,
                                              card_type=payload['cardtype'],

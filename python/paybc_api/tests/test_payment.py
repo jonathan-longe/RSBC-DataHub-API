@@ -425,7 +425,7 @@ def test_receipt_endpoint_returns_success_creates_verify_schedule_event(prohibit
 
     responses.add(responses.GET,
                   '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
-                  json=vips_mock.status_applied_and_paid_not_scheduled(prohibition_types), status=200)
+                  json=vips_mock.status_applied_not_paid(prohibition_types), status=200)
 
     responses.add(responses.GET,
                   '{}/{}/application/{}'.format(
@@ -469,7 +469,7 @@ def test_receipt_endpoint_returns_success_and_sends_schedule_email(prohibition_t
     caplog.set_level(logging.INFO)
     responses.add(responses.GET,
                   '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
-                  json=vips_mock.status_applied_and_paid_not_scheduled(prohibition_types), status=200)
+                  json=vips_mock.status_applied_not_paid(prohibition_types), status=200)
 
     responses.add(responses.GET,
                   '{}/{}/application/{}'.format(
@@ -501,9 +501,9 @@ def test_receipt_endpoint_returns_success_and_sends_schedule_email(prohibition_t
     logging.info("receipt: {}".format(response.json))
     assert "APP" in response.json['status']  # APP == APPROVED
     assert response.status_code == 200
-    assert '"to": ["applicant_fake@gov.bc.ca"]' in responses.calls[3].request.body.decode('utf-8')
-    assert '"subject": "Select Review Date - Driving Prohibition 20-123456 Review"' in responses.calls[3].request.body.decode('utf-8')
-    assert 'Dear Developer Norris,' in responses.calls[3].request.body.decode('utf-8')
+    assert '"to": ["applicant_fake@gov.bc.ca"]' in responses.calls[4].request.body.decode('utf-8')
+    assert '"subject": "Select Review Date - Driving Prohibition 20-123456 Review"' in responses.calls[4].request.body.decode('utf-8')
+    assert 'Dear Developer Norris,' in responses.calls[4].request.body.decode('utf-8')
     assert '"email": "success", "prohibition_number": "20123456"' in caplog.text
 
 
@@ -512,7 +512,7 @@ def test_receipt_endpoint_sends_adp_select_review_date_with_order_number(token, 
 
     responses.add(responses.GET,
                   '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "20123456", "20123456"),
-                  json=vips_mock.status_applied_and_paid_not_scheduled("ADP"), status=200)
+                  json=vips_mock.status_applied_not_paid("ADP"), status=200)
 
     responses.add(responses.GET,
                   '{}/{}/application/{}'.format(

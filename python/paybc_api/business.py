@@ -1,6 +1,7 @@
 import python.common.middleware as middleware
 import python.common.rsi_email as rsi_email
 import python.common.actions as actions
+import python.paybc_api.website.api_responses as api_responses
 
 
 def search_for_invoice() -> list:
@@ -21,6 +22,7 @@ def search_for_invoice() -> list:
         {"try": middleware.application_has_been_saved_to_vips, "fail": []},
         {"try": middleware.application_not_paid, "fail": []},
         {"try": middleware.is_applicant_within_window_to_pay, "fail": []},
+        {"try": api_responses.search_prohibition_success, "fail": []}
     ]
 
 
@@ -44,6 +46,7 @@ def generate_invoice() -> list:
         {"try": middleware.get_application_details, "fail": []},
         {"try": middleware.valid_application_received_from_vips, "fail": []},
         {"try": middleware.get_invoice_details, "fail": []},
+        {"try": api_responses.get_prohibition_success, "fail": []}
     ]
 
 
@@ -69,7 +72,8 @@ def save_payment() -> list:
             {"try": rsi_email.applicant_to_schedule_review, "fail": []},
             {"try": middleware.create_verify_schedule_event, "fail": []},
             {"try": actions.add_hold_to_verify_schedule, "fail": []},
-            {"try": actions.add_to_hold_queue, "fail": []}
+            {"try": actions.add_to_hold_queue, "fail": []},
+            {"try": api_responses.payment_success, "fail": []}
         ]},
         {"try": middleware.get_application_details, "fail": []},
         {"try": middleware.valid_application_received_from_vips, "fail": []},
@@ -80,5 +84,6 @@ def save_payment() -> list:
         {"try": rsi_email.applicant_to_schedule_review, "fail": []},
         {"try": middleware.create_verify_schedule_event, "fail": []},
         {"try": actions.add_hold_to_verify_schedule, "fail": []},
-        {"try": actions.add_to_hold_queue, "fail": []}
+        {"try": actions.add_to_hold_queue, "fail": []},
+        {"try": api_responses.payment_success, "fail": []}
     ]

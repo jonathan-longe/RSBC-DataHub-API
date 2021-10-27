@@ -1,13 +1,11 @@
 from flask import Blueprint, request, jsonify, make_response
 from python.paybc_api.website.oauth2 import authorization, require_oauth
-import python.paybc_api.website.api_responses as api_responses
 import python.common.helper as helper
 import python.paybc_api.business as rules
 from python.paybc_api.website.config import Config
 from python.common.rabbitmq import RabbitMQ
 import logging
 import logging.config
-import json
 
 logging.config.dictConfig(Config.LOGGING)
 logging.warning('*** Pay BC API initialized ***')
@@ -33,18 +31,11 @@ def search():
         driver_last_name = request.args.get('check_value')
         args = helper.middle_logic(
             rules.search_for_invoice(),
+            request=request,
             config=Config,
             prohibition_number=prohibition_number,
             driver_last_name=driver_last_name)
-        if 'error_string' not in args:
-            host_url = request.host_url.replace('http', 'https')
-            return jsonify({
-                "items": [{"selected_invoice": {
-                       "$ref": host_url + 'api_v2/invoice/' + args.get('prohibition_number')}
-                    }
-                ]
-            })
-        return jsonify({"error": args.get('error_string')})
+        return args.get('response', jsonify({"error": args.get('error_string')}))
 
 
 @bp.route('/api_v2/invoice/<prohibition_number>', methods=['GET'])
@@ -58,27 +49,7 @@ def show(prohibition_number):
         args = helper.middle_logic(rules.generate_invoice(),
                                    prohibition_number=prohibition_number,
                                    config=Config)
-        if 'error_string' not in args:
-            presentation_type = args.get('presentation_type')
-            amount_due = args.get('amount_due')
-            service_date = args.get('service_date')
-            return jsonify(dict({
-                "invoice_number": args.get('prohibition_number'),
-                "pbc_ref_number": "10008",
-                "party_number": 0,
-                "party_name": "n/a",
-                "account_number": "n/a",
-                "site_number": "0",
-                "cust_trx_type": "Review Notice of Driving Prohibition",
-                "term_due_date": service_date.isoformat(),
-                "total": amount_due,
-                "amount_due": amount_due,
-                "attribute1": args.get('notice_type_verbose'),
-                "attribute2": service_date.strftime("%b %-d, %Y"),
-                "attribute3": presentation_type,
-                "amount": amount_due
-            }))
-        return jsonify({"error": args.get('error_string')})
+        return args.get('response', jsonify({"error": args.get('error_string')}))
 
 
 @bp.route('/api_v2/receipt', methods=['POST'])
@@ -97,8 +68,4 @@ def receipt():
                                    payload=payload,
                                    config=Config,
                                    writer=RabbitMQ(Config))
-
-        if not args.get('payment_success'):
-            return api_responses.payment_incomplete(**args)
-
-        return api_responses.payment_success(**args)
+        return args.get('response', make_response({'status': 'INCMP'}, 400))

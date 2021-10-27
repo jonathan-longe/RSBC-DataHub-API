@@ -82,9 +82,9 @@ def payment_get(application_id: str, config, correlation_id='abcd'):
     return False, dict({})
 
 
-def payment_patch(prohibition_id: str, config, correlation_id='abcd', **args):
+def payment_patch(application_id: str, config, prohibition_id, **args):
     logging.info('inside payment_patch()')
-    endpoint = build_endpoint(config.VIPS_API_ROOT_URL, prohibition_id, 'payment', correlation_id)
+    endpoint = build_endpoint(config.VIPS_API_ROOT_URL, application_id, 'payment', prohibition_id)
     vips_date_string = vips_datetime(args.get('receipt_date'))
     payload = {
             "transactionInfo": {
@@ -94,7 +94,7 @@ def payment_patch(prohibition_id: str, config, correlation_id='abcd', **args):
                 "receiptNumberTxt": args.get('receipt_number'),
             }
         }
-    return patch(endpoint, config.VIPS_API_USERNAME, config.VIPS_API_PASSWORD, payload, correlation_id)
+    return patch(endpoint, config.VIPS_API_USERNAME, config.VIPS_API_PASSWORD, payload, prohibition_id)
 
 
 def disclosure_patch(document_id: str, **args):

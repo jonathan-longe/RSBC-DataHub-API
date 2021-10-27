@@ -177,6 +177,42 @@ export const actions = {
                 })
     },
 
+    async fetchDynamicLookupTables(context, payload) {
+        const url = constants.API_ROOT_URL + "/api/v1/" + payload.url
+        let networkDataRetrieved = false
+
+        // trigger request for fresh data from API
+        var networkUpdate = await fetch(url, {
+            "method": 'GET',
+            "headers": context.getters.apiHeader
+        })
+            .then( response => {
+                return response.json()
+            })
+            .then( data => {
+                console.log("networkDataRetrieved: okay")
+                networkDataRetrieved = true
+                context.commit("populateStaticLookupTables", { "type": payload.type, "data": data })
+            })
+            .catch(function (error) {
+                console.log('network request failed', error)
+            });
+
+        caches.match(url).then( response => {
+            if (!response) throw Error("No cached data");
+            return response.json();
+        }).then ( data => {
+            // don't overwrite newer network data
+            if(!networkDataRetrieved) {
+                context.commit("populateStaticLookupTables", { "type": payload.type, "data": data })
+                return data;
+            }
+        }).catch( function() {
+            console.log("we didn't get cached data, the API is our last hope")
+            return networkUpdate;
+        })
+    },
+
     async fetchStaticLookupTables(context, type) {
         const admin = type === 'users' ? 'admin/' : ''
         const url = constants.API_ROOT_URL + "/api/v1/" + admin + type

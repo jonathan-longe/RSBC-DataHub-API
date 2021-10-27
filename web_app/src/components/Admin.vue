@@ -24,10 +24,10 @@ export default {
     ...mapGetters(['isUserAnAdmin', 'getAllUsers']),
   },
   methods: {
-    ...mapActions(['fetchStaticLookupTables'])
+    ...mapActions(['fetchDynamicLookupTables'])
   },
   created() {
-    this.fetchStaticLookupTables('users')
+    this.fetchDynamicLookupTables({url:'admin/users', type: "users"})
   },
   components: {
     AdminUserRole

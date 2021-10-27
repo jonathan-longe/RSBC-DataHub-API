@@ -44,7 +44,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['fetchStaticLookupTables', 'adminApproveUserRole']),
+    ...mapActions(['adminApproveUserRole']),
     triggerApproveUserRole() {
       this.approveSpinner = true;
       this.adminApproveUserRole(this.user.username)
@@ -56,9 +56,6 @@ export default {
         })
 
     }
-  },
-  created() {
-    this.fetchStaticLookupTables('users')
   }
 }
 </script>

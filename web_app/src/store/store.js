@@ -79,6 +79,7 @@ export const store = new Vuex.Store ({
         }
       }
     },
+    agencies: [],
     impound_lot_operators: [],
     provinces: [],
     jurisdictions: [],

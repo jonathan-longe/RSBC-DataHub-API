@@ -31,7 +31,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["getAttributeValue", "getArrayOfBCCityNames"])
+    ...mapGetters(["getAttributeValue", "getArrayOfBCCityNames", "getArrayOfAgencies"])
   },
   components: {
     CheckField,

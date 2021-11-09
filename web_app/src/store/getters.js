@@ -88,6 +88,10 @@ export const getters = {
         return state.cities;
     },
 
+    getArrayOfAgencies: state => {
+        return state.agencies;
+    },
+
     getArrayOfCommonCarColors: state => {
         return state.colors;
     },

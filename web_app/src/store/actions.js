@@ -193,13 +193,17 @@ export const actions = {
                 console.log("networkDataRetrieved: okay")
                 networkDataRetrieved = true
                 context.commit("populateStaticLookupTables", { "type": payload.type, "data": data })
+                return data
             })
             .catch(function (error) {
                 console.log('network request failed', error)
             });
 
         caches.match(url).then( response => {
-            if (!response) throw Error("No cached data");
+            if (!response) {
+                // TODO -
+                 throw Error("No cached data");
+            }
             return response.json();
         }).then ( data => {
             // don't overwrite newer network data
@@ -218,7 +222,10 @@ export const actions = {
         const url = constants.API_ROOT_URL + "/api/v1/" + admin + type
 
         caches.match(url).then( response => {
-            if (!response) throw Error("No cached data");
+            if (!response) {
+                // TODO - refactor promise reject instead
+                throw Error("No cached data");
+            }
             return response.json();
         }).then ( data => {
             context.commit("populateStaticLookupTables", { "type": type, "data": data })
@@ -234,6 +241,7 @@ export const actions = {
                 context.commit("populateStaticLookupTables", { "type": type, "data": data })
             })
             .catch(function (error) {
+                // TODO - refactor promise reject instead
                 console.log('network request failed', error)
             });
         })

@@ -19,7 +19,7 @@ def test_get_agencies(as_guest):
                         follow_redirects=True,
                         content_type="application/json")
     assert resp.status_code == 200
-    assert {"id": "2101", "agency": "Kelowna RCMP"} in resp.json
+    assert "2101" in resp.json
 
 
 def test_get_impound_lot_operators(as_guest):

@@ -16,11 +16,12 @@ CORS(bp, resources={"/api/v1/agencies": {"origins": Config.ACCESS_CONTROL_ALLOW_
 @bp.route('/agencies', methods=['GET'])
 def index():
     """
-    List all car colors
+    List all agency ids
     """
     if request.method == 'GET':
-        data = helper.load_json_into_dict('python/prohibition_web_service/data/agencies.json')
-        return make_response(jsonify(data), 200)
+        agencies = helper.load_json_into_dict('python/prohibition_web_service/data/agencies.json')
+        ids = [o['id'] for o in agencies]
+        return make_response(jsonify(ids), 200)
 
 
 @bp.route('/agencies/<string:agency_id>', methods=['GET'])

@@ -7,7 +7,7 @@ import python.common.helper as helper
 from flask import jsonify
 
 logging.config.dictConfig(Config.LOGGING)
-logging.info('*** colors blueprint loaded ***')
+logging.info('*** agency blueprint loaded ***')
 
 bp = Blueprint('agencies', __name__, url_prefix='/api/v1')
 CORS(bp, resources={"/api/v1/agencies": {"origins": Config.ACCESS_CONTROL_ALLOW_ORIGIN}})

@@ -4,7 +4,7 @@ import python.common.rsi_email as rsi_email
 import logging.config
 
 logging.config.dictConfig(Config.LOGGING)
-logging.info('*** admin forms blueprint loaded ***')
+logging.info('*** admin/forms blueprint loaded ***')
 
 bp = Blueprint('admin_forms', __name__)
 

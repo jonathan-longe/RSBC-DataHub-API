@@ -7,7 +7,7 @@ import python.prohibition_web_service.business.roles_logic as rules
 
 
 logging.config.dictConfig(Config.LOGGING)
-logging.info('*** admin users_roles blueprint loaded ***')
+logging.info('*** admin/users_roles blueprint loaded ***')
 
 bp = Blueprint('admin_users_roles', __name__, url_prefix='/api/v1/admin')
 CORS(bp, resources={"/api/v1/admin/users/*": {"origins": Config.ACCESS_CONTROL_ALLOW_ORIGIN}})

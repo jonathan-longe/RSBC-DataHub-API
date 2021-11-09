@@ -78,6 +78,7 @@ def test_user_without_keycloak_login_cannot_get_driver(as_guest, monkeypatch):
                         headers=_get_keycloak_auth_header("invalid-token"))
     assert resp.status_code == 401
 
+
 @responses.activate
 def test_authorized_user_gets_driver_not_found(as_guest, monkeypatch, roles):
     monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
@@ -124,7 +125,7 @@ def test_authorized_user_gets_vehicle(as_guest, monkeypatch, roles):
     monkeypatch.setattr(middleware, "decode_keycloak_access_token", _get_authorized_user)
     responses.add(responses.GET,
                   '{}/vehicles?plateNumber={}'.format(Config.ICBC_API_ROOT, "LD626J"),
-                  json=_sample_vehicle_response(),
+                  json=sample_vehicle_response(),
                   status=200)
     resp = as_guest.get("/api/v1/icbc/vehicles/LD626J",
                         follow_redirects=True,
@@ -142,7 +143,7 @@ def test_request_for_licence_plate_using_lowercase_automatically_converted_to_up
     monkeypatch.setattr(middleware, "decode_keycloak_access_token", _get_authorized_user)
     responses.add(responses.GET,
                   '{}/vehicles?plateNumber={}'.format(Config.ICBC_API_ROOT, "LD626J"),
-                  json=_sample_vehicle_response(),
+                  json=sample_vehicle_response(),
                   status=200)
     resp = as_guest.get("/api/v1/icbc/vehicles/ld626j",
                         follow_redirects=True,
@@ -171,6 +172,20 @@ def test_user_without_keycloak_login_cannot_get_vehicle(as_guest, monkeypatch):
                         content_type="application/json",
                         headers=_get_keycloak_auth_header("invalid-token"))
     assert resp.status_code == 401
+
+
+def test_authorized_user_gets_fake_vehicle_if_using_icbc_licence_plate(as_guest, monkeypatch, roles):
+    # TODO - remove before flight - this functionality shouldn't go to production
+    monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
+    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _get_authorized_user)
+    # responds without calling ICBC - useful for demos when ICBC doesn't respond
+    resp = as_guest.get("/api/v1/icbc/vehicles/ICBC",
+                        follow_redirects=True,
+                        content_type="application/json",
+                        headers=_get_keycloak_auth_header(_get_keycloak_access_token()))
+    assert resp.status_code == 200
+    assert 'plateNumber' in resp.json[0]
+    assert resp.json[0]['plateNumber'] == "LD626J"
 
 
 def _sample_driver_response() -> dict:
@@ -217,7 +232,7 @@ def _sample_driver_response() -> dict:
     }
 
 
-def _sample_vehicle_response() -> list:
+def sample_vehicle_response() -> list:
     return [
       {
         "plateNumber": "LD626J",

@@ -39,3 +39,7 @@ def get_icbc_vehicle(**kwargs) -> tuple:
     return True, kwargs
 
 
+def is_request_not_seeking_test_plate(**kwargs) -> tuple:
+    # TODO - remove before flight
+    plate_number = kwargs.get('plate_number')
+    return plate_number != 'ICBC', kwargs

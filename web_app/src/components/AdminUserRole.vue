@@ -10,10 +10,13 @@
           <button class="btn-secondary btn btn-sm" v-if="! isApproved" @click="triggerApproveUserRole">
             Approve <b-spinner v-if="approveSpinner" small></b-spinner>
           </button>
-          <button class="btn-secondary btn btn-sm" v-if="isApproved">
+
+        </td>
+      <td>
+        <button class="btn-secondary btn btn-sm" v-if="isApproved">
             Delete <b-spinner v-if="deleteSpinner" small></b-spinner>
           </button>
-        </td>
+      </td>
     </tr>
 </template>
 

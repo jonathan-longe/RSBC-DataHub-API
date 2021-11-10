@@ -8,7 +8,7 @@
             {{ this.showApplicationLabel }}
           </span>
         </span>
-        <div v-if="showApplication" class="d-flex justify-content-center mt-2">
+        <div v-if="showApplication && ! hasUserApplied" class="d-flex justify-content-center mt-2">
           <div class="form-inline">
             <div class="form-group">
               <label v-if="false" for="keycloak_username">Username</label>

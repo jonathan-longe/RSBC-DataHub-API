@@ -179,10 +179,9 @@ export const actions = {
 
     async fetchDynamicLookupTables(context, payload) {
         const url = constants.API_ROOT_URL + "/api/v1/" + payload.url
-        let networkDataRetrieved = false
 
         // trigger request for fresh data from API
-        var networkUpdate = await fetch(url, {
+        var network_response = await fetch(url, {
             "method": 'GET',
             "headers": context.getters.apiHeader
         })
@@ -190,8 +189,7 @@ export const actions = {
                 return response.json()
             })
             .then( data => {
-                console.log("networkDataRetrieved: okay")
-                networkDataRetrieved = true
+                console.log("networkDataRetrieved: ", url)
                 context.commit("populateStaticLookupTables", { "type": payload.type, "data": data })
                 return data
             })
@@ -200,51 +198,49 @@ export const actions = {
             });
 
         caches.match(url).then( response => {
-            if (!response) {
-                // TODO -
-                 throw Error("No cached data");
-            }
-            return response.json();
-        }).then ( data => {
-            // don't overwrite newer network data
-            if(!networkDataRetrieved) {
-                context.commit("populateStaticLookupTables", { "type": payload.type, "data": data })
-                return data;
-            }
-        }).catch( function() {
-            console.log("we didn't get cached data, the API is our last hope")
-            return networkUpdate;
-        })
+                return response.json();
+            })
+            .then ( data => {
+                console.log('cache match: ', url)
+                if( ! network_response) {
+                    context.commit("populateStaticLookupTables", { "type": payload.type, "data": data })
+                    return data;
+                }
+            })
+            .catch( function() {
+                console.log("we didn't get cached data, the API is our last hope", network_response)
+                context.commit("populateStaticLookupTables", { "type": payload.type, "data": network_response })
+                return network_response;
+            })
     },
 
     async fetchStaticLookupTables(context, type) {
         const admin = type === 'users' ? 'admin/' : ''
         const url = constants.API_ROOT_URL + "/api/v1/" + admin + type
 
-        caches.match(url).then( response => {
-            if (!response) {
-                // TODO - refactor promise reject instead
-                throw Error("No cached data");
-            }
-            return response.json();
-        }).then ( data => {
-            context.commit("populateStaticLookupTables", { "type": type, "data": data })
-        }).catch( async function() {
-            // we didn't get cached data, get the data from the network
-            return await fetch(url, {
-                "method": 'GET',
-                "headers": context.getters.apiHeader
-            }).then( response => {
-                return response.json()
+        caches.match(url)
+            .then( response => {
+                return response.json();
             })
-            .then( data => {
+            .then ( data => {
                 context.commit("populateStaticLookupTables", { "type": type, "data": data })
             })
-            .catch(function (error) {
-                // TODO - refactor promise reject instead
-                console.log('network request failed', error)
-            });
-        })
+            .catch( async function() {
+                // we didn't get cached data, get the data from the network
+                return await fetch(url, {
+                    "method": 'GET',
+                    "headers": context.getters.apiHeader})
+                    .then( response => {
+                        return response.json()
+                    })
+                    .then( data => {
+                        context.commit("populateStaticLookupTables", { "type": type, "data": data })
+                    })
+                    .catch(function (error) {
+                        // TODO - refactor promise reject instead
+                        console.log('network request failed', error)
+                    });
+            })
     },
 
     async deleteFormFromDB(context, form_id) {

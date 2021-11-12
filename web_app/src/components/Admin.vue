@@ -27,7 +27,6 @@ export default {
     ...mapActions(['fetchDynamicLookupTables', 'fetchStaticLookupTables'])
   },
   created() {
-    // this.fetchStaticLookupTables("users")
     this.fetchDynamicLookupTables({url:'admin/users', type: "users"})
   },
   components: {

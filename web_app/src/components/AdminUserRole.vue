@@ -4,16 +4,13 @@
         <td><h2 class="badge badge-secondary">{{ user.role_name }}</h2></td>
         <td class="text-muted small">{{ user.submitted_dt }}</td>
         <td>
-          <h2 class="badge badge-secondary" v-if="isApproved">
-            <b-icon-check variant="success"></b-icon-check> Approved
-          </h2>
           <button class="btn-secondary btn btn-sm" v-if="! isApproved" @click="triggerApproveUserRole">
             Approve <b-spinner v-if="approveSpinner" small></b-spinner>
           </button>
 
         </td>
       <td>
-        <button class="btn-secondary btn btn-sm" v-if="isApproved">
+        <button class="btn-secondary btn btn-sm" v-if="isApproved" @click="triggerDeleteUserRole">
             Delete <b-spinner v-if="deleteSpinner" small></b-spinner>
           </button>
       </td>
@@ -47,7 +44,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['adminApproveUserRole']),
+    ...mapActions(['adminApproveUserRole', 'adminDeleteUserRole']),
     triggerApproveUserRole() {
       this.approveSpinner = true;
       this.adminApproveUserRole(this.user.username)
@@ -57,8 +54,21 @@ export default {
         .catch( () => {
           this.approveSpinner = false;
         })
-
-    }
+    },
+    triggerDeleteUserRole() {
+      this.deleteSpinner = true;
+      const payload = {
+        username: this.user.username,
+        role_name: this.user.role_name
+      }
+      this.adminDeleteUserRole(payload)
+        .then( () => {
+          this.deleteSpinner = false;
+        })
+        .catch( () => {
+          this.deleteSpinner = false;
+        })
+    },
   }
 }
 </script>

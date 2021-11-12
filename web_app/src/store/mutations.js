@@ -151,6 +151,11 @@ export const mutations = {
         Vue.set(state.users, index, p)
     },
 
+    deleteUser(state, p) {
+        const index = state.users.findIndex( u => u.username === p.username && u.role_name === p.role_name)
+        Vue.delete(state.users, index)
+    },
+
     pushInitialUserRole(state, payload) {
         Vue.set(state, "user_roles", [payload])
     }

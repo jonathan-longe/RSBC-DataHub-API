@@ -509,4 +509,28 @@ export const actions = {
                         });
                 })
     },
+
+    async adminDeleteUserRole(context, payload) {
+        console.log("inside actions.js adminDeleteUserRole(): ", payload)
+        const url = constants.API_ROOT_URL + "/api/v1/admin/users/" + payload.username + "/roles/" + payload.role_name
+        return await new Promise((resolve, reject) => {
+            fetch(url, {
+            "method": 'DELETE',
+            "headers": context.getters.apiHeader,
+                })
+                    .then(response => {
+                        console.log(response)
+                        if (response.status === 200) {
+                            resolve(context.commit("deleteUser", payload))
+                        }
+                    })
+                    .catch(error => {
+                        console.log("error", error)
+                        if (error) {
+                            reject("message" in error ? {"description": error.message }: {"description": "No valid response"})
+                        }
+                        reject({"description": "Server did not respond"})
+                        });
+                })
+    },
 }

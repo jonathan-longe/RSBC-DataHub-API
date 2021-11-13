@@ -11,8 +11,8 @@
              placeholder="Plate"
              :value="getAttributeValue(id)"
              @input="updateFormField">
-        <div class="input-group-append" v-if="isPlateJurisdictionBC">
-          <button @click="triggerPlateLookup" class="btn-sm btn-primary">
+        <div class="input-group-append" v-if="isDisplayIcbcPlateLookup">
+          <button @click="triggerPlateLookup" class="btn-sm btn-secondary">
             ICBC Lookup
             <b-spinner v-if="display_spinner" small label="Loading..."></b-spinner>
           </button>
@@ -42,7 +42,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["getAttributeValue", "isPlateJurisdictionBC", "getCurrentlyEditedFormId"]),
+    ...mapGetters(["getAttributeValue", "isDisplayIcbcPlateLookup", "getCurrentlyEditedFormId"]),
     icbcPayload() {
       return {
         "plateNumber": this.getAttributeValue(this.id)

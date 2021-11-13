@@ -12,11 +12,14 @@
             <router-link to="/admin" v-if="isUserAnAdmin" class="text-white font-weight-bold">
               <span>Admin</span>
             </router-link>
-            <span v-if="! isUserAnAdmin">User</span> {{ getKeycloakUsername }}
+            <span v-if="! isUserAnAdmin && isUserAuthenticated">User</span> {{ getKeycloakUsername }}
           </div>
         </div>
       </div>
+
     </div>
+    <offline-banner v-if="! $store.state.isOnline"></offline-banner>
+    <not-logged-in-banner v-if="isDisplayNotLoggedInBanner"></not-logged-in-banner>
     <div class="card-body">
       <router-view></router-view>
       <div class="card-footer bg-transparent border-0 text-muted small">Version: {{ getAppVersion }}</div>
@@ -27,11 +30,15 @@
 <script>
 
 import {mapGetters} from 'vuex';
+import OfflineBanner from "@/offline-banner";
+import NotLoggedInBanner from "@/NotLoggedInBanner";
 
 export default {
   name: 'App',
+  components: {OfflineBanner, NotLoggedInBanner},
   computed: {
-    ...mapGetters(['getAppVersion', "getKeycloakUsername", "isUserAnAdmin"]),
+    ...mapGetters(['getAppVersion', "getKeycloakUsername", "isUserAnAdmin", "isUserAuthenticated",
+    "isDisplayNotLoggedInBanner"]),
   },
 
 }

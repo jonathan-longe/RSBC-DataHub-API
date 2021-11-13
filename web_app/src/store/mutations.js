@@ -158,6 +158,14 @@ export const mutations = {
 
     pushInitialUserRole(state, payload) {
         Vue.set(state, "user_roles", [payload])
+    },
+
+    networkIsOnline(state) {
+        Vue.set(state, "isOnline", true)
+    },
+
+    networkIsOffline(state) {
+        Vue.set(state, "isOnline", false)
     }
 }
 

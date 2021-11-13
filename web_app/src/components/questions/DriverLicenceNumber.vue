@@ -11,9 +11,9 @@
              placeholder="Driver's Licence Number"
              :value="getAttributeValue(id)"
              @input="updateFormField">
-        <div class="input-group-append" v-if="isLicenceJurisdictionBC">
-          <button :disabled="disabled" @click="triggerDriversLookup"
-                  class="btn-sm btn-primary text-white">Driver's Lookup
+        <div class="input-group-append">
+          <button :disabled="! isDisplayIcbcLicenceLookup" @click="triggerDriversLookup"
+                  class="btn-sm btn-secondary text-white">Driver's Lookup
             <b-spinner v-if="display_spinner" small label="Loading..."></b-spinner>
           </button>
           <button :disabled=true class="btn-sm btn-secondary text-white ml-2">Scan DL</button>
@@ -49,7 +49,7 @@ export default {
         "form_object": this.getCurrentlyEditedFormObject
       }
     },
-    ...mapGetters(['getCurrentlyEditedFormObject', "getAttributeValue", "isLicenceJurisdictionBC"]),
+    ...mapGetters(['getCurrentlyEditedFormObject', "getAttributeValue", "isDisplayIcbcLicenceLookup"]),
   },
   methods: {
     ...mapMutations(['updateFormField']),

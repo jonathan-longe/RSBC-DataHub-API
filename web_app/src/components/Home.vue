@@ -1,9 +1,13 @@
 <template>
   <div>
-    <user-not-permitted-banner v-if="isUserWithoutRole"></user-not-permitted-banner>
+    <user-not-permitted-banner v-if="isDisplayUserNotAuthorizedBanner"></user-not-permitted-banner>
+    <user-not-authenticated-has-no-unique-ids v-if="isDisplayWelcomeNotLoggedInBanner">
+
+    </user-not-authenticated-has-no-unique-ids>
+
     <recent-prohibitions v-if="isRecentProhibitions"></recent-prohibitions>
     <issue-prohibitions></issue-prohibitions>
-    <prohibition-search></prohibition-search>
+    <prohibition-search v-if="isDisplaySearchRecentProhibition"></prohibition-search>
     <feedback-welcome></feedback-welcome>
   </div>
 </template>
@@ -16,10 +20,12 @@ import ProhibitionSearch from "@/components/ProhibitionSearch";
 import RecentProhibitions from "@/components/RecentProhibitions";
 import UserNotPermittedBanner from "@/components/UserNotPermittedBanner";
 import {mapGetters} from "vuex";
+import UserNotAuthenticatedHasNoUniqueIds from "@/components/UserNotAuthenticatedHasNoUniqueIds";
 
 export default {
-  name: "Home.vue",
+  name: "Home",
   components: {
+    UserNotAuthenticatedHasNoUniqueIds,
      UserNotPermittedBanner,
      RecentProhibitions,
      ProhibitionSearch,
@@ -27,7 +33,9 @@ export default {
      IssueProhibitions
   },
   computed: {
-    ...mapGetters(['isRecentProhibitions', 'getFormData', 'getCurrentlyEditedFormObject', 'isUserWithoutRole']),
+    ...mapGetters(['isRecentProhibitions', 'getFormData',
+      'getCurrentlyEditedFormObject', 'isDisplayUserNotAuthorizedBanner',
+      'isDisplayWelcomeNotLoggedInBanner', 'isDisplaySearchRecentProhibition']),
   },
 }
 </script>

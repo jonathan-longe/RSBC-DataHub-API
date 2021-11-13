@@ -30,7 +30,9 @@ Vue.config.productionTip = false
 
 
 Vue.use(VueKeyCloak, {
-  onLoad: 'login-required',
+  init: {
+    onLoad: 'check-sso',
+  },
   config: constants.API_ROOT_URL + '/api/v1/keycloak',
   onReady: () => {
     new Vue({
@@ -38,21 +40,24 @@ Vue.use(VueKeyCloak, {
       store: store,
       async created() {
         store.commit("setKeycloak", Vue.prototype.$keycloak)
+
         await store.dispatch("getAllFormsFromDB");
 
-        await store.dispatch("getMoreFormsFromApiIfNecessary")
-        await store.dispatch("fetchStaticLookupTables", "agencies")
-        await store.dispatch("fetchDynamicLookupTables", {url: "user_roles", type: "user_roles"})
-        await store.dispatch("fetchStaticLookupTables", "impound_lot_operators")
-        await store.dispatch("fetchStaticLookupTables", "countries")
-        await store.dispatch("fetchStaticLookupTables", "jurisdictions")
-        await store.dispatch("fetchStaticLookupTables", "provinces")
-        await store.dispatch("fetchStaticLookupTables", "cities")
-        await store.dispatch("fetchStaticLookupTables", "colors")
-        await store.dispatch("fetchStaticLookupTables", "vehicles")
-        await store.dispatch("fetchStaticLookupTables", "vehicle_styles")
+        if (store.getters.isUserAuthenticated) {
+          await store.dispatch("getMoreFormsFromApiIfNecessary")
+          await store.dispatch("fetchStaticLookupTables", "agencies")
+          await store.dispatch("fetchDynamicLookupTables", {url: "user_roles", type: "user_roles"})
+          await store.dispatch("fetchStaticLookupTables", "impound_lot_operators")
+          await store.dispatch("fetchStaticLookupTables", "countries")
+          await store.dispatch("fetchStaticLookupTables", "jurisdictions")
+          await store.dispatch("fetchStaticLookupTables", "provinces")
+          await store.dispatch("fetchStaticLookupTables", "cities")
+          await store.dispatch("fetchStaticLookupTables", "colors")
+          await store.dispatch("fetchStaticLookupTables", "vehicles")
+          await store.dispatch("fetchStaticLookupTables", "vehicle_styles")
 
-        // TODO - await store.dispatch("renewFormLeasesFromApiIfNecessary")
+          // TODO - await store.dispatch("renewFormLeasesFromApiIfNecessary")
+        }
 
       },
       render: h => h(App),

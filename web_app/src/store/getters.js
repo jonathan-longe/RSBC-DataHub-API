@@ -1,6 +1,7 @@
 import moment from "moment";
 import constants from "../config/constants";
 
+
 export const getters = {
 
     getAllAvailableForms: state => {
@@ -134,10 +135,6 @@ export const getters = {
         return false
     },
 
-    isNetworkOnline: state => {
-        return state.isOnline;
-    },
-
     isFormEditable: state => form_object => {
         return state.forms[form_object.form_type][form_object.form_id].printed_timestamp == null;
     },
@@ -187,13 +184,17 @@ export const getters = {
         return state.pickup_locations.map( o => o.address + ", " + o.city);
     },
 
-    isPlateJurisdictionBC: state => {
+    isDisplayIcbcPlateLookup: (state, getters) => {
         let form_object = state.currently_editing_form_object;
         let root = state.forms[form_object.form_type][form_object.form_id].data;
-        return root['plate_province'] === "British Columbia"
+        return root['plate_province'] === "British Columbia" && getters.isUserAuthenticated && state.isOnline
     },
 
-    isLicenceJurisdictionBC: state => {
+    isDisplayIcbcLicenceLookup: (state, getters) => {
+        return getters.isLicenceJurisdictionBC && getters.isUserAuthenticated && state.isOnline;
+    },
+
+    isLicenceJurisdictionBC: (state) => {
         let form_object = state.currently_editing_form_object;
         let root = state.forms[form_object.form_type][form_object.form_id].data;
         return root['drivers_licence_jurisdiction'] === "British Columbia"
@@ -304,24 +305,28 @@ export const getters = {
         return filteredObject[0]['objectCd']
     },
 
-    isUserWithoutRole: state => {
-        if (Array.isArray(state.user_roles)) {
-            for (const role of state.user_roles) {
-                if ('approved_dt' in role) {
-                    if (role.approved_dt) {
-                        return false
-                    }
-                }
-            }
-        }
-        return true
-    },
-
     isUserAnAdmin: state => {
         if (Array.isArray(state.user_roles)) {
             for (const role of state.user_roles) {
                 if ('role_name' in role) {
                     if (role.role_name === 'administrator') {
+                        return true
+                    }
+                }
+            }
+        }
+        return false
+    },
+
+    isUserAuthenticated: state => {
+        return state.keycloak.authenticated
+    },
+
+    isUserAuthorized: state => {
+        if (Array.isArray(state.user_roles)) {
+            for (const role of state.user_roles) {
+                if ('approved_dt' in role) {
+                    if (role.approved_dt) {
                         return true
                     }
                 }
@@ -343,6 +348,31 @@ export const getters = {
         }
         return false
     },
+
+    isDisplayUserNotAuthorizedBanner: (state, getters) => {
+        return getters.isUserAuthenticated && ! getters.isUserAuthorized
+    },
+
+    isDisplayWelcomeNotLoggedInBanner: (state, getters) => {
+        if (getters.isUserAuthenticated && getters.getArrayOfCommonCarColors.length > 0) {
+            for (let form_type in getters.getFormTypeCount) {
+                if (form_type > 0) {
+                    return false
+                }
+            }
+            return false
+        }
+        return true
+    },
+
+    isDisplayNotLoggedInBanner: (state, getters) => {
+        return ! getters.isUserAuthenticated && state.isOnline && ! getters.isDisplayWelcomeNotLoggedInBanner;
+    },
+
+    isDisplaySearchRecentProhibition: (state, getters) => {
+        return getters.isUserAuthorized;
+    }
+
 
 }
 

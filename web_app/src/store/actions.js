@@ -281,7 +281,8 @@ export const actions = {
         })
     },
 
-        // the print templates use different field names from the form
+    // the print templates use different field names from the form
+    // TODO - refactor this method.  Suggest calling appropriate getters from print_layout.json
     async getPrintMappings(context, form_object) {
         return new Promise(resolve => {
             let key_value_pairs = Array();

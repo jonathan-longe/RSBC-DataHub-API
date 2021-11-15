@@ -349,20 +349,23 @@ export const getters = {
         return false
     },
 
+    isUserHasAtLeastOneFormId: (state, getters) => {
+        for (let form_type in getters.getFormTypeCount) {
+                if (form_type > 0) {
+                    return true
+                }
+            }
+        return false
+    },
+
     isDisplayUserNotAuthorizedBanner: (state, getters) => {
         return getters.isUserAuthenticated && ! getters.isUserAuthorized
     },
 
     isDisplayWelcomeNotLoggedInBanner: (state, getters) => {
-        if (getters.isUserAuthenticated && getters.getArrayOfCommonCarColors.length > 0) {
-            for (let form_type in getters.getFormTypeCount) {
-                if (form_type > 0) {
-                    return false
-                }
-            }
-            return false
-        }
-        return true
+        return ! getters.isUserAuthenticated
+            && getters.getArrayOfCommonCarColors.length === 0
+            && ! getters.isUserHasAtLeastOneFormId
     },
 
     isDisplayNotLoggedInBanner: (state, getters) => {

@@ -30,8 +30,8 @@
 <script>
 
 import {mapGetters} from 'vuex';
-import OfflineBanner from "@/offline-banner";
-import NotLoggedInBanner from "@/NotLoggedInBanner";
+import OfflineBanner from "@/components/offline-banner";
+import NotLoggedInBanner from "@/components/NotLoggedInBanner";
 
 export default {
   name: 'App',

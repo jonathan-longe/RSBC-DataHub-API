@@ -349,6 +349,10 @@ export const getters = {
         return false
     },
 
+    isAppAvailableToWorkOffline: (state, getters) => {
+        return getters.isUserHasAtLeastOneFormId && getters.getArrayOfCommonCarColors.length > 0;
+    },
+
     isUserHasAtLeastOneFormId: (state, getters) => {
         for (let form_type in getters.getFormTypeCount) {
                 if (form_type > 0) {
@@ -362,18 +366,24 @@ export const getters = {
         return getters.isUserAuthenticated && ! getters.isUserAuthorized
     },
 
-    isDisplayWelcomeNotLoggedInBanner: (state, getters) => {
-        return ! getters.isUserAuthenticated
-            && getters.getArrayOfCommonCarColors.length === 0
-            && ! getters.isUserHasAtLeastOneFormId
+    isDisplayIssueProhibitions: (state, getters) => {
+        return getters.isUserAuthorized || getters.isAppAvailableToWorkOffline;
+    },
+
+    isDisplayFeedbackBanner: (state, getters) => {
+        return getters.isUserAuthorized;
     },
 
     isDisplayNotLoggedInBanner: (state, getters) => {
-        return ! getters.isUserAuthenticated && state.isOnline && ! getters.isDisplayWelcomeNotLoggedInBanner;
+        return ! getters.isUserAuthenticated && state.isOnline && getters.isAppAvailableToWorkOffline;
     },
 
     isDisplaySearchRecentProhibition: (state, getters) => {
         return getters.isUserAuthorized;
+    },
+
+    isDisplayWelcomeLoginCard: (state, getters) => {
+        return ! getters.isAppAvailableToWorkOffline && ! getters.isUserAuthenticated;
     }
 
 

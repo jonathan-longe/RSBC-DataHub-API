@@ -47,7 +47,7 @@ export default {
   },
   mixins: [FormsCommon],
   computed: {
-    ...mapGetters(["getAttributeValue", "isPlateJurisdictionBC", "getCurrentlyEditedFormData",
+    ...mapGetters(["getAttributeValue", "getCurrentlyEditedFormData",
       "corporateOwner", "getPdfFileNameString"]),
     isProhibitionTypeDrugs() {
       return this.getAttributeValue('prohibition_type') === "Drugs 215(3)";

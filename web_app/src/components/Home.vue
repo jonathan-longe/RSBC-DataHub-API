@@ -1,14 +1,11 @@
 <template>
   <div>
     <user-not-permitted-banner v-if="isDisplayUserNotAuthorizedBanner"></user-not-permitted-banner>
-    <user-not-authenticated-has-no-unique-ids v-if="isDisplayWelcomeNotLoggedInBanner">
-
-    </user-not-authenticated-has-no-unique-ids>
-
+    <welcome-login-card v-if="isDisplayWelcomeLoginCard"></welcome-login-card>
     <recent-prohibitions v-if="isRecentProhibitions"></recent-prohibitions>
-    <issue-prohibitions></issue-prohibitions>
+    <issue-prohibitions v-if="isDisplayIssueProhibitions"></issue-prohibitions>
     <prohibition-search v-if="isDisplaySearchRecentProhibition"></prohibition-search>
-    <feedback-welcome></feedback-welcome>
+    <feedback-welcome v-if="isDisplayFeedbackBanner"></feedback-welcome>
   </div>
 </template>
 
@@ -20,12 +17,12 @@ import ProhibitionSearch from "@/components/ProhibitionSearch";
 import RecentProhibitions from "@/components/RecentProhibitions";
 import UserNotPermittedBanner from "@/components/UserNotPermittedBanner";
 import {mapGetters} from "vuex";
-import UserNotAuthenticatedHasNoUniqueIds from "@/components/UserNotAuthenticatedHasNoUniqueIds";
+import WelcomeLoginCard from "@/components/WelcomeLoginCard";
 
 export default {
   name: "Home",
   components: {
-    UserNotAuthenticatedHasNoUniqueIds,
+     WelcomeLoginCard,
      UserNotPermittedBanner,
      RecentProhibitions,
      ProhibitionSearch,
@@ -33,9 +30,16 @@ export default {
      IssueProhibitions
   },
   computed: {
-    ...mapGetters(['isRecentProhibitions', 'getFormData',
-      'getCurrentlyEditedFormObject', 'isDisplayUserNotAuthorizedBanner',
-      'isDisplayWelcomeNotLoggedInBanner', 'isDisplaySearchRecentProhibition']),
+    ...mapGetters([
+      'isRecentProhibitions',
+      'getFormData',
+      'isDisplayIssueProhibitions',
+      'getCurrentlyEditedFormObject',
+      'isDisplayUserNotAuthorizedBanner',
+      'isDisplayFeedbackBanner',
+      'isDisplaySearchRecentProhibition',
+      'isDisplayWelcomeLoginCard'
+    ]),
   },
 }
 </script>

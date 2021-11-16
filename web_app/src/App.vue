@@ -18,9 +18,9 @@
       </div>
 
     </div>
-    <offline-banner v-if="! $store.state.isOnline"></offline-banner>
     <not-logged-in-banner v-if="isDisplayNotLoggedInBanner"></not-logged-in-banner>
     <div class="card-body">
+      <offline-banner v-if="! $store.state.isOnline"></offline-banner>
       <router-view></router-view>
       <div class="card-footer bg-transparent border-0 text-muted small">Version: {{ getAppVersion }}</div>
     </div>
@@ -30,12 +30,12 @@
 <script>
 
 import {mapGetters} from 'vuex';
-import OfflineBanner from "@/components/offline-banner";
 import NotLoggedInBanner from "@/components/NotLoggedInBanner";
+import OfflineBanner from '@/components/OfflineBanner'
 
 export default {
   name: 'App',
-  components: {OfflineBanner, NotLoggedInBanner},
+  components: {NotLoggedInBanner, OfflineBanner},
   computed: {
     ...mapGetters(['getAppVersion', "getKeycloakUsername", "isUserAnAdmin", "isUserAuthenticated",
     "isDisplayNotLoggedInBanner"]),

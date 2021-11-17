@@ -534,4 +534,21 @@ export const actions = {
                         });
                 })
     },
+
+    async downloadLookupTables(context) {
+
+        await context.dispatch("getMoreFormsFromApiIfNecessary")
+        await context.dispatch("fetchStaticLookupTables", "agencies")
+        await context.dispatch("fetchDynamicLookupTables", {url: "user_roles", type: "user_roles"})
+        await context.dispatch("fetchStaticLookupTables", "impound_lot_operators")
+        await context.dispatch("fetchStaticLookupTables", "countries")
+        await context.dispatch("fetchStaticLookupTables", "jurisdictions")
+        await context.dispatch("fetchStaticLookupTables", "provinces")
+        await context.dispatch("fetchStaticLookupTables", "cities")
+        await context.dispatch("fetchStaticLookupTables", "colors")
+        await context.dispatch("fetchStaticLookupTables", "vehicles")
+        await context.dispatch("fetchStaticLookupTables", "vehicle_styles")
+
+        // TODO - await store.dispatch("renewFormLeasesFromApiIfNecessary")
+    }
 }

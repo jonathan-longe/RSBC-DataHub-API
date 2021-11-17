@@ -35,34 +35,27 @@ Vue.use(VueKeyCloak, {
   },
   config: constants.API_ROOT_URL + '/api/v1/keycloak',
   onReady: () => {
-    new Vue({
-      router,
-      store: store,
-      async created() {
-        store.commit("setKeycloak", Vue.prototype.$keycloak)
-
-        await store.dispatch("getAllFormsFromDB");
-
-        if (store.getters.isUserAuthenticated) {
-          await store.dispatch("getMoreFormsFromApiIfNecessary")
-          await store.dispatch("fetchStaticLookupTables", "agencies")
-          await store.dispatch("fetchDynamicLookupTables", {url: "user_roles", type: "user_roles"})
-          await store.dispatch("fetchStaticLookupTables", "impound_lot_operators")
-          await store.dispatch("fetchStaticLookupTables", "countries")
-          await store.dispatch("fetchStaticLookupTables", "jurisdictions")
-          await store.dispatch("fetchStaticLookupTables", "provinces")
-          await store.dispatch("fetchStaticLookupTables", "cities")
-          await store.dispatch("fetchStaticLookupTables", "colors")
-          await store.dispatch("fetchStaticLookupTables", "vehicles")
-          await store.dispatch("fetchStaticLookupTables", "vehicle_styles")
-
-          // TODO - await store.dispatch("renewFormLeasesFromApiIfNecessary")
-        }
-
-      },
-      render: h => h(App),
-    }).$mount('#app')
-
+    store.commit("setKeycloak", Vue.prototype.$keycloak)
   }
-})
+});
+
+
+new Vue({
+  router,
+  store: store,
+  async created() {
+
+    await store.dispatch("getAllFormsFromDB");
+
+    this.$store.subscribe((mutation) => {
+      if (mutation.type === 'setKeycloak') {
+        store.dispatch("downloadLookupTables")
+      }
+    });
+
+  },
+  render: h => h(App),
+}).$mount('#app')
+
+
 

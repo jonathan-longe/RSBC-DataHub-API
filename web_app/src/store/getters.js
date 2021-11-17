@@ -319,7 +319,7 @@ export const getters = {
     },
 
     isUserAuthenticated: state => {
-        return state.keycloak.authenticated
+        return state.keycloak.authenticated && state.keycloak.ready
     },
 
     isUserAuthorized: state => {
@@ -363,7 +363,7 @@ export const getters = {
     },
 
     isDisplayUserNotAuthorizedBanner: (state, getters) => {
-        return getters.isUserAuthenticated && ! getters.isUserAuthorized
+        return getters.isUserAuthenticated && ! getters.isUserAuthorized && state.keycloak.ready;
     },
 
     isDisplayIssueProhibitions: (state, getters) => {
@@ -383,7 +383,7 @@ export const getters = {
     },
 
     isDisplayWelcomeLoginCard: (state, getters) => {
-        return ! getters.isAppAvailableToWorkOffline && ! getters.isUserAuthenticated;
+        return ! getters.isAppAvailableToWorkOffline && ! getters.isUserAuthenticated && state.keycloak.ready;
     }
 
 

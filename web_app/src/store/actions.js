@@ -177,69 +177,38 @@ export const actions = {
                 })
     },
 
-    async fetchDynamicLookupTables(context, payload) {
-        const url = constants.API_ROOT_URL + "/api/v1/" + payload.url
-
-        // trigger request for fresh data from API
-        var network_response = await fetch(url, {
-            "method": 'GET',
-            "headers": context.getters.apiHeader
-        })
-            .then( response => {
-                return response.json()
-            })
-            .then( data => {
-                console.log("networkDataRetrieved: ", url)
-                context.commit("populateStaticLookupTables", { "type": payload.type, "data": data })
-                return data
-            })
-            .catch(function (error) {
-                console.log('network request failed', error)
-            });
-
-        caches.match(url).then( response => {
-                return response.json();
-            })
-            .then ( data => {
-                console.log('cache match: ', url)
-                if( ! network_response) {
-                    context.commit("populateStaticLookupTables", { "type": payload.type, "data": data })
-                    return data;
-                }
-            })
-            .catch( function() {
-                console.log("we didn't get cached data, the API is our last hope", network_response)
-                context.commit("populateStaticLookupTables", { "type": payload.type, "data": network_response })
-                return network_response;
-            })
-    },
 
     async fetchStaticLookupTables(context, type) {
+        console.log("fetchStaticLookupTables()", type)
         const admin = type === 'users' ? 'admin/' : ''
         const url = constants.API_ROOT_URL + "/api/v1/" + admin + type
 
-        caches.match(url)
-            .then( response => {
-                return response.json();
-            })
-            .then ( data => {
-                context.commit("populateStaticLookupTables", { "type": type, "data": data })
-            })
-            .catch( async function() {
-                // we didn't get cached data, get the data from the network
-                return await fetch(url, {
+        let networkDataReceived = false;
+
+        let networkUpdate = await fetch(url, {
                     "method": 'GET',
                     "headers": context.getters.apiHeader})
                     .then( response => {
                         return response.json()
                     })
                     .then( data => {
+                        networkDataReceived = true;
                         context.commit("populateStaticLookupTables", { "type": type, "data": data })
                     })
-                    .catch(function (error) {
-                        // TODO - refactor promise reject instead
-                        console.log('network request failed', error)
-                    });
+
+        caches.match(url)
+            .then( response => {
+                return response.json();
+            })
+            .then ( data => {
+                // don't overwrite newer network data
+                if(!networkDataReceived) {
+                    context.commit("populateStaticLookupTables", { "type": type, "data": data })
+                }
+            })
+            .catch( function() {
+                // we didn't get cached data, get the data from the network
+                return networkUpdate
             })
     },
 
@@ -539,7 +508,7 @@ export const actions = {
 
         await context.dispatch("getMoreFormsFromApiIfNecessary")
         await context.dispatch("fetchStaticLookupTables", "agencies")
-        await context.dispatch("fetchDynamicLookupTables", {url: "user_roles", type: "user_roles"})
+        await context.dispatch("fetchStaticLookupTables", "user_roles")
         await context.dispatch("fetchStaticLookupTables", "impound_lot_operators")
         await context.dispatch("fetchStaticLookupTables", "countries")
         await context.dispatch("fetchStaticLookupTables", "jurisdictions")

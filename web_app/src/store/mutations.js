@@ -50,24 +50,11 @@ export const mutations = {
         Vue.set(state.forms[form_object.form_type][form_object.form_id], "printed_timestamp", date)
     },
 
-    nextStep(state) {
-        let form_object = state.currently_editing_form_object
-        let current_step_number = state.forms[form_object.form_type][form_object.form_id].data.current_step;
-        Vue.set(state.forms[form_object.form_type][form_object.form_id].data, "current_step", current_step_number + 1);
-    },
-
-    previousStep(state) {
-        let form_object = state.currently_editing_form_object
-        let current_step_number = state.forms[form_object.form_type][form_object.form_id].data.current_step;
-        Vue.set(state.forms[form_object.form_type][form_object.form_id].data, "current_step", current_step_number - 1);
-    },
-
     setNewFormDefaults(state, form_object) {
         console.log("inside setNewFormDefaults()", form_object)
         let root = state.forms[form_object.form_type][form_object.form_id]
         if(! ("data" in root)) {
             Vue.set( root, "data", Object())
-            Vue.set( root.data, "current_step", 1);
             Vue.set( root.data, "submitted", false);
 
             for (let form_property in state.form_schemas.forms[form_object.form_type]) {

@@ -42,31 +42,6 @@ export const getters = {
         return root.data;
     },
 
-    getFormSteps: state => {
-        let form_object = state.currently_editing_form_object;
-        return state.forms[form_object.form_type][form_object.form_id].steps;
-    },
-
-    getFormCurrentStep: state => {
-        let form_object = state.currently_editing_form_object;
-        return state.forms[form_object.form_type][form_object.form_id].data.current_step;
-    },
-
-    isPreviousButtonDisabled: state => {
-        let form_object = state.currently_editing_form_object;
-        if (state.forms[form_object.form_type][form_object.form_id].data.current_step === 1) {
-            return true
-        }
-    },
-
-    isNextButtonDisabled: state => {
-        let form_object = state.currently_editing_form_object;
-        let max_steps = state.forms[form_object.form_type][form_object.form_id].steps.length
-        if (state.forms[form_object.form_type][form_object.form_id].data.current_step === max_steps) {
-            return true
-        }
-    },
-
     getAttributeValue: state => id => {
         let form_object = state.currently_editing_form_object;
         let root = state.forms[form_object.form_type][form_object.form_id].data;
@@ -165,7 +140,7 @@ export const getters = {
 
     documentObjects: state => {
         let form_object = state.currently_editing_form_object;
-        return state.form_schemas.forms[form_object.form_type].documents;
+        return state.form_schemas.forms[form_object.form_type].documents['all'].variants;
     },
 
     getArrayOfJurisdictions: state => {

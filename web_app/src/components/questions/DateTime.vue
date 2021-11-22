@@ -2,20 +2,24 @@
 <div v-if="visible" class="form-group" :class="fg_class">
   <validation-provider :rules="rules" :name="id" v-slot="{ errors, required }">
     <label :for="id"><slot></slot>
-      <span v-if="! required" class="text-muted"> (optional)</span>
+      <span v-if="required" class="text-muted"> (required)</span>
       <span class="text-muted" v-if="displayTimeAgoString"> ({{ timeAgoString }})</span>
       <span v-if="displayNotValidWarning" class="text-danger"> (date and/or time not valid)</span>
     </label>
     <div class="col-xs-10">
-      <div class="input-group mb-3">
+      <div class="input-group">
         <input type="text"
-           class="form-control" :disabled="disabled"
-               placeholder="YYYYMMDD"
+           class="form-control"
+           :class="errors.length > 0 ? 'border-danger bg-warning' : ''"
+           :disabled="disabled"
+           placeholder="YYYYMMDD"
            :id="id"
            :value="dateSegment"
            @input="updateDateSegment">
         <input type="text"
-           class="form-control" :disabled="disabled"
+           class="form-control"
+           :class="errors.length > 0 ? 'border-danger bg-warning' : ''"
+           :disabled="disabled"
             placeholder="HHMM"
             :value="timeSegment"
             @input="updateTimeSegment">

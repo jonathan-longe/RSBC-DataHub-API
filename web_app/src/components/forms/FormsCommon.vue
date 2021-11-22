@@ -1,21 +1,22 @@
 <script>
-import FormContainer from "@/components/forms/FormContainer";
-import FormStep from "@/components/forms/FormStep";
-import FormCard from "@/components/forms/FormCard";
-import FormRow from "@/components/forms/FormRow";
-import TextField from "@/components/questions/TextField";
-import ProvinceField from "@/components/questions/ProvinceField";
+import CheckField from "@/components/questions/CheckField";
+import DateField from "@/components/questions/DateField";
+import DateTime from "@/components/questions/DateTime";
+import DobField from "@/components/questions/DoBField";
 import DriverLicenceNumber from "@/components/questions/DriverLicenceNumber";
-import TypeAheadField from "@/components/questions/TypeAheadField";
+import FormCard from "@/components/forms/FormCard";
+import FormContainer from "@/components/forms/FormContainer";
+import FormRow from "@/components/forms/FormRow";
+import FormStep from "@/components/forms/FormStep";
 import GenderField from "@/components/questions/GenderField";
 import PhoneField from "@/components/questions/PhoneField";
-import DateTime from "@/components/questions/DateTime";
-import DateField from "@/components/questions/DateField";
-import DobField from "@/components/questions/DoBField";
 import PlateNumber from "@/components/questions/PlateNumber";
+import ProvinceField from "@/components/questions/ProvinceField";
 import RadioField from "@/components/questions/RadioField";
-import CheckField from "@/components/questions/CheckField";
 import ShadowBox from "@/components/forms/ShadowBox";
+import TextField from "@/components/questions/TextField";
+import TypeAheadField from "@/components/questions/TypeAheadField";
+import { ValidationObserver } from 'vee-validate';
 import {mapGetters, mapMutations} from "vuex";
 
 
@@ -27,7 +28,8 @@ export default {
   data() {
     return {
       data: {},
-      isMounted: false
+      isMounted: false,
+      display_spinner: false
     }
   },
   computed: {
@@ -37,23 +39,24 @@ export default {
     ...mapMutations(["editExistingForm", "setNewFormDefaults"])
   },
   components: {
-    FormContainer,
-    FormStep,
-    FormCard,
-    FormRow,
-    DobField,
-    TextField,
-    ProvinceField,
-    DriverLicenceNumber,
-    TypeAheadField,
-    GenderField,
-    PhoneField,
-    DateTime,
-    PlateNumber,
-    RadioField,
     CheckField,
     DateField,
-    ShadowBox
+    DateTime,
+    DobField,
+    DriverLicenceNumber,
+    FormCard,
+    FormContainer,
+    FormRow,
+    FormStep,
+    GenderField,
+    PhoneField,
+    PlateNumber,
+    ProvinceField,
+    RadioField,
+    ShadowBox,
+    TextField,
+    TypeAheadField,
+    ValidationObserver
   }
 }
 </script>

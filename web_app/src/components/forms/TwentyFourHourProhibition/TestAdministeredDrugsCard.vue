@@ -42,7 +42,7 @@
     </shadow-box>
     <form-row>
         <check-field id="result_drug" fg_class="col-sm-12"
-                     :options='["Ability to drive affected by a drug"]'><strong>Result</strong></check-field>
+                     :options='[this.drugConclusion]'><strong>Result</strong></check-field>
     </form-row>
 </form-card>
 </template>
@@ -51,9 +51,21 @@
 import CardsCommon from "@/components/forms/CardsCommon";
 
 export default {
-  name: "OfficersReport",
+
+  name: "TestAdministeredDrugsCard",
   mixins: [CardsCommon],
+  mounted () {
+    // set "Ability to drive affected by a drug" to checked
+    this.$store.commit("updateFormField", {
+      target: {
+        id: "result_drug",
+        value: this.drugConclusion}
+    })
+  },
   computed: {
+    drugConclusion() {
+      return "Ability to drive affected by a drug";
+    },
     isProhibitionTypeSelected() {
       return this.getAttributeValue('prohibition_type').length > 0;
     },

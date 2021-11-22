@@ -43,6 +43,21 @@ extend('notFutureDt', {
   computesRequired: true
 });
 
+// digits 8
+extend('dig8', {
+  validate(value) {
+    let result = false;
+    const regexMatch = value.match("^[0-9]{4}[0-9]{2}[0-9]{2}$")
+    if (Array.isArray(regexMatch)) {
+       result = regexMatch[0] === value;
+    }
+    return {
+      valid: result
+    };
+  },
+  message: "DOB must have 8 digits",
+});
+
 extend('dob', {
   validate(value) {
     return {
@@ -58,7 +73,7 @@ extend('dob', {
 extend('phone', {
   validate(value) {
     let result = false;
-    const regexMatch = value.match("^[0-9]{3}-[0-9]{3}-[0-9]{4}$")
+    const regexMatch = value.match("^[0-9]{10}$")
     if (Array.isArray(regexMatch)) {
        result = regexMatch[0] === value;
     }
@@ -66,8 +81,25 @@ extend('phone', {
       valid: result
     };
   },
-  message: "That's not a valid phone number"
+  message: "Phone number format ##########"
 });
 
 
+extend('lt25', {
+  validate(value) {
+    return {
+      valid: value.length <= 25,
+    };
+  },
+  message: "too long; must be less 25 chars",
+});
 
+
+extend('lt5', {
+  validate(value) {
+    return {
+      valid: value.length <= 5,
+    };
+  },
+  message: "Value must be less than 5",
+});

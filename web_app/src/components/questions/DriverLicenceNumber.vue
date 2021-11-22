@@ -9,8 +9,7 @@
              class="form-control"
              :id="id"
              placeholder="Driver's Licence Number"
-             :value="getAttributeValue(id)"
-             @input="updateFormField">
+             v-model="attribute">
         <div class="input-group-append">
           <button :disabled="! isDisplayIcbcLicenceLookup" @click="triggerDriversLookup"
                   class="btn-sm btn-secondary text-white">Driver's Lookup

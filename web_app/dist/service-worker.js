@@ -1,4 +1,4 @@
-importScripts("/precache-manifest.64e06ec5f254f854a35b641cdbb99ef8.js", "https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
+importScripts("/precache-manifest.63edcdc7039b577ef199e4ebcd87d67f.js", "https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 self.__precacheManifest = [].concat(self.__precacheManifest || []);
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
@@ -7,10 +7,10 @@ self.addEventListener("message", msg => {
     if (msg.data.action === 'SKIP_WAITING') self.skipWaiting();
 })
 
-const CACHE_NAME = 'roadsafety-digital-forms';
+const CACHE_NAME = 'roadsafety-digital-forms-' + "0.0.63";
 
 self.addEventListener('fetch',event=> {
-    console.log('caching: ' + event.request.url )
+    console.log('caching fetch request: ', event.request.url, event.request.method )
     event.respondWith(
       caches.open(CACHE_NAME).then(function(cache) {
         return fetch(event.request).then(function(response) {
@@ -20,4 +20,35 @@ self.addEventListener('fetch',event=> {
       })
     );
 });
+
+// self.addEventListener('activate', event => {
+//   console.log('Activating new service worker...');
+//
+//   const cacheAllowlist = [CACHE_NAME];
+//
+//   event.waitUntil(
+//     caches.keys().then(cacheNames => {
+//       return Promise.all(
+//         cacheNames.map(cacheName => {
+//           if (cacheAllowlist.indexOf(cacheName) === -1) {
+//             return caches.delete(cacheName);
+//           }
+//         })
+//       );
+//     })
+//   );
+// });
+
+// self.addEventListener( "install", function( event ){
+//     event.waitUntil(
+//         caches.open( CACHE_NAME + "-public-assets")
+//               .then(function( cache ){
+//             return cache.addAll([
+//                 "/public/assets/MV2634_102018_notice.png",
+//                 "/public/assets/MV2634_102018_report.png",
+//                 "/public/assets/MV2906_102018_notice.png"
+//             ]);
+//         })
+//     );
+// });
 

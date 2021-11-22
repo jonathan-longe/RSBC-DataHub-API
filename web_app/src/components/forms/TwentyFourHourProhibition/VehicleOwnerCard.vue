@@ -6,7 +6,7 @@
           <div class="col-6 pt-1 pl-0">Registered Owner</div>
           <div class="col-6 text-right">
             <div class="custom-control custom-switch">
-              <button @click="populateOwnerFromDriver" class="btn btn-outline-primary btn-sm small">Fill from driver</button>
+              <div @click="populateOwnerFromDriver" class="btn btn-outline-primary btn-sm small">Fill from driver</div>
            </div>
           </div>
       </div>
@@ -22,10 +22,10 @@
             <text-field v-if="!corporateOwner" id="owners_first_name" fg_class="col-sm-6">Owner's First Name</text-field>
           </form-row>
           <form-row>
-            <text-field id="owners_address1" fg_class="col-sm-12" placeholder="Address" rules="required">Address Line 1</text-field>
+            <text-field id="owners_address1" fg_class="col-sm-12" placeholder="Address" rules="lt25">Address Line 1</text-field>
           </form-row>
           <form-row>
-            <type-ahead-field id="owners_city" fg_class="col-sm-4" :suggestions="getArrayOfBCCityNames" rules="required">City</type-ahead-field>
+            <type-ahead-field id="owners_city" fg_class="col-sm-4" :suggestions="getArrayOfBCCityNames">City</type-ahead-field>
             <province-field id="owners_province" fg_class="col-sm-2">Province</province-field>
             <text-field id="owners_postal" fg_class="col-sm-2">Postal</text-field>
             <phone-field id="owners_phone" fg_class="col-sm-4" rules="phone">Phone</phone-field>

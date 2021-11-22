@@ -11,9 +11,9 @@
            :disabled="disabled"
            :id="id"
            class="form-control"
+             :class="errors.length > 0 ? 'border-danger bg-warning' : ''"
            placeholder="YYYYMMDD"
-           :value="getAttributeValue(id)"
-            @input="updateDateField">
+           v-model="attribute">
       <div class="small text-danger">{{ errors[0] }}</div>
     </div>
   </validation-provider>
@@ -31,19 +31,11 @@ export default {
   mixins: [FieldCommon],
   methods: {
     ...mapMutations(['updateFormField']),
-    updateDateField(e) {
-      const isoDate = e.target.value;
-      const payload = {target: {id: this.id, value: isoDate }}
-      this.$store.commit("updateFormField", payload)
-    },
   },
   computed: {
     ...mapGetters(["getAttributeValue"]),
     yearsOld() {
       return moment().diff(moment(this.getAttributeValue(this.id)), 'years')
-    },
-    yearsAgo() {
-      return moment(this.getAttributeValue(this.id)).fromNow()
     },
     isValidDate() {
       return moment(this.getAttributeValue(this.id)).isValid()

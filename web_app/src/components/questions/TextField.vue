@@ -2,15 +2,15 @@
 <div v-if="visible" class="form-group" :class="fg_class">
   <validation-provider :rules="rules" :name="id" v-slot="{ errors }">
     <label v-if="show_label" :for="id"><slot></slot>
-      <span v-if="isShowOptional" class="text-muted"> (optional)</span>
+      <span v-if=" ! isShowOptional" class="text-muted"> (required)</span>
     </label>
     <input type="text"
          class="form-control"
+           :class="errors.length > 0 ? 'border-danger bg-warning' : ''"
          :id="id"
          :disabled="disabled"
          :placeholder="placeholder"
-         :value="getAttributeValue(id)"
-          @input="updateFormField">
+         v-model="attribute">
     <div class="small text-danger">{{ errors[0] }}</div>
   </validation-provider>
 </div>
@@ -42,3 +42,8 @@ export default {
   }
 }
 </script>
+
+<style>
+
+
+</style>

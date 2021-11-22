@@ -1,7 +1,11 @@
 <template>
 <div v-if="visible" class="form-group" :class="fg_class">
-  <label :for="id"><slot></slot></label>
-  <vue-typeahead-bootstrap @input="typeAheadUpdate" :value="getAttributeValue(id)" :data=suggestions :disabled="disabled" />
+  <validation-provider :rules="rules" :name="id" v-slot="{ errors, required }">
+    <label :for="id"><slot></slot></label>
+    <span v-if="required" class="small text-muted"> (required)</span>
+    <vue-typeahead-bootstrap :input-class="errors.length > 0 ? 'border-danger bg-warning' : ''" @input="typeAheadUpdate" :value="getAttributeValue(id)" :data=suggestions :disabled="disabled" />
+    <div class="small text-danger">{{ errors[0] }}</div>
+  </validation-provider>
 </div>
 </template>
 

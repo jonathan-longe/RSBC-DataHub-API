@@ -1,54 +1,70 @@
 <template>
   <form-container title="Notice of 24 Hour Licence Prohibition" v-if="isMounted">
-      <drivers-information-card></drivers-information-card>
-      <vehicle-information-card></vehicle-information-card>
-      <vehicle-owner-card></vehicle-owner-card>
-      <vehicle-impoundment-card></vehicle-impoundment-card>
-      <return-of-licence-card></return-of-licence-card>
-      <prohibition-information-card></prohibition-information-card>
-      <reasonable-grounds-card></reasonable-grounds-card>
-      <test-administered-alcohol-card v-if="isPrescribedTestUsed && isProhibitionTypeAlcohol"></test-administered-alcohol-card>
-      <test-administered-drugs-card v-if="isPrescribedTestUsed && isProhibitionTypeDrugs"></test-administered-drugs-card>
-      <officer-details-card></officer-details-card>
-      <document-download-container></document-download-container>
+    <validation-observer v-slot="{handleSubmit, valid}">
+      <form @submit.prevent="handleSubmit(onSubmit(valid))">
+        <drivers-information-card></drivers-information-card>
+        <vehicle-information-card></vehicle-information-card>
+        <vehicle-owner-card></vehicle-owner-card>
+        <vehicle-impoundment-card></vehicle-impoundment-card>
+        <return-of-licence-card></return-of-licence-card>
+        <prohibition-information-card></prohibition-information-card>
+        <reasonable-grounds-card></reasonable-grounds-card>
+        <test-administered-alcohol-card v-if="isPrescribedTestUsed && isProhibitionTypeAlcohol"></test-administered-alcohol-card>
+        <test-administered-drugs-card v-if="isPrescribedTestUsed && isProhibitionTypeDrugs"></test-administered-drugs-card>
+        <officer-details-card></officer-details-card>
+        <form-card title="Download Notice and Officer's Report">
+          <div class="d-flex justify-content-between">
+            <button type="submit" class="btn btn-primary">Download PDF
+              <b-spinner v-if="display_spinner" small label="Loading..."></b-spinner>
+            </button>
+          </div>
+          <div class="small text-danger pt-2">
+            <fade-text v-if="isNotValid" :key="rerender" show-seconds=3000>Errors in form - check above</fade-text>
+          </div>
+        </form-card>
+      </form>
+    </validation-observer>
   </form-container>
 </template>
 
 <script>
 
 import FormsCommon from "@/components/forms/FormsCommon";
-import { mapGetters } from 'vuex';
+import {mapActions, mapGetters, mapMutations} from 'vuex';
 
-import VehicleInformationCard from "@/components/forms/TwentyFourHourProhibition/VehicleInformationCard";
-import VehicleImpoundmentCard from "@/components/forms/TwentyFourHourProhibition/VehicleImpoundmentCard";
 import DriversInformationCard from "@/components/forms/TwentyFourHourProhibition/DriversInformationCard";
-import ReturnOfLicenceCard from "@/components/forms/ReturnOfLicenceCard";
+import FadeText from "@/components/FadeText";
+import OfficerDetailsCard from "@/components/forms/TwentyFourHourProhibition/OfficerDetailsCard";
 import ProhibitionInformationCard from "@/components/forms/TwentyFourHourProhibition/ProhibitionInformationCard";
 import ReasonableGroundsCard from "@/components/forms/TwentyFourHourProhibition/ReasonableGroundsCard";
+import ReturnOfLicenceCard from "@/components/forms/ReturnOfLicenceCard";
 import TestAdministeredAlcoholCard from "@/components/forms/TwentyFourHourProhibition/TestAdministeredAlcoholCard";
 import TestAdministeredDrugsCard from "@/components/forms/TwentyFourHourProhibition/TestAdministeredDrugsCard";
-import OfficerDetailsCard from "@/components/forms/TwentyFourHourProhibition/OfficerDetailsCard";
+import VehicleImpoundmentCard from "@/components/forms/TwentyFourHourProhibition/VehicleImpoundmentCard";
+import VehicleInformationCard from "@/components/forms/TwentyFourHourProhibition/VehicleInformationCard";
 import VehicleOwnerCard from "@/components/forms/TwentyFourHourProhibition/VehicleOwnerCard";
-import DocumentDownloadContainer from "@/components/forms/DocumentDownloadContainer";
+import moment from "moment";
 
 
 export default {
   name: "TwentyFourHourProhibition",
   components: {
-    VehicleOwnerCard,
+    DriversInformationCard,
+    FadeText,
+    OfficerDetailsCard,
+    ProhibitionInformationCard,
+    ReasonableGroundsCard,
+    ReturnOfLicenceCard,
     TestAdministeredAlcoholCard,
     TestAdministeredDrugsCard,
-    ReasonableGroundsCard,
-    ProhibitionInformationCard,
-    VehicleImpoundmentCard, VehicleInformationCard,
-    DriversInformationCard, ReturnOfLicenceCard,
-    OfficerDetailsCard,
-    DocumentDownloadContainer
+    VehicleImpoundmentCard,
+    VehicleInformationCard,
+    VehicleOwnerCard,
   },
   mixins: [FormsCommon],
   computed: {
-    ...mapGetters(["getAttributeValue", "getCurrentlyEditedFormData",
-      "corporateOwner", "getPdfFileNameString"]),
+    ...mapGetters(["getAttributeValue", "getCurrentlyEditedFormData", "getCurrentlyEditedFormObject",
+      "corporateOwner", "getPdfFileNameString", "documentObjects"]),
     isProhibitionTypeDrugs() {
       return this.getAttributeValue('prohibition_type') === "Drugs 215(3)";
     },
@@ -65,12 +81,52 @@ export default {
       default: '24Hour'
     }
   },
+  data() {
+    return {
+      isNotValid: false,
+      rerender: 1
+    }
+  },
   mounted() {
     let payload = {form_type: this.name, form_id: this.id}
     this.editExistingForm(payload)
     this.setNewFormDefaults(payload)
     this.data = this.getCurrentlyEditedFormData
     this.isMounted = true
+  },
+  methods: {
+    ...mapMutations(["setFormAsPrinted"]),
+    ...mapActions(["saveCurrentFormToDB", "createPDF", "tellApiFormIsPrinted"]),
+    async onSubmit (valid) {
+      console.log('inside onSubmit()', valid);
+      if(valid) {
+        this.display_spinner = true;
+        const current_timestamp = moment.now()
+        console.log("inside saveAndPrint()", this.display_spinner, current_timestamp)
+        let payload = {}
+        payload['form_object'] = this.getCurrentlyEditedFormObject;
+        payload['filename'] = this.getPdfFileNameString(payload.form_object, "all");
+        payload['variants'] = this.documentObjects;
+        await this.saveCurrentFormToDB(payload.form_object)
+        await this.createPDF(payload)
+          .then( () => {
+            this.display_spinner = false;
+            console.log("saveAndPrint() complete", this.display_spinner)
+
+          })
+        payload['timestamp'] = current_timestamp
+        await this.tellApiFormIsPrinted(payload.form_object)
+          .then( (response) => {
+            console.log("response from tellApiFormIsPrinted()", response)
+            this.setFormAsPrinted(payload)
+            this.saveCurrentFormToDB(payload.form_object)
+          })
+      } else {
+        this.rerender++;
+        this.isNotValid = true;
+
+      }
+    }
   }
 }
 </script>

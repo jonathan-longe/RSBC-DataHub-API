@@ -74,9 +74,10 @@ def approve_officers_role(**kwargs) -> tuple:
 
 
 def delete_a_role(**kwargs) -> tuple:
+
     try:
         user_role = db.session.query(UserRole) \
-            .filter(UserRole.role_name == 'officer') \
+            .filter(UserRole.role_name == kwargs.get('role_name')) \
             .filter(UserRole.username == kwargs.get('requested_username')) \
             .first()
         db.session.delete(user_role)

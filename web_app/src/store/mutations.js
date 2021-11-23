@@ -143,6 +143,10 @@ export const mutations = {
         Vue.delete(state.users, index)
     },
 
+    addUsers(state, payload) {
+        state.users.push(payload)
+    },
+
     pushInitialUserRole(state, payload) {
         Vue.set(state, "user_roles", [payload])
     },

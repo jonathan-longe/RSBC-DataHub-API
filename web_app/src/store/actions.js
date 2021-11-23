@@ -504,6 +504,32 @@ export const actions = {
                 })
     },
 
+    async adminAddUserRole(context, username) {
+        console.log("inside actions.js adminAddUserRole(): ")
+        const url = constants.API_ROOT_URL + "/api/v1/admin/users/" + username + "/roles"
+        const payload = {"role_name": "administrator"}
+        return await new Promise((resolve, reject) => {
+            fetch(url, {
+                method: 'POST',
+                body: JSON.stringify(payload),
+                headers: context.getters.apiHeader,
+                })
+                    .then(response => {
+                        return response.json()
+                    })
+                    .then( data => {
+                        return resolve(context.commit("addUsers", data))
+                    })
+                    .catch((error) => {
+                        console.log("error", error)
+                        if (error) {
+                            return reject("message" in error ? {"description": error.message }: {"description": "No valid response"})
+                        }
+                        return reject({"description": "Server did not respond"})
+                        });
+                })
+    },
+
     async downloadLookupTables(context) {
 
         await context.dispatch("getMoreFormsFromApiIfNecessary")

@@ -93,7 +93,7 @@ def test_non_administrators_cannot_approve_a_user_role(as_guest, monkeypatch, ro
     assert resp.status_code == 401
 
 
-def test_administrator_can_delete_a_specific_user_role(as_guest, monkeypatch, roles, database):
+def test_administrator_can_delete_an_officer_user(as_guest, monkeypatch, roles, database):
     monkeypatch.setattr(Config, 'ADMIN_USERNAME', 'administrator@idir')
     monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
     monkeypatch.setattr(middleware, "decode_keycloak_access_token", _get_administrative_user_from_database)
@@ -106,6 +106,22 @@ def test_administrator_can_delete_a_specific_user_role(as_guest, monkeypatch, ro
     assert database.session.query(UserRole) \
                .filter(UserRole.role_name == 'officer') \
                .filter(UserRole.username == 'john@idir') \
+               .count() == 0
+
+
+def test_administrator_can_delete_another_admin_user(as_guest, monkeypatch, roles, database):
+    monkeypatch.setattr(Config, 'ADMIN_USERNAME', 'administrator@idir')
+    monkeypatch.setattr(middleware, "get_keycloak_certificates", _mock_keycloak_certificates)
+    monkeypatch.setattr(middleware, "decode_keycloak_access_token", _get_administrative_user_from_database)
+    resp = as_guest.delete("/api/v1/admin/users/mo@idir/roles/administrator",
+                         follow_redirects=True,
+                         content_type="application/json",
+                         headers=_get_keycloak_auth_header(_get_keycloak_access_token()))
+    logging.debug(json.dumps(resp.json))
+    assert resp.status_code == 200
+    assert database.session.query(UserRole) \
+               .filter(UserRole.role_name == 'administrator') \
+               .filter(UserRole.username == 'mo@idir') \
                .count() == 0
 
 

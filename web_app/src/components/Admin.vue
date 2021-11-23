@@ -1,5 +1,5 @@
 <template>
-  <div class="card w-100 mt-3 mb-3">
+  <div class="card w-100 mt-3 mb-3" v-if="isUserAnAdmin">
       <div class="card-header text-white text-left font-weight-bold small pl-3 pt-1 pb-1 bg-primary">
         User Roles
       </div>
@@ -7,16 +7,19 @@
         <table class="table table-striped">
           <tbody>
             <admin-user-role v-for="(user, index) in getAllUsers" :key="index" :user="user"></admin-user-role>
+
           </tbody>
         </table>
       </div>
-    </div>
+     <add-user-role></add-user-role>
+  </div>
 </template>
 
 <script>
 
 import {mapActions, mapGetters} from "vuex";
 import AdminUserRole from "@/components/AdminUserRole";
+import AddUserRole from "@/components/AddUserRole";
 
 export default {
   name: "Admin",
@@ -24,12 +27,13 @@ export default {
     ...mapGetters(['isUserAnAdmin', 'getAllUsers']),
   },
   methods: {
-    ...mapActions(['fetchDynamicLookupTables', 'fetchStaticLookupTables'])
+    ...mapActions(['fetchStaticLookupTables'])
   },
   created() {
-    this.fetchDynamicLookupTables({url:'admin/users', type: "users"})
+    this.fetchStaticLookupTables("users")
   },
   components: {
+    AddUserRole,
     AdminUserRole
   }
 }

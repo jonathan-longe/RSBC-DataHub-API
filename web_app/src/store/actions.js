@@ -276,6 +276,7 @@ export const actions = {
             key_value_pairs['OFFICER_BADGE_NUMBER'] = context.getters.getFormPrintValue(form_object, 'badge_number')
             key_value_pairs['AGENCY_NAME'] = context.getters.getFormPrintValue(form_object, 'agency')
             key_value_pairs['AGENCY_FILE_NUMBER'] = context.getters.getFormPrintValue(form_object, 'file_number')
+            key_value_pairs['OFFICER_LAST_NAME'] = context.getters.getFormPrintValue(form_object, 'officer_name')
 
             key_value_pairs['OWNER_NAME'] = context.getters.getFormPrintValue(form_object, 'owners_last_name')
                 + ", " + context.getters.getFormPrintValue(form_object, 'owners_first_name')

@@ -145,6 +145,15 @@
                 }
               },
               {
+                "name": "OFFICER_LAST_NAME",
+                "field_type": "text",
+                "font_size": 12,
+                "start": {
+                  "x": 7,
+                  "y": 123
+                }
+              },
+              {
                 "name": "OFFICER_BADGE_NUMBER",
                 "field_type": "text",
                 "font_size": 12,

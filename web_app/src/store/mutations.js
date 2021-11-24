@@ -56,13 +56,14 @@ export const mutations = {
         if(! ("data" in root)) {
             Vue.set( root, "data", Object())
             Vue.set( root.data, "submitted", false);
-
             for (let form_property in state.form_schemas.forms[form_object.form_type]) {
                 Vue.set(root, form_property, state.form_schemas.forms[form_object.form_type][form_property])
             }
         }
-
-
+        if(state.keycloak) {
+            Vue.set( root.data, "logged_in_user", state.keycloak.idTokenParsed.preferred_username);
+            Vue.set( root.data, "officer_name", state.keycloak.idTokenParsed.family_name);
+        }
     },
 
     populateStaticLookupTables(state, payload) {

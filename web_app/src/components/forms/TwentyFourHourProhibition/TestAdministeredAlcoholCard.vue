@@ -30,32 +30,29 @@
         <text-field v-if="isTestAdministeredApprovedInstrument" id="test_result_bac" fg_class="col-sm-12">Result</text-field>
       </form-row>
     </shadow-box>
+    <shadow-box>
+      <form-row>
+        <check-field :show_label="false" id="test_administered_sfst" fg_class="col-sm-6"
+                     :options='["Prescribed Physical Coordination Test (SFST)"]'>&nbsp;
+        </check-field>
+        <date-time v-if="isTestAdministeredSFST"
+                   id="time_of_test"
+                   rules="required|notFutureDt"
+                   fg_class="col-sm-6">Time of test</date-time>
+      </form-row>
+    </shadow-box>
 </form-card>
 </template>
 
 <script>
 import CardsCommon from "@/components/forms/CardsCommon";
+import {mapGetters} from "vuex";
 
 export default {
   name: "OfficersReport",
   mixins: [CardsCommon],
   computed: {
-    isTestAdministeredASD() {
-      const root = this.getAttributeValue('test_administered_asd')
-      console.log('test_administered', root)
-      if (Array.isArray(root)) {
-        return root.includes("Alco-Sensor FST (ASD)")
-      }
-      return false;
-    },
-    isTestAdministeredApprovedInstrument() {
-      const root = this.getAttributeValue('test_administered_instrument')
-      console.log('test_administered', root)
-      if (Array.isArray(root)) {
-        return root.includes("Approved Instrument")
-      }
-      return false;
-    }
+    ...mapGetters(["isTestAdministeredSFST", "isTestAdministeredApprovedInstrument", "isTestAdministeredASD"])
   }
 }
 </script>

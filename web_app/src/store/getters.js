@@ -359,6 +359,48 @@ export const getters = {
 
     isDisplayWelcomeLoginCard: (state, getters) => {
         return ! getters.isAppAvailableToWorkOffline && ! getters.isUserAuthenticated && state.keycloak.ready;
+    },
+
+    isTestAdministeredADSE: (state, getters) => {
+      const root = getters.getAttributeValue('test_administered_adse')
+      console.log('test_administered', root)
+      if (Array.isArray(root)) {
+        return root.includes("Approved Drug Screening Equipment")
+      }
+      return false;
+    },
+    isTestAdministeredSFST: (state, getters) => {
+      const root = getters.getAttributeValue('test_administered_sfst')
+      console.log('test_administered', root)
+      if (Array.isArray(root)) {
+        return root.includes("Prescribed Physical Coordination Test (SFST)")
+      }
+      return false;
+    },
+    isTestAdministeredDRE: (state, getters) => {
+      const root = getters.getAttributeValue('test_administered_dre')
+      console.log('test_administered', root)
+      if (Array.isArray(root)) {
+        return root.includes("Prescribed Physical Coordination Test (DRE)")
+      }
+      return false;
+    },
+
+    isTestAdministeredASD: (state, getters) => {
+      const root = getters.getAttributeValue('test_administered_asd')
+      console.log('test_administered', root)
+      if (Array.isArray(root)) {
+        return root.includes("Alco-Sensor FST (ASD)")
+      }
+      return false;
+    },
+    isTestAdministeredApprovedInstrument: (state, getters) => {
+      const root = getters.getAttributeValue('test_administered_instrument')
+      console.log('test_administered', root)
+      if (Array.isArray(root)) {
+        return root.includes("Approved Instrument")
+      }
+      return false;
     }
 
 

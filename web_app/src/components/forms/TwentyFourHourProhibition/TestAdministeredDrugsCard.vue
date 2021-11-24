@@ -49,6 +49,7 @@
 
 <script>
 import CardsCommon from "@/components/forms/CardsCommon";
+import {mapGetters} from "vuex";
 
 export default {
 
@@ -78,31 +79,7 @@ export default {
     isPrescribedTestUsed() {
       return this.getAttributeValue('prescribed_device').substr(0,3) === "Yes";
     },
-
-    isTestAdministeredADSE() {
-      const root = this.getAttributeValue('test_administered_adse')
-      console.log('test_administered', root)
-      if (Array.isArray(root)) {
-        return root.includes("Approved Drug Screening Equipment")
-      }
-      return false;
-    },
-    isTestAdministeredSFST() {
-      const root = this.getAttributeValue('test_administered_sfst')
-      console.log('test_administered', root)
-      if (Array.isArray(root)) {
-        return root.includes("Prescribed Physical Coordination Test (SFST)")
-      }
-      return false;
-    },
-    isTestAdministeredDRE() {
-      const root = this.getAttributeValue('test_administered_dre')
-      console.log('test_administered', root)
-      if (Array.isArray(root)) {
-        return root.includes("Prescribed Physical Coordination Test (DRE)")
-      }
-      return false;
-    }
+    ...mapGetters(['isTestAdministeredDRE', 'isTestAdministeredSFST', 'isTestAdministeredADSE'])
   }
 }
 </script>

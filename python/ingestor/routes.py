@@ -7,7 +7,6 @@ from flask import request, jsonify, Response, g
 from flask_api import FlaskAPI
 import logging
 import logging.config
-import json
 from functools import wraps
 import python.common.rsi_email as rsi_email
 

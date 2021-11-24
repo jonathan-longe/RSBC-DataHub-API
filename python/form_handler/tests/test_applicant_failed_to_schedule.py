@@ -4,7 +4,6 @@ import python.common.tests.vips_mock as vips_mock
 import python.common.helper as helper
 import python.form_handler.business as business
 from python.form_handler.config import Config as BaseConfig
-import python.common.vips_api as vips
 import python.common.common_email_services as common_email
 from python.common.rabbitmq import RabbitMQ
 

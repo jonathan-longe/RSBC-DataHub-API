@@ -178,7 +178,7 @@ def payment_patch_payload() -> dict:
     }
 
 
-def payment_get(payment_date) -> dict:
+def payment_get(payment_date: str) -> dict:
     return {
       "resp": "success",
       "data": {

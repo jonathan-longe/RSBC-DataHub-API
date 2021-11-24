@@ -173,7 +173,8 @@ def schedule_get(notice_type: str, review_type: str, first_date: datetime, last_
 def schedule_create(**args):
     config = args.get('config')
     prohibition_number = args.get('prohibition_number')
-    endpoint = build_endpoint(config.VIPS_API_ROOT_URL, prohibition_number, 'review', 'schedule', prohibition_number)
+    application_id = args.get('application_id')
+    endpoint = build_endpoint(config.VIPS_API_ROOT_URL, application_id, 'review', 'schedule', prohibition_number)
     payload = {
         "timeSlot": args.get('requested_time_slot')
     }

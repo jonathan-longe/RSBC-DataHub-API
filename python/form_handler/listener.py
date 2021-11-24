@@ -42,7 +42,7 @@ class Listener:
 
         # Regardless of whether the process above follows the happy path or not,
         # we need to acknowledge receipt of the message to RabbitMQ below. This
-        # acknowledgement deletes it from the WATCH queue. The logic above
+        # acknowledgement deletes it from the queue. The logic above
         # must have saved / handled the message before we get here.
 
         ch.basic_ack(delivery_tag=method.delivery_tag)

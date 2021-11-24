@@ -64,7 +64,7 @@ export default {
   mixins: [FormsCommon],
   computed: {
     ...mapGetters(["getAttributeValue", "getCurrentlyEditedFormData", "getCurrentlyEditedFormObject",
-      "corporateOwner", "getPdfFileNameString", "documentObjects"]),
+      "corporateOwner", "getPdfFileNameString", "getPagesToPrint"]),
     isProhibitionTypeDrugs() {
       return this.getAttributeValue('prohibition_type') === "Drugs 215(3)";
     },
@@ -106,7 +106,7 @@ export default {
         let payload = {}
         payload['form_object'] = this.getCurrentlyEditedFormObject;
         payload['filename'] = this.getPdfFileNameString(payload.form_object, "all");
-        payload['variants'] = this.documentObjects;
+        payload['variants'] = this.getPagesToPrint;
         await this.saveCurrentFormToDB(payload.form_object)
         await this.createPDF(payload)
           .then( () => {

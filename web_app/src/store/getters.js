@@ -138,9 +138,23 @@ export const getters = {
         return state.form_schemas.forms[form_object.form_type].documents[document_type].pdf;
     },
 
-    documentObjects: state => {
+    getPagesToPrint: (state, getters) => {
         let form_object = state.currently_editing_form_object;
-        return state.form_schemas.forms[form_object.form_type].documents['all'].variants;
+        let variantList = state.form_schemas.forms[form_object.form_type].documents['all'].variants;
+        if ( ! getters.isVehicleImpounded) {
+            // remove page for impound lot operator if vehicle not impounded
+            const index = variantList.indexOf("ilo");
+            if (index > -1) {
+              variantList.splice(index, 1);
+            }
+            return variantList
+        }
+        return variantList
+    },
+
+    isVehicleImpounded: state => {
+        let form_object = state.currently_editing_form_object;
+        return state.forms[form_object.form_type][form_object.form_id].data.vehicle_impounded === "Yes"
     },
 
     getArrayOfJurisdictions: state => {

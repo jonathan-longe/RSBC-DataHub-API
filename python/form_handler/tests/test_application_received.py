@@ -495,6 +495,31 @@ def test_an_unlicenced_applicant_that_has_previously_applied_gets_application_ac
     assert "Application Accepted - Driving Prohibition 21-999344 Review" == email_payload['subject']
 
 
+@responses.activate
+def test_an_unlicenced_applicant_that_had_a_successful_review_cannot_apply_again():
+
+    responses.add(responses.GET,
+                  '{}/{}/status/{}'.format(Config.VIPS_API_ROOT_URL, "21999344", "21999344"),
+                  json=vips_mock.status_previously_applied_review_successful("UL"),
+                  status=200, match_querystring=True)
+
+    responses.add(responses.POST, '{}/realms/{}/protocol/openid-connect/token'.format(
+        Config.COMM_SERV_AUTH_URL, Config.COMM_SERV_REALM), json={"access_token": "token"}, status=200)
+
+    responses.add(responses.POST, '{}/api/v1/email'.format(
+        Config.COMM_SERV_API_ROOT_URL), json={"response": "ignored"}, status=200)
+
+    message_dict = get_sample_application_submission("UL")
+
+    results = helper.middle_logic(helper.get_listeners(business.process_incoming_form(), message_dict['event_type']),
+                                  message=message_dict,
+                                  config=Config,
+                                  writer=None)
+
+    email_payload = json.loads(responses.calls[2].request.body.decode())
+    assert "me@lost.com" in email_payload['to']
+    assert "Previous Review on File – Driving Prohibition 21-999344 Review" == email_payload['subject']
+
 
 @responses.activate
 def test_an_unlicenced_applicant_who_has_never_previously_applied_gets_application_accepted_email():

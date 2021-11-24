@@ -52,6 +52,12 @@ def status_previously_applied_review_unsuccessful(prohibition_type) -> dict:
     return data
 
 
+def status_previously_applied_review_successful(prohibition_type) -> dict:
+    data = json.loads(json.dumps(status_get('2018-04-12')))  # deep copy
+    data['data']['status']['noticeTypeCd'] = prohibition_type
+    data['data']['status']['reviews'][0]['status'] = "complete_success"
+    return data
+
 def status_applied_at_icbc(prohibition_type, review_start_date: str) -> dict:
     data = json.loads(json.dumps(status_get('2018-04-12')))  # deep copy
     data['data']['status']['noticeTypeCd'] = prohibition_type

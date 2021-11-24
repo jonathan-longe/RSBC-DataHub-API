@@ -12,7 +12,7 @@
              :value="getAttributeValue(id)"
              @input="updateFormField">
         <div class="input-group-append" v-if="isDisplayIcbcPlateLookup">
-          <button @click="triggerPlateLookup" class="btn-sm btn-secondary">
+          <button type="button" @click="triggerPlateLookup" class="btn-sm btn-secondary">
             ICBC Lookup
             <b-spinner v-if="display_spinner" small label="Loading..."></b-spinner>
           </button>

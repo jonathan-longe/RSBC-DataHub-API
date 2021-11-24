@@ -111,7 +111,7 @@ export const getters = {
     },
 
     isFormEditable: state => form_object => {
-        return state.forms[form_object.form_type][form_object.form_id].printed_timestamp == null;
+        return ! (state.forms[form_object.form_type][form_object.form_id].printed_timestamp)
     },
 
     getServedStatus: state => form_object => {

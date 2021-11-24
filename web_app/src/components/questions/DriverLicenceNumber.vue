@@ -11,11 +11,11 @@
              placeholder="Driver's Licence Number"
              v-model="attribute">
         <div class="input-group-append">
-          <button :disabled="! isDisplayIcbcLicenceLookup" @click="triggerDriversLookup"
+          <button type="button" :disabled="! isDisplayIcbcLicenceLookup" @click="triggerDriversLookup"
                   class="btn-sm btn-secondary text-white">Driver's Lookup
             <b-spinner v-if="display_spinner" small label="Loading..."></b-spinner>
           </button>
-          <button :disabled=true class="btn-sm btn-secondary text-white ml-2">Scan DL</button>
+          <div type="button" :disabled=true class="btn-sm btn-secondary text-white ml-2">Scan DL</div>
         </div>
       </div>
       <div class="small text-danger">{{ errors[0] }}

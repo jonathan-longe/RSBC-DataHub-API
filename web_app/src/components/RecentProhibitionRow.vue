@@ -9,13 +9,13 @@
     <td>{{ getServedStatus(prohibition) }}</td>
     <td><span class="text-muted text-secondary">{{ prohibition.form_id }}</span></td>
     <td>
-      <h6 v-if="isFormEditable">
+      <h6 v-if="isFormEditable(prohibition)">
         <b-icon-trash variant="danger" @click="deleteSpecificForm(prohibition)"></b-icon-trash>&nbsp;
         <router-link :to="{ name: prohibition.form_type, params: { id: prohibition.form_id}}">
           <b-icon-pen variant="primary"></b-icon-pen>
         </router-link>
       </h6>
-      <div v-if="! isFormEditable" :disabled=true class="btn btn-primary">Amend</div>
+      <div v-if="! isFormEditable(prohibition)" :disabled=true class="btn btn-primary small">Print again</div>
     </td>
   </tr>
 </template>

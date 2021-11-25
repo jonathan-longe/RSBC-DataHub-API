@@ -302,13 +302,13 @@ def time_slot_to_friendly_string(time_slot: dict, presentation_type: str) -> dic
     end_time = time_slot['reviewEndDtm']
     label = ""
     if presentation_type == "ORAL":
-        label = "{} - {} to {}".format(
+        label = "{} - {} to {} (Pacific Time)".format(
             # Fri, Sep 4, 2020 - 10:00am to 10:30am
             vips_str_to_datetime(start_time).strftime("%a, %b %-d, %Y"),
             vips_str_to_friendly_time(start_time),
             vips_str_to_friendly_time(end_time))
     elif presentation_type == "WRIT":
-        label = "{} at 9:30AM".format(
+        label = "{} at 9:30AM (Pacific Time)".format(
             # Friday, Sept 4, 2020 at 9:30AM
             vips_str_to_datetime(start_time).strftime("%a, %b %-d, %Y"))
     return {

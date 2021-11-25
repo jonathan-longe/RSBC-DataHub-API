@@ -146,9 +146,11 @@ class TestVips:
         print(json.dumps(time_slots[0]))
         print(str(type(time_slots[0])))
         friendly_times_list = vips.time_slots_to_friendly_times(time_slots, "ORAL")
-        expected = list(["Fri, Sep 4, 2020 - 9:00AM to 9:30AM", "Fri, Sep 4, 2020 - 10:00AM to 10:30AM",
-                         "Fri, Sep 4, 2020 - 11:00AM to 11:30AM", "Fri, Sep 4, 2020 - 12:00PM to 12:30PM",
-                         "Fri, Sep 4, 2020 - 1:00PM to 1:30PM"])
+        expected = list(["Fri, Sep 4, 2020 - 9:00AM to 9:30AM (Pacific Time)",
+                         "Fri, Sep 4, 2020 - 10:00AM to 10:30AM (Pacific Time)",
+                         "Fri, Sep 4, 2020 - 11:00AM to 11:30AM (Pacific Time)",
+                         "Fri, Sep 4, 2020 - 12:00PM to 12:30PM (Pacific Time)",
+                         "Fri, Sep 4, 2020 - 1:00PM to 1:30PM (Pacific Time)"])
         for index, item in enumerate(expected):
             assert friendly_times_list[index]['label'] == item
 

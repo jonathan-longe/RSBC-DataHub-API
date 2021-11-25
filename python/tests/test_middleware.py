@@ -514,7 +514,7 @@ def test_get_human_friendly_time_slot_string_for_oral_review():
         "reviewEndDtm": "2020-09-04 10:30:00 -07:00"
     }
     friendly_string = vips.time_slot_to_friendly_string(time_slot, "ORAL")
-    assert friendly_string['label'] == 'Fri, Sep 4, 2020 - 10:00AM to 10:30AM'
+    assert friendly_string['label'] == 'Fri, Sep 4, 2020 - 10:00AM to 10:30AM (Pacific Time)'
 
 
 def test_get_human_friendly_time_slot_string_for_written_review():
@@ -523,7 +523,7 @@ def test_get_human_friendly_time_slot_string_for_written_review():
         "reviewEndDtm": "2020-09-04 10:30:00 -07:00"
     }
     friendly_string = vips.time_slot_to_friendly_string(time_slot, "WRIT")
-    assert friendly_string['label'] == 'Fri, Sep 4, 2020 at 9:30AM'
+    assert friendly_string['label'] == 'Fri, Sep 4, 2020 at 9:30AM (Pacific Time)'
 
 
 review_date_in_the_future = [

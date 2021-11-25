@@ -43,7 +43,6 @@ import TestAdministeredDrugsCard from "@/components/forms/TwentyFourHourProhibit
 import VehicleImpoundmentCard from "@/components/forms/TwentyFourHourProhibition/VehicleImpoundmentCard";
 import VehicleInformationCard from "@/components/forms/TwentyFourHourProhibition/VehicleInformationCard";
 import VehicleOwnerCard from "@/components/forms/TwentyFourHourProhibition/VehicleOwnerCard";
-import moment from "moment";
 
 
 export default {
@@ -64,7 +63,7 @@ export default {
   mixins: [FormsCommon],
   computed: {
     ...mapGetters(["getAttributeValue", "getCurrentlyEditedFormData", "getCurrentlyEditedFormObject",
-      "corporateOwner", "getPdfFileNameString", "getPagesToPrint"]),
+      "corporateOwner"]),
     isProhibitionTypeDrugs() {
       return this.getAttributeValue('prohibition_type') === "Drugs 215(3)";
     },
@@ -96,35 +95,20 @@ export default {
   },
   methods: {
     ...mapMutations(["setFormAsPrinted"]),
-    ...mapActions(["saveCurrentFormToDB", "createPDF", "tellApiFormIsPrinted"]),
+    ...mapActions(["saveFormAndGeneratePDF"]),
     async onSubmit (valid) {
       console.log('inside onSubmit()', valid);
       if(valid) {
         this.display_spinner = true;
-        const current_timestamp = moment.now()
-        console.log("inside saveAndPrint()", this.display_spinner, current_timestamp)
-        let payload = {}
-        payload['form_object'] = this.getCurrentlyEditedFormObject;
-        payload['filename'] = this.getPdfFileNameString(payload.form_object, "all");
-        payload['variants'] = this.getPagesToPrint;
-        await this.saveCurrentFormToDB(payload.form_object)
-        await this.createPDF(payload)
-          .then( () => {
-            this.display_spinner = false;
-            console.log("saveAndPrint() complete", this.display_spinner)
-
-          })
-        payload['timestamp'] = current_timestamp
-        await this.tellApiFormIsPrinted(payload.form_object)
-          .then( (response) => {
-            console.log("response from tellApiFormIsPrinted()", response)
-            this.setFormAsPrinted(payload)
-            this.saveCurrentFormToDB(payload.form_object)
-          })
-      } else {
-        this.rerender++;
-        this.isNotValid = true;
-
+        await this.saveFormAndGeneratePDF(this.getFormObject)
+            .then(() => {
+              this.display_spinner = false;
+            })
+            .catch(() => {
+              this.display_spinner = false;
+              this.rerender++;
+              this.isNotValid = true;
+            })
       }
     }
   }

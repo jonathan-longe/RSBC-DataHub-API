@@ -23,6 +23,9 @@ import {mapGetters, mapMutations} from "vuex";
 export default {
   name: "FormsCommon",
     props: {
+      name: {
+        type: String
+      },
       id: {},
   },
   data() {
@@ -34,6 +37,12 @@ export default {
   },
   computed: {
     ...mapGetters(["getArrayOfBCCityNames", "getFormData"]),
+    getFormObject() {
+      return {
+        form_id: this.id,
+        form_type: this.name
+      }
+    }
   },
   methods: {
     ...mapMutations(["editExistingForm", "setNewFormDefaults"])

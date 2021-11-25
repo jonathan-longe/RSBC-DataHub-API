@@ -138,10 +138,9 @@ export const getters = {
         return state.form_schemas.forms[form_object.form_type].documents[document_type].pdf;
     },
 
-    getPagesToPrint: (state, getters) => {
-        let form_object = state.currently_editing_form_object;
+    getPagesToPrint: (state, getters) => form_object => {
         let variantList = state.form_schemas.forms[form_object.form_type].documents['all'].variants;
-        if ( ! getters.isVehicleImpounded) {
+        if ( ! getters.isVehicleImpounded(form_object)) {
             // remove page for impound lot operator if vehicle not impounded
             const index = variantList.indexOf("ilo");
             if (index > -1) {
@@ -152,8 +151,7 @@ export const getters = {
         return variantList
     },
 
-    isVehicleImpounded: state => {
-        let form_object = state.currently_editing_form_object;
+    isVehicleImpounded: state => form_object => {
         return state.forms[form_object.form_type][form_object.form_id].data.vehicle_impounded === "Yes"
     },
 
@@ -377,7 +375,6 @@ export const getters = {
 
     isTestAdministeredADSE: (state, getters) => {
       const root = getters.getAttributeValue('test_administered_adse')
-      console.log('test_administered', root)
       if (Array.isArray(root)) {
         return root.includes("Approved Drug Screening Equipment")
       }
@@ -385,7 +382,6 @@ export const getters = {
     },
     isTestAdministeredSFST: (state, getters) => {
       const root = getters.getAttributeValue('test_administered_sfst')
-      console.log('test_administered', root)
       if (Array.isArray(root)) {
         return root.includes("Prescribed Physical Coordination Test (SFST)")
       }
@@ -393,7 +389,6 @@ export const getters = {
     },
     isTestAdministeredDRE: (state, getters) => {
       const root = getters.getAttributeValue('test_administered_dre')
-      console.log('test_administered', root)
       if (Array.isArray(root)) {
         return root.includes("Prescribed Physical Coordination Test (DRE)")
       }
@@ -402,7 +397,6 @@ export const getters = {
 
     isTestAdministeredASD: (state, getters) => {
       const root = getters.getAttributeValue('test_administered_asd')
-      console.log('test_administered', root)
       if (Array.isArray(root)) {
         return root.includes("Alco-Sensor FST (ASD)")
       }
@@ -410,7 +404,6 @@ export const getters = {
     },
     isTestAdministeredApprovedInstrument: (state, getters) => {
       const root = getters.getAttributeValue('test_administered_instrument')
-      console.log('test_administered', root)
       if (Array.isArray(root)) {
         return root.includes("Approved Instrument")
       }

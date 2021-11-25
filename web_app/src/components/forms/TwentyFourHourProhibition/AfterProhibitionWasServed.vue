@@ -107,7 +107,6 @@ export default {
     },
     isTestAdministeredApprovedInstrument() {
       const root = this.getAttributeValue('after_test_administered')
-      console.log('test_administered', root)
       if (Array.isArray(root)) {
         return root.includes("Approved Instrument")
       }

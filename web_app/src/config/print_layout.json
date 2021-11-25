@@ -185,7 +185,7 @@
                 "field_type": "text",
                 "font_size": 12,
                 "start": {
-                  "x": 10,
+                  "x": 9,
                   "y": 148
                 }
               },
@@ -194,7 +194,7 @@
                 "field_type": "text",
                 "font_size": 12,
                 "start": {
-                  "x": 10,
+                  "x": 9,
                   "y": 158
                 }
               },
@@ -293,7 +293,7 @@
                 "field_type": "text",
                 "font_size": 12,
                 "start": {
-                  "x": 55,
+                  "x": 54,
                   "y": 178
                 }
               },

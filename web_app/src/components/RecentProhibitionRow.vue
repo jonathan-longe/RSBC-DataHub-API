@@ -15,7 +15,10 @@
           <b-icon-pen variant="primary"></b-icon-pen>
         </router-link>
       </h6>
-      <div v-if="! isFormEditable(prohibition)" :disabled=true class="btn btn-primary small">Print again</div>
+      <div v-if="! isFormEditable(prohibition)" @click="triggerPrint" class="btn btn-primary small">
+        Print again
+        <b-spinner v-if="display_spinner" small label="Loading..."></b-spinner>
+      </div>
     </td>
   </tr>
 </template>
@@ -29,12 +32,29 @@ export default {
   props: {
     prohibition: {}
   },
+  data() {
+    return {
+      display_spinner: false
+    }
+  },
   computed: {
     ...mapGetters(["isFormEditable", "getServedStatus"])
   },
   methods: {
     ...mapMutations(["editExistingForm"]),
-    ...mapActions(["deleteSpecificForm"])
+    ...mapActions(["deleteSpecificForm", "saveFormAndGeneratePDF"]),
+    triggerPrint() {
+      console.log('inside triggerPrint()', this.display_spinner, this.getFormObject);
+      this.display_spinner = true;
+      this.saveFormAndGeneratePDF(this.prohibition)
+          .then(() => {
+            this.display_spinner = false;
+          })
+          .catch(() => {
+            this.display_spinner = false;
+          })
+
+    }
   }
 }
 </script>

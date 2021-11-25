@@ -531,6 +531,24 @@ export const actions = {
                 })
     },
 
+    async saveFormAndGeneratePDF(context, form_object) {
+        const current_timestamp = moment.now()
+        console.log("inside saveAndPrint()", current_timestamp)
+        let payload = {}
+        payload['form_object'] = form_object
+        payload['filename'] = context.getters.getPdfFileNameString(form_object, "all");
+        payload['variants'] = context.getters.getPagesToPrint(form_object);
+        await context.dispatch("saveCurrentFormToDB", form_object)
+        await context.dispatch("createPDF", payload)
+        payload['timestamp'] = current_timestamp
+        await context.dispatch("tellApiFormIsPrinted", form_object)
+          .then( (response) => {
+            console.log("response from tellApiFormIsPrinted()", response)
+            context.commit("setFormAsPrinted", payload)
+            context.dispatch("saveCurrentFormToDB", form_object)
+          })
+    },
+
     async downloadLookupTables(context) {
 
         await context.dispatch("getMoreFormsFromApiIfNecessary")

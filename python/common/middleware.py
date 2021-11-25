@@ -235,11 +235,13 @@ def applicant_is_eligible_to_reapply(**args) -> tuple:
     Check that an applicant is eligible to (re)apply. IRP and ADP prohibitions cannot reapply.
     For UL prohibitions, applicants can reapply if the previous review is complete and wasn't successful.
     """
+    failed_list = ['unknown', 'cancelled', 'unsuccessful']
     vips_data = args.get('vips_data')
     prohibition = pro.prohibition_factory(vips_data['noticeTypeCd'])
     if prohibition.CAN_APPLY_FOR_REVIEW_MORE_THAN_ONCE:
         if 'status' in vips_data['reviews'][0]:
-            return vips_data['reviews'][0]['status'] == 'complete_failed', args
+            # if the previous review was unsuccessful, the UL applicant is eligible to apply again
+            return vips_data['reviews'][0]['status'] in failed_list, args
     error = 'the applicant not eligible to reapply'
     logging.info(error)
     args['error_string'] = "The applicant is not eligible to reapply"

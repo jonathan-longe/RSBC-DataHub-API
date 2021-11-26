@@ -101,5 +101,25 @@ extend('lt5', {
       valid: value.length <= 5,
     };
   },
-  message: "Value must be less than 5",
+  message: "Value must be less than 5 chars",
 });
+
+extend('lt3', {
+  validate(value) {
+    return {
+      valid: value.length < 3,
+    };
+  },
+  message: "Value must be less than 3 chars",
+});
+
+extend('lt4', {
+  validate(value) {
+    return {
+      valid: value.length < 5,
+    };
+  },
+  message: "Value must be than 5 chars",
+});
+
+

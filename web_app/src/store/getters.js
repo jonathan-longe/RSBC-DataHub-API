@@ -5,7 +5,15 @@ import constants from "../config/constants";
 export const getters = {
 
     getAllAvailableForms: state => {
-      return state.form_schemas.forms;
+        return state.form_schemas.forms;
+    },
+
+    getArrayOfAllFormNames: state => {
+        let formNames = [];
+        for (let form in state.form_schemas.forms) {
+            formNames.push(form)
+        }
+        return formNames
     },
 
     getAppVersion: state => {
@@ -197,9 +205,9 @@ export const getters = {
     },
 
     areNewUniqueIdsRequiredByType: (state, getters) => form_type => {
+        console.log("inside areNewUniqueIdsRequiredByType", form_type)
         // Business rules state that X number of forms must be available to use offline
         if (getters.getFormTypeCount[form_type] < constants.MINIMUM_NUMBER_OF_UNIQUE_IDS_PER_TYPE) {
-            console.log("inside areNewUniqueIdsRequiredByType", getters.getFormTypeCount, form_type)
             return true;
         }
         return false

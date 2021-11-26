@@ -16,7 +16,8 @@ export const store = new Vuex.Store ({
     forms: {
       "IRP": {},
       "24Hour": {},
-      "12Hour": {}
+      "12Hour": {},
+      "VI": {}
     },
     currently_editing_form_object: {
       "form_type": null,
@@ -60,6 +61,31 @@ export const store = new Vuex.Store ({
               "variants": ['ilo']
             },
             "report": {
+              "name": "Police Copy",
+              "variants": ['police']
+            },
+            "all": {
+              "name": "All Copies",
+              "variants": ['driver', 'ilo', 'police']
+            }
+          },
+          "disabled": false
+        },
+        "VI": {
+          "component": "VehicleImpoundment",
+          "form_type": "VI",
+          "description": "Vehicle Impoundment",
+          "full_name": "MV2721",
+          "documents": {
+            "driver": {
+              "name": "Driver Copy",
+              "variants": ['driver'],
+            },
+            "ilo": {
+              "name": "ILO Copy",
+              "variants": ['ilo']
+            },
+            "police": {
               "name": "Police Copy",
               "variants": ['police']
             },

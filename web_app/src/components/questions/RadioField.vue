@@ -2,7 +2,7 @@
 <div v-if="visible" class="form-group" :class="fg_class">
 <!--  <validation-provider :rules="rules" :name="id" v-slot="{ errors }">-->
       <label v-if="show_label" :for="id"><slot></slot></label>
-      <div class="form-check" v-for="(option) in options" :key="option">
+      <div class="form-check" v-for="(option, index) in options" :key="index">
         <input class="form-check-input"
                :id="id"
                v-model="attribute"

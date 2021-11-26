@@ -6,6 +6,7 @@ import Login from "@/components/Login";
 import TwentyFourHourProhibition from "@/components/forms/TwentyFourHourProhibition/TwentyFourHourProhibition";
 import TwelveHourProhibition from "@/components/forms/TwelveHourSuspension/TwelveHourProhibition";
 import ImmediateRoadsideProhibition from "@/components/forms/ImmediateRoadsideProhibition";
+import VehicleImpoundment from "@/components/forms/VehicleImpoundment/VehicleImpoundment";
 
 Vue.use(Router)
 
@@ -50,6 +51,12 @@ const router = new Router({
       path: '/IRP/:id',
       name: 'IRP',
       component: ImmediateRoadsideProhibition,
+      props: true
+    },
+    {
+      path: '/VI/:id',
+      name: 'VI',
+      component: VehicleImpoundment,
       props: true
     },
   ],

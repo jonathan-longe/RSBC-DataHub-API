@@ -12,9 +12,9 @@
         <test-administered-alcohol-card v-if="isPrescribedTestUsed && isProhibitionTypeAlcohol"></test-administered-alcohol-card>
         <test-administered-drugs-card v-if="isPrescribedTestUsed && isProhibitionTypeDrugs"></test-administered-drugs-card>
         <officer-details-card></officer-details-card>
-        <form-card title="Download Notice and Officer's Report">
+        <form-card title="Generate PDF for Printing">
           <div class="d-flex justify-content-between">
-            <button type="submit" class="btn btn-primary">Download PDF
+            <button type="submit" class="btn btn-primary">PDF
               <b-spinner v-if="display_spinner" small label="Loading..."></b-spinner>
             </button>
           </div>

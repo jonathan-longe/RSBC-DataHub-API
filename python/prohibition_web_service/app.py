@@ -59,8 +59,8 @@ def initialize_app(app):
 def _seed_forms_for_development(database):
     # TODO - Remove before flight
     seed_records = []
-    prefix = ["J", "V", "40"]
-    for idx, form_type in enumerate(["12Hour", "24Hour", "IRP"]):
+    prefix = ["J", "V", "40", "22"]
+    for idx, form_type in enumerate(["12Hour", "24Hour", "IRP", "VI"]):
         for x in range(100000, 100100):
             unique_id = '{}-{}'.format(prefix[idx], str(x))
             seed_records.append(Form(

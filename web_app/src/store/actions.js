@@ -37,12 +37,12 @@ export const actions = {
 
     async getMoreFormsFromApiIfNecessary (context) {
         console.log("inside getMoreFormsFromApiIfNecessary()")
-        for( let form_type in context.state.form_schemas.forms) {
+        context.getters.getArrayOfAllFormNames.forEach( form_type => {
             let number_of_attempts = 0
             while (context.getters.areNewUniqueIdsRequiredByType(form_type)
             && number_of_attempts < constants.MAX_NUMBER_UNIQUE_ID_FETCH_ATTEMPTS) {
                 number_of_attempts++;
-                await context.dispatch("getFormIdsFromApiByType", form_type)
+                context.dispatch("getFormIdsFromApiByType", form_type)
                     .then(data => {
                         if (data) {
                             context.commit("pushFormToStore", data)
@@ -54,7 +54,7 @@ export const actions = {
                         console.log(error)
                     })
            }
-        }
+        })
     },
 
     async getFormIdsFromApiByType (context, form_type) {
@@ -217,12 +217,6 @@ export const actions = {
     },
 
     async getAllFormsFromDB(context) {
-        // TODO - Remove before flight - replace hardcoded form types below
-        context.state.forms = {
-            "IRP": {},
-            "12Hour": {},
-            "24Hour": {}
-        };
         await persistence.all()
             .then( forms => {
                 console.log("inside getAllFormsFromDB()", forms)

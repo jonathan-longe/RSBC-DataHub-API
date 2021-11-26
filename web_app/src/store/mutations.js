@@ -16,6 +16,10 @@ export const mutations = {
         Vue.set(state.forms[form_object.form_type][form_object.form_id].data, id, value);
     },
 
+    updateRichCheckBox (state, payload) {
+        console.log("inside updateRichCheckBox()", payload)
+    },
+
     updateCheckBox (state, payload) {
         let id = payload.target.id;
         let value = payload.target.value;

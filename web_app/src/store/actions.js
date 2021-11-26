@@ -558,5 +558,16 @@ export const actions = {
         await context.dispatch("fetchStaticLookupTables", "vehicle_styles")
 
         // TODO - await store.dispatch("renewFormLeasesFromApiIfNecessary")
-    }
+    },
+
+    updateRichCheckBox (context, payload) {
+        console.log("inside updateRichCheckBox()", payload)
+        if(payload.event.checked) {
+            context.commit('addItemToCheckboxList', payload)
+        } else {
+            context.commit('removeItemFromCheckboxList', payload)
+        }
+
+
+    },
 }

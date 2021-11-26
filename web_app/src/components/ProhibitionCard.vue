@@ -7,7 +7,7 @@
       <p class="card-text text-dark">{{ form.description }}</p>
       <p class="card-text">
         <small class="text-muted">
-          Prohibition IDs available: {{ getFormTypeCount[form.form_type] }}
+          IDs available: {{ getFormTypeCount[form.form_type] }}
         </small>
       </p>
         <button type="submit" class="btn btn-primary" :disabled="! isFormAvailable">

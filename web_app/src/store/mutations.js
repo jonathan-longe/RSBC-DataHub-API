@@ -16,8 +16,23 @@ export const mutations = {
         Vue.set(state.forms[form_object.form_type][form_object.form_id].data, id, value);
     },
 
-    updateRichCheckBox (state, payload) {
-        console.log("inside updateRichCheckBox()", payload)
+    addItemToCheckboxList (state, payload) {
+        console.log("inside addItemToCheckboxList()", state, payload)
+        let root = state.forms[payload.form_object.form_type][payload.form_object.form_id].data
+        let tenant = {id: payload.event.id, value: payload.event.value}
+        if(payload.id in root) {
+            root[payload.id].push(tenant);
+        } else {
+            root[payload.id] = [tenant];
+        }
+    },
+
+    removeItemFromCheckboxList (state, payload) {
+        console.log("inside removeItemFromCheckboxList()", state, payload)
+        let root = state.forms[payload.form_object.form_type][payload.form_object.form_id].data
+        let tenant = {id: payload.event.id, value: payload.event.value}
+        let indexOfValue = root[payload.id].indexOf(tenant)
+        root[payload.id].splice(indexOfValue, 1)
     },
 
     updateCheckBox (state, payload) {

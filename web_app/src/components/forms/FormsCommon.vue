@@ -32,7 +32,9 @@ export default {
     return {
       data: {},
       isMounted: false,
-      display_spinner: false
+      display_spinner: false,
+      isNotValid: false,
+      rerender: 1
     }
   },
   computed: {

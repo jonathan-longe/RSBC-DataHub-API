@@ -80,12 +80,6 @@ export default {
       default: '24Hour'
     }
   },
-  data() {
-    return {
-      isNotValid: false,
-      rerender: 1
-    }
-  },
   mounted() {
     let payload = {form_type: this.name, form_id: this.id}
     this.editExistingForm(payload)

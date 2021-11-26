@@ -14,9 +14,6 @@
       <text-field id="address1" fg_class="col-sm-12" placeholder="Address" rules="required">Address Line 1</text-field>
     </form-row>
     <form-row>
-      <text-field id="address2" fg_class="col-sm-12" placeholder="Address">Address Line 2</text-field>
-    </form-row>
-    <form-row>
       <type-ahead-field id="city" fg_class="col-sm-6" :suggestions="getArrayOfBCCityNames" rules="required">City</type-ahead-field>
       <province-field :disabled=true id="province" fg_class="col-sm-2">Province</province-field>
       <text-field id="postal" fg_class="col-sm-4">Postal</text-field>

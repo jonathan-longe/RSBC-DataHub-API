@@ -1,19 +1,24 @@
 <template>
   <form-container title="Notice of 12 Hour Licence Suspension" v-if="isMounted">
-    <validation-observer v-slot="{valid}">
-      <drivers-information-card></drivers-information-card>
-      <vehicle-information-card></vehicle-information-card>
-      <return-of-licence-card></return-of-licence-card>
-      <vehicle-impoundment-card></vehicle-impoundment-card>
-      <prohibition-information-card></prohibition-information-card>
-      <officer-details-card></officer-details-card>
-      <form-card title="Download Notice and Officer's Report">
+    <validation-observer v-slot="{handleSubmit, valid}">
+      <form @submit.prevent="handleSubmit(onSubmit(valid))">
+        <drivers-information-card></drivers-information-card>
+        <vehicle-information-card></vehicle-information-card>
+        <return-of-licence-card></return-of-licence-card>
+        <vehicle-impoundment-card></vehicle-impoundment-card>
+        <prohibition-information-card></prohibition-information-card>
+        <officer-details-card></officer-details-card>
+        <form-card title="Generate PDF for Printing">
           <div class="d-flex justify-content-between">
-            <div @click="onSubmit(valid)" class="btn-primary">Download PDF
+            <button type="submit" class="btn btn-primary">PDF
               <b-spinner v-if="display_spinner" small label="Loading..."></b-spinner>
-            </div>
+            </button>
           </div>
-      </form-card>
+          <div class="small text-danger pt-2">
+            <fade-text v-if="isNotValid" :key="rerender" show-seconds=3000>Errors in form - check above</fade-text>
+          </div>
+        </form-card>
+      </form>
     </validation-observer>
   </form-container>
 </template>
@@ -27,13 +32,14 @@ import OfficerDetailsCard from "@/components/forms/TwelveHourSuspension/OfficerD
 import VehicleInformationCard from "@/components/forms/TwelveHourSuspension/VehicleInformationCard";
 import ProhibitionInformationCard from "@/components/forms/TwelveHourSuspension/ProhibitionInformationCard";
 import VehicleImpoundmentCard from "@/components/forms/TwelveHourSuspension/VehicleImpoundmentCard";
-import moment from "moment";
-import {mapGetters} from "vuex";
+import {mapActions, mapGetters, mapMutations} from "vuex";
+import FadeText from "@/components/FadeText";
 
 export default {
   name: "TwelveTwentyFour",
   mixins: [FormsCommon],
   components: {
+    FadeText,
     ProhibitionInformationCard,
     DriversInformationCard,
     OfficerDetailsCard,
@@ -47,6 +53,7 @@ export default {
       default: '12Hour'
     }
   },
+
   mounted() {
     let payload = {form_type: this.name, form_id: this.id}
     this.editExistingForm(payload)
@@ -58,31 +65,22 @@ export default {
     ...mapGetters(["getCurrentlyEditedFormObject", "getPdfFileNameString"]),
   },
   methods: {
-    async onSubmit(valid) {
+    ...mapMutations(["setFormAsPrinted"]),
+    ...mapActions(["saveFormAndGeneratePDF"]),
+    async onSubmit (valid) {
       console.log('inside onSubmit()', valid);
       if(valid) {
         this.display_spinner = true;
-        const current_timestamp = moment.now()
-        console.log("inside saveAndPrint()", this.display_spinner, current_timestamp)
-        let payload = {}
-        payload['form_object'] = this.getCurrentlyEditedFormObject;
-        payload['filename'] = this.getPdfFileNameString(payload.form_object, this.kid);
-        payload['variants'] = this.document.variants;
-        await this.saveCurrentFormToDB(payload.form_object)
-        await this.createPDF(payload)
-          .then( () => {
-            this.display_spinner = false;
-            console.log("saveAndPrint() complete", this.display_spinner)
-          })
-        payload['timestamp'] = current_timestamp
-        await this.tellApiFormIsPrinted(payload.form_object)
-          .then( (response) => {
-            console.log("response from tellApiFormIsPrinted()", response)
-            this.setFormAsPrinted(payload)
-            this.saveCurrentFormToDB(payload.form_object)
-          })
+        await this.saveFormAndGeneratePDF(this.getFormObject)
+            .then(() => {
+              this.display_spinner = false;
+            })
+            .catch(() => {
+              this.display_spinner = false;
+              this.rerender++;
+              this.isNotValid = true;
+            })
       }
-      console.log('do nothing')
     }
   }
 }

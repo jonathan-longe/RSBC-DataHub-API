@@ -10,12 +10,7 @@
         <form-row v-if="licencePickupInPerson && isLicenceSurrendered">
           <type-ahead-field id="pickup_address" :suggestions="getArrayOfPickupLocations" fg_class="col-sm-6">
             Pickup address and city
-            <a @mouseover="display_tooltip = true" @mouseleave="display_tooltip = false"><b-icon-question-circle text="pickup locations can be added to this list"></b-icon-question-circle></a>
           </type-ahead-field>
-        </form-row>
-        <form-row v-if="display_tooltip">
-          <p class="col-sm-6 text-muted small">Begin typing the address where drivers can pickup their licence.
-            Email {{ getRoadSafetyEmailAddress }} to have pickup addresses added or removed from the list.</p>
         </form-row>
       </form-card>
   </div>
@@ -30,11 +25,6 @@ import {mapGetters} from "vuex";
 export default {
   name: "ReturnOfLicenceCard",
   mixins: [CardsCommon],
-  data() {
-    return {
-      display_tooltip: false
-    }
-  },
   computed: {
     ...mapGetters(["getArrayOfPickupLocations", "getRoadSafetyEmailAddress"]),
     licencePickupInPerson() {
@@ -43,11 +33,6 @@ export default {
     isLicenceSurrendered() {
       return this.getAttributeValue('licence_surrendered') === "Yes";
     },
-  },
-  methods: {
-    toggleToolTip() {
-      this.display_tooltip = true
-    }
   }
 }
 </script>

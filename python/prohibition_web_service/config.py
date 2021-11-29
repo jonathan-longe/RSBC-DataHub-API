@@ -7,6 +7,9 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config(BaseConfig):
     FLASK_SECRET_KEY                    = os.getenv('FLASK_SECRET_KEY')
 
+    FLASK_BASIC_AUTH_USER               = os.getenv('FLASK_BASIC_AUTH_USER')
+    FLASK_BASIC_AUTH_PASS               = os.getenv('FLASK_BASIC_AUTH_PASS')
+
     ICBC_API_ROOT                       = os.getenv('ICBC_API_ROOT', "http://localhost:8080/api")
     ICBC_API_USERNAME                   = os.getenv('ICBC_API_USERNAME', 'user1')
     ICBC_API_PASSWORD                   = os.getenv('ICBC_API_PASSWORD', 'secret')

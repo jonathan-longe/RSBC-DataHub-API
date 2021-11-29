@@ -4,6 +4,7 @@ import datetime
 import pytz
 from flask import jsonify, make_response
 from python.prohibition_web_service.models import db, Form
+from python.prohibition_web_service.config import Config
 
 
 def validate_update(**kwargs) -> tuple:
@@ -95,7 +96,7 @@ def request_contains_a_payload(**kwargs) -> tuple:
     return payload is not None, kwargs
 
 
-def list_all_forms(**kwargs) -> tuple:
+def list_all_users_forms(**kwargs) -> tuple:
     form_type = kwargs.get('form_type')
     username = kwargs.get('username')
     logging.debug("inside list_all_forms() {} {}".format(username, form_type))
@@ -126,4 +127,17 @@ def get_a_form(**kwargs) -> tuple:
         return False, kwargs
     return True, kwargs
 
+
+def admin_list_all_forms_by_type(**kwargs) -> tuple:
+    logging.debug("inside admin_list_all_forms()")
+    form_type = kwargs.get('form_type')
+    try:
+        all_forms = db.session.query(Form) \
+            .filter(Form.form_type == form_type) \
+            .limit(Config.MAX_RECORDS_RETURNED).all()
+        kwargs['response'] = make_response(jsonify(Form.collection_to_dict(all_forms)))
+    except Exception as e:
+        logging.warning(str(e))
+        return False, kwargs
+    return True, kwargs
 

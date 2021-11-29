@@ -19,7 +19,7 @@ def index(form_type):
     List all forms for a user
     """
     if request.method == 'GET':
-        kwargs = helper.middle_logic(rules.list_all_forms(),
+        kwargs = helper.middle_logic(rules.list_all_users_forms(),
                                      required_permission='forms-index',
                                      request=request,
                                      form_type=form_type,

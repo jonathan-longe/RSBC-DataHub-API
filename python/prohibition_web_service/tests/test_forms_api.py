@@ -1,4 +1,5 @@
 import pytest
+import base64
 import logging
 import json
 import responses
@@ -50,7 +51,8 @@ def roles(database):
     today = datetime.strptime("2021-07-21", "%Y-%m-%d")
     user_role = [
         UserRole(username='john@idir', role_name='officer', submitted_dt=today),
-        UserRole(username='larry@idir', role_name='officer', submitted_dt=today, approved_dt=today)
+        UserRole(username='larry@idir', role_name='officer', submitted_dt=today, approved_dt=today),
+        UserRole(username='mo@idir', role_name='administrator', submitted_dt=today, approved_dt=today)
     ]
     db.session.bulk_save_objects(user_role)
     db.session.commit()
@@ -195,13 +197,21 @@ def test_form_delete_method_not_implemented(as_guest):
     assert resp.json == {"error": "method not implemented"}
 
 
-# def test_administrator_can_view_all_forms(as_guest, forms):
-#     resp = as_guest.get("/admin/forms",
-#                         headers=_get_basic_authentication_header(Config),
-#                         follow_redirects=True)
-#     assert resp.status_code == 200
-#     assert b"Forms" in resp.data
-#     assert b"AA-123332" in resp.data
+def test_an_unauthorized_user_cannot_list_all_forms_by_type(as_guest, monkeypatch, roles, forms):
+    resp = as_guest.get("/api/v1/admin/forms?type=24Hour",
+                        content_type="application/json")
+    assert resp.status_code == 401
+
+
+def test_an_administrator_can_list_all_forms_by_type(as_guest, monkeypatch, roles, forms):
+    resp = as_guest.get("/api/v1/admin/forms?type=24Hour",
+                        content_type="application/json",
+                        headers=get_basic_authentication_header(monkeypatch))
+    assert resp.status_code == 200
+    logging.warning(str(resp.json))
+    assert len(resp.json) == 3
+
+
 #
 #
 # def test_administrator_can_filter_all_forms_by_form_type(as_guest, forms):
@@ -239,3 +249,17 @@ def _get_authorized_user(**kwargs) -> tuple:
     logging.warning("inside _get_authorized_user()")
     kwargs['decoded_access_token'] = {'preferred_username': 'larry@idir'}  # keycloak username
     return True, kwargs
+
+
+def _get_administrative_user_from_database(**kwargs) -> tuple:
+    kwargs['decoded_access_token'] = {'preferred_username': 'mo@idir'}
+    return True, kwargs
+
+
+def get_basic_authentication_header(monkeypatch, username="name", password="secret") -> dict:
+    monkeypatch.setattr(Config, "FLASK_BASIC_AUTH_USER", username)
+    monkeypatch.setattr(Config, "FLASK_BASIC_AUTH_PASS", password)
+    credentials = base64.b64encode((username + ":" + password).encode('utf-8')).decode('utf-8')
+    headers = dict({"Authorization": "Basic {}".format(credentials)})
+    logging.debug(headers)
+    return headers

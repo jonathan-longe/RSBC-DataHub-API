@@ -3,9 +3,17 @@ import python.prohibition_web_service.http_responses as http_responses
 from python.prohibition_web_service.business.keycloak_logic import get_authorized_keycloak_user
 
 
-def list_all_forms() -> list:
+def admin_list_all_forms() -> list:
+    return [
+        {"try": form_middleware.admin_list_all_forms_by_type, "fail": [
+            {"try": http_responses.server_error_response, "fail": []},
+        ]}
+    ]
+
+
+def list_all_users_forms() -> list:
     return get_authorized_keycloak_user() + [
-        {"try": form_middleware.list_all_forms, "fail": [
+        {"try": form_middleware.list_all_users_forms, "fail": [
             {"try": http_responses.server_error_response, "fail": []},
         ]}
     ]

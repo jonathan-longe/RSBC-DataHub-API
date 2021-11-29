@@ -4,7 +4,8 @@ import python.common.helper as helper
 from flask_cors import CORS
 import logging.config
 from functools import wraps
-import python.prohibition_web_service.business.forms_logic as rules
+import python.prohibition_web_service.middleware.form_middleware as form_middleware
+import python.prohibition_web_service.http_responses as http_responses
 
 logging.config.dictConfig(Config.LOGGING)
 logging.info('*** admin/forms blueprint loaded ***')
@@ -38,10 +39,15 @@ def index():
     List all forms
     """
     if request.method == 'GET':
-        kwargs = helper.middle_logic(rules.admin_list_all_forms(),
-                                     form_type=request.args.get('type'),
-                                     request=request,
-                                     config=Config)
+        kwargs = helper.middle_logic(
+            [
+                {"try": form_middleware.admin_list_all_forms_by_type, "fail": [
+                    {"try": http_responses.server_error_response, "fail": []},
+                ]}
+            ],
+            form_type=request.args.get('type'),
+            request=request,
+            config=Config)
         return kwargs.get('response')
 
 
@@ -55,12 +61,27 @@ def get(form_id):
 
 
 @bp.route('/forms', methods=['POST'])
+@basic_auth_required
 def create():
     """
     Create a new form
     """
     if request.method == 'POST':
-        return make_response('method not implemented', 405)
+        kwargs = helper.middle_logic(
+            [
+                {"try": form_middleware.get_json_payload, "fail": [
+                    {"try": http_responses.payload_missing, "fail": []},
+                ]},
+                {"try": form_middleware.validate_form_payload, "fail": [
+                    {"try": http_responses.failed_validation, "fail": []},
+                ]},
+                {"try": form_middleware.admin_create_form, "fail": [
+                    {"try": http_responses.server_error_response, "fail": []},
+                ]}
+            ],
+            request=request,
+            config=Config)
+        return kwargs.get('response')
 
 
 @bp.route('/forms/<string:form_id>', methods=['PATCH'])

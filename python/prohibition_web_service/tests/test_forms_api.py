@@ -66,8 +66,20 @@ def test_authorized_user_gets_only_current_users_form_records(as_guest, monkeypa
                         headers=_get_keycloak_auth_header(_get_keycloak_access_token()))
     assert len(resp.json) == 2
     assert resp.json == [
-        {'id': 'AA-123332', 'form_type': '24Hour', 'lease_expiry': '2021-07-21', 'printed_timestamp': None},
-        {'id': 'AA-123333', 'form_type': '24Hour', 'lease_expiry': '2021-07-20', 'printed_timestamp': None}
+        {
+             'id': 'AA-123332',
+             'form_type': '24Hour',
+             'lease_expiry': '2021-07-21',
+             'printed_timestamp': None,
+             'username': 'larry@idir'
+         },
+        {
+            'id': 'AA-123333',
+            'form_type': '24Hour',
+            'lease_expiry': '2021-07-20',
+            'printed_timestamp': None,
+            'username': 'larry@idir'
+        }
     ]
     assert resp.status_code == 200
 
@@ -100,7 +112,11 @@ def test_when_form_created_authorized_user_receives_unique_form_id_for_later_use
 
     assert resp.status_code == 201
     assert resp.json == {
-        'id': 'AA-11111', 'form_type': '24Hour', 'lease_expiry': expected_lease_expiry, 'printed_timestamp': None
+        'id': 'AA-11111',
+        'form_type': '24Hour',
+        'lease_expiry': expected_lease_expiry,
+        'printed_timestamp': None,
+        'username': 'larry@idir'
     }
 
 
@@ -185,7 +201,11 @@ def test_when_form_updated_without_payload_user_receives_updated_lease_date(as_g
 
     assert resp.status_code == 200
     assert resp.json == {
-        'id': 'AA-123332', 'form_type': '24Hour', 'lease_expiry': expected_lease_expiry, 'printed_timestamp': None
+        'id': 'AA-123332',
+        'form_type': '24Hour',
+        'lease_expiry': expected_lease_expiry,
+        'printed_timestamp': None,
+        'username': 'larry@idir'
     }
 
 
@@ -195,33 +215,6 @@ def test_form_delete_method_not_implemented(as_guest):
                            headers=_get_keycloak_auth_header(Config))
     assert resp.status_code == 405
     assert resp.json == {"error": "method not implemented"}
-
-
-def test_an_unauthorized_user_cannot_list_all_forms_by_type(as_guest, monkeypatch, roles, forms):
-    resp = as_guest.get("/api/v1/admin/forms?type=24Hour",
-                        content_type="application/json")
-    assert resp.status_code == 401
-
-
-def test_an_administrator_can_list_all_forms_by_type(as_guest, monkeypatch, roles, forms):
-    resp = as_guest.get("/api/v1/admin/forms?type=24Hour",
-                        content_type="application/json",
-                        headers=get_basic_authentication_header(monkeypatch))
-    assert resp.status_code == 200
-    logging.warning(str(resp.json))
-    assert len(resp.json) == 3
-
-
-#
-#
-# def test_administrator_can_filter_all_forms_by_form_type(as_guest, forms):
-#     resp = as_guest.get("/admin/forms{}".format('?form_type=12Hour'),
-#                         headers=_get_basic_authentication_header(Config),
-#                         follow_redirects=True)
-#     assert resp.status_code == 200
-#     assert b"Forms" in resp.data
-#     assert b"AA-123334" in resp.data
-#     assert b"AA-123332" not in resp.data
 
 
 def _get_keycloak_access_token() -> str:
@@ -254,12 +247,3 @@ def _get_authorized_user(**kwargs) -> tuple:
 def _get_administrative_user_from_database(**kwargs) -> tuple:
     kwargs['decoded_access_token'] = {'preferred_username': 'mo@idir'}
     return True, kwargs
-
-
-def get_basic_authentication_header(monkeypatch, username="name", password="secret") -> dict:
-    monkeypatch.setattr(Config, "FLASK_BASIC_AUTH_USER", username)
-    monkeypatch.setattr(Config, "FLASK_BASIC_AUTH_PASS", password)
-    credentials = base64.b64encode((username + ":" + password).encode('utf-8')).decode('utf-8')
-    headers = dict({"Authorization": "Basic {}".format(credentials)})
-    logging.debug(headers)
-    return headers

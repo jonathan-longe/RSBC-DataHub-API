@@ -63,6 +63,11 @@ def payload_missing(**kwargs) -> tuple:
     return True, kwargs
 
 
+def failed_validation(**kwargs) -> tuple:
+    kwargs['response'] = make_response({'error': 'failed validation'}, 400)
+    return True, kwargs
+
+
 def respond_test_vehicle(**kwargs) -> tuple:
     # TODO - Remove before flight
     kwargs['response'] = make_response(sample_vehicle_response(), 200)

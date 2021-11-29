@@ -2,6 +2,7 @@ import logging
 import json
 import datetime
 import pytz
+from cerberus import Validator
 from flask import jsonify, make_response
 from python.prohibition_web_service.models import db, Form
 from python.prohibition_web_service.config import Config
@@ -136,6 +137,52 @@ def admin_list_all_forms_by_type(**kwargs) -> tuple:
             .filter(Form.form_type == form_type) \
             .limit(Config.MAX_RECORDS_RETURNED).all()
         kwargs['response'] = make_response(jsonify(Form.collection_to_dict(all_forms)))
+    except Exception as e:
+        logging.warning(str(e))
+        return False, kwargs
+    return True, kwargs
+
+
+def get_json_payload(**kwargs) -> tuple:
+    logging.debug("inside get_json_payload()")
+    try:
+        request = kwargs.get('request')
+        kwargs['payload'] = request.json
+    except Exception as e:
+        logging.warning(str(e))
+        return False, kwargs
+    return True, kwargs
+
+
+def validate_form_payload(**kwargs) -> tuple:
+    logging.debug("inside validate_form_payload()")
+    payload = kwargs.get('payload')
+    schema = {
+        "form_id": {
+            'type': 'string',
+            'empty': False,
+            'required': True
+        },
+        "form_type": {
+            'type': 'string',
+            'allowed': ['12Hour', '24Hour', 'IRP', 'VI'],
+            'empty': False,
+            'required': True
+        }
+    }
+    v = Validator(schema)
+    return v.validate(payload), kwargs
+
+
+def admin_create_form(**kwargs) -> tuple:
+    logging.debug("inside admin_create_form()")
+    payload = kwargs.get('payload')
+    logging.warning(str(payload))
+    try:
+        new_form = Form(form_id=payload.get('form_id'), form_type=payload.get('form_type'))
+        db.session.add(new_form)
+        db.session.commit()
+        kwargs['response'] = make_response({"success": True}, 201)
     except Exception as e:
         logging.warning(str(e))
         return False, kwargs

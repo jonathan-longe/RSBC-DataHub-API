@@ -25,7 +25,8 @@ class Form(db.Model):
             "id": form.id,
             "form_type": form.form_type,
             "lease_expiry": Form._format_lease_expiry(form.lease_expiry),
-            "printed_timestamp": form.printed_timestamp
+            "printed_timestamp": form.printed_timestamp,
+            "username": form.username
         }
 
     def lease(self, username):

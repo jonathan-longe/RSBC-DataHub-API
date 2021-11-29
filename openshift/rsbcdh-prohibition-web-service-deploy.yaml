@@ -18,6 +18,8 @@ parameters:
 - name: KEYCLOAK_REALM
 - name: KEYCLOAK_AUTH_URL
 - name: KEYCLOAK_CLIENT_ID
+- name: FLASK_BASIC_AUTH_USER
+- name: FLASK_BASIC_AUTH_PASS
 - name: LOG_LEVEL
   value: 'INFO'
 - name: FLASK_ENV
@@ -137,6 +139,16 @@ objects:
                 secretKeyRef:
                   name: ${NAME}${SUFFIX}
                   key: keycloak-client-id
+            - name: FLASK_BASIC_AUTH_USER
+              valueFrom:
+                secretKeyRef:
+                  name: ${NAME}${SUFFIX}
+                  key: flask-basic-auth-user
+            - name: FLASK_BASIC_AUTH_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: ${NAME}${SUFFIX}
+                  key: flask-basic-auth-pass
             - name: LOG_LEVEL
               value: ${LOG_LEVEL}
             - name: ENVIRONMENT

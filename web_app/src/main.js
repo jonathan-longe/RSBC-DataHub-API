@@ -48,10 +48,11 @@ new Vue({
   async created() {
 
     await store.dispatch("getAllFormsFromDB");
+    await store.dispatch("downloadLookupTables")
 
     this.$store.subscribe((mutation) => {
       if (mutation.type === 'setKeycloak') {
-        store.dispatch("downloadLookupTables")
+        store.dispatch("fetchStaticLookupTables", "user_roles")
       }
     });
 

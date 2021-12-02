@@ -253,7 +253,7 @@ export const getters = {
     apiHeader: state => {
         const headers = new Headers();
         headers.set('Content-Type', 'application/json')
-        if (state.keycloak) {
+        if (state.keycloak.token) {
             headers.set('Authorization', 'Bearer ' + state.keycloak.token)
         }
         return headers
@@ -349,8 +349,9 @@ export const getters = {
     },
 
     isUserHasAtLeastOneFormId: (state, getters) => {
-        for (let form_type in getters.getFormTypeCount) {
-                if (form_type > 0) {
+        const form_types = getters.getFormTypeCount;
+        for (let row in form_types) {
+                if (form_types[row] > 0) {
                     return true
                 }
             }

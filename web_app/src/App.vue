@@ -22,7 +22,7 @@
     <div class="card-body">
       <offline-banner v-if="! $store.state.isOnline"></offline-banner>
       <router-view></router-view>
-      <div class="card-footer bg-transparent border-0 text-muted small">Version: {{ getAppVersion }}</div>
+      <debug-component></debug-component>
     </div>
   </div>
 </template>
@@ -32,10 +32,11 @@
 import {mapGetters} from 'vuex';
 import NotLoggedInBanner from "@/components/NotLoggedInBanner";
 import OfflineBanner from '@/components/OfflineBanner'
+import DebugComponent from "@/components/debugComponent";
 
 export default {
   name: 'App',
-  components: {NotLoggedInBanner, OfflineBanner},
+  components: {DebugComponent, NotLoggedInBanner, OfflineBanner},
   computed: {
     ...mapGetters(['getAppVersion', "getKeycloakUsername", "isUserAnAdmin", "isUserAuthenticated",
     "isDisplayNotLoggedInBanner"]),

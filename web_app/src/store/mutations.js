@@ -79,7 +79,7 @@ export const mutations = {
                 Vue.set(root, form_property, state.form_schemas.forms[form_object.form_type][form_property])
             }
         }
-        if(state.keycloak) {
+        if(state.keycloak.idTokenParsed) {
             Vue.set( root.data, "logged_in_user", state.keycloak.idTokenParsed.preferred_username);
             Vue.set( root.data, "officer_name", state.keycloak.idTokenParsed.family_name);
         }

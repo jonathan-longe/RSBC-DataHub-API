@@ -21,16 +21,6 @@ if (process.env.NODE_ENV === 'production') {
       console.log('New content is downloading.')
     },
     updated (registration) {
-      console.log('New version of app is available - delete old caches')
-      caches.keys().then(function(cacheNames) {
-        return Promise.all(
-          cacheNames.filter(function(cacheName) {
-            console.log('  - deleting: ' + cacheName)
-          }).map(function(cacheName) {
-            return caches.delete(cacheName);
-          })
-        );
-      })
       console.log('New version of app is available - reloading app automatically')
       document.dispatchEvent(
           new CustomEvent('swUpdated', { detail: registration })

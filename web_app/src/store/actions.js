@@ -177,15 +177,41 @@ export const actions = {
                 })
     },
 
+    // async fetchStaticLookupTwo(context, type) {
+    //     const admin = type === 'users' ? 'admin/' : ''
+    //     const url = constants.API_ROOT_URL + "/api/v1/" + admin + type
+    //     // Try to get the response from a cache.
+    //     const cachedResponse = await caches.match(url);
+    //     // Return if we found one.
+    //     const cachedData = response ? await cachedResponse.json() : undefined
+    //     if (cachedData) {
+    //         console.log(`[Service Worker] Using cached resource: ${url}`);
+    //         context.commit("populateStaticLookupTables", { "type": type, "data": cachedData })
+    //     }
+    //     console.log(`[Service Worker] Fetching resource: ${url}`);
+    //     const response = await fetch(url, {
+    //                 "method": 'GET',
+    //                 "headers": context.getters.apiHeader});
+    //     // response may be used only once
+    //     // we need to save clone to put one copy in cache and serve second one
+    //     // const responseClone = response.clone();
+    //     // const cache = await caches.open("cacheName");
+    //     // console.log(`[Service Worker] Caching new resource: ${url}`);
+    //     // await cache.put(url, responseClone)
+    //     const data = response ? await response.json() : undefined
+    //     if (data) {
+    //         context.commit("populateStaticLookupTables", { "type": type, "data": data })
+    //     }
+    // },
 
     async fetchStaticLookupTables(context, type) {
-        console.log("fetchStaticLookupTables()", type)
         const admin = type === 'users' ? 'admin/' : ''
         const url = constants.API_ROOT_URL + "/api/v1/" + admin + type
+        console.log("fetchStaticLookupTables()", url)
 
         let networkDataReceived = false;
 
-        let networkUpdate = await fetch(url, {
+        let networkUpdate = fetch(url, {
                     "method": 'GET',
                     "headers": context.getters.apiHeader})
                     .then( response => {
@@ -194,6 +220,9 @@ export const actions = {
                     .then( data => {
                         networkDataReceived = true;
                         context.commit("populateStaticLookupTables", { "type": type, "data": data })
+                    })
+                    .catch(() => {
+                        console.log("fetchStaticLookupTables network fetch failed")
                     })
 
         caches.match(url)
@@ -547,7 +576,6 @@ export const actions = {
 
         await context.dispatch("getMoreFormsFromApiIfNecessary")
         await context.dispatch("fetchStaticLookupTables", "agencies")
-        await context.dispatch("fetchStaticLookupTables", "user_roles")
         await context.dispatch("fetchStaticLookupTables", "impound_lot_operators")
         await context.dispatch("fetchStaticLookupTables", "countries")
         await context.dispatch("fetchStaticLookupTables", "jurisdictions")

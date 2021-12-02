@@ -31,6 +31,8 @@ export default {
   },
   computed: {
     ...mapGetters([
+        "isUserHasAtLeastOneFormId",
+        "getArrayOfCommonCarColors",
       'isRecentProhibitions',
       'getFormData',
       'isDisplayIssueProhibitions',

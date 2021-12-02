@@ -6,8 +6,10 @@
         <div>getArrayOfCommonCarColors.length: {{ getArrayOfCommonCarColors.length }}</div>
         <div>isUserAuthenticated: {{ isUserAuthenticated }}</div>
         <div>isUserAuthorized: {{ isUserAuthorized }}</div>
-        <div>state.keycloak.ready: {{ $store.state.keycloak.ready }}</div>
         <div>state.isOnline: {{ $store.state.isOnline }}</div>
+        <div>state.keycloak.ready: {{ $store.state.keycloak.ready }}</div>
+        <div>state.keycloak.authenticated: {{ $store.state.keycloak.authenticated}}</div>
+        <pre>{{ $store.state.keycloak }}</pre>
       </div>
     </div>
 </template>
@@ -28,20 +30,20 @@ export default {
     }
   },
   computed: {
-        ...mapGetters([
-        "isUserHasAtLeastOneFormId",
+      ...mapGetters([
+        "getAppVersion",
+        "isUserAuthenticated",
+        "isUserAuthorized",
         "getArrayOfCommonCarColors",
-      'isRecentProhibitions',
-      'getFormData',
-      'isDisplayIssueProhibitions',
-      'getCurrentlyEditedFormObject',
-      'isDisplayUserNotAuthorizedBanner',
-      'isDisplayFeedbackBanner',
-      'isDisplaySearchRecentProhibition',
-      'isDisplayWelcomeLoginCard',
-            "getAppVersion",
-            "isUserAuthenticated",
-            "isUserAuthorized"
+        "isUserHasAtLeastOneFormId",
+        'getCurrentlyEditedFormObject',
+        'getFormData',
+        'isDisplayFeedbackBanner',
+        'isDisplayIssueProhibitions',
+        'isDisplaySearchRecentProhibition',
+        'isDisplayUserNotAuthorizedBanner',
+        'isDisplayWelcomeLoginCard',
+        'isRecentProhibitions',
     ]),
   }
 }

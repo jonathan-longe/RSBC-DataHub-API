@@ -48,6 +48,9 @@ def test_an_applicant_can_schedule_an_oral_review(monkeypatch):
                   json={"timeSlot": time_slot},
                   status=200)
 
+    responses.add(responses.POST, "{}:{}/services/collector".format(
+        Config.SPLUNK_HOST, Config.SPLUNK_PORT), status=201)
+
     responses.add(responses.POST, '{}/realms/{}/protocol/openid-connect/token'.format(
         Config.COMM_SERV_AUTH_URL, Config.COMM_SERV_REALM), json={"access_token": "token"}, status=200)
 
@@ -74,7 +77,7 @@ def test_an_applicant_can_schedule_an_oral_review(monkeypatch):
                                   config=Config,
                                   writer=RabbitMQ)
 
-    email_payload = json.loads(responses.calls[5].request.body.decode())
+    email_payload = json.loads(responses.calls[6].request.body.decode())
     assert "applicant_fake@gov.bc.ca" in email_payload['to']
     assert "Review Date Confirmed - Driving Prohibition 21-900040 Review" in email_payload['subject']
     assert "We can only change the review date or time in special situations." in email_payload['body']
@@ -117,6 +120,9 @@ def test_an_applicant_can_schedule_a_written_review(monkeypatch):
                   json={"timeSlot": time_slot},
                   status=201)
 
+    responses.add(responses.POST, "{}:{}/services/collector".format(
+        Config.SPLUNK_HOST, Config.SPLUNK_PORT), status=201)
+
     responses.add(responses.POST, '{}/realms/{}/protocol/openid-connect/token'.format(
         Config.COMM_SERV_AUTH_URL, Config.COMM_SERV_REALM), json={"access_token": "token"}, status=200)
 
@@ -143,7 +149,7 @@ def test_an_applicant_can_schedule_a_written_review(monkeypatch):
                                   config=Config,
                                   writer=RabbitMQ)
 
-    email_payload = json.loads(responses.calls[5].request.body.decode())
+    email_payload = json.loads(responses.calls[6].request.body.decode())
     assert "applicant_fake@gov.bc.ca" in email_payload['to']
     assert "Review Date Confirmed - Driving Prohibition 21-900040 Review" in email_payload['subject']
     assert "We can only change the review date or time in special situations." in email_payload['body']

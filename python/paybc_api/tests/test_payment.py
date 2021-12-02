@@ -481,6 +481,9 @@ def test_receipt_endpoint_returns_success_and_sends_schedule_email(prohibition_t
                       Config.VIPS_API_ROOT_URL, "bb71037c-f87b-0444-e054-00144ff95452", "20123456"),
                   json=vips_mock.payment_patch_payload(), status=200)
 
+    responses.add(responses.POST, "{}:{}/services/collector".format(
+        Config.SPLUNK_HOST, Config.SPLUNK_PORT), status=201)
+
     responses.add(responses.POST, '{}/realms/{}/protocol/openid-connect/token'.format(
         Config.COMM_SERV_AUTH_URL, Config.COMM_SERV_REALM), json={"access_token": "token"}, status=200)
 
@@ -501,9 +504,10 @@ def test_receipt_endpoint_returns_success_and_sends_schedule_email(prohibition_t
     logging.info("receipt: {}".format(response.json))
     assert "APP" in response.json['status']  # APP == APPROVED
     assert response.status_code == 200
-    assert '"to": ["applicant_fake@gov.bc.ca"]' in responses.calls[4].request.body.decode('utf-8')
-    assert '"subject": "Select Review Date - Driving Prohibition 20-123456 Review"' in responses.calls[4].request.body.decode('utf-8')
-    assert 'Dear Developer Norris,' in responses.calls[4].request.body.decode('utf-8')
+    email_body = responses.calls[5].request.body.decode('utf-8')
+    assert '"to": ["applicant_fake@gov.bc.ca"]' in email_body
+    assert '"subject": "Select Review Date - Driving Prohibition 20-123456 Review"' in email_body
+    assert 'Dear Developer Norris,' in email_body
     assert '"email": "success", "prohibition_number": "20123456"' in caplog.text
 
 

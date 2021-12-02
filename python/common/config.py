@@ -38,7 +38,7 @@ class Config:
     PAYLOAD_VERSION_NUMBER              = "1.5"
 
     # Splunk settings
-    SPLUNK_HOST                         = os.getenv('SPLUNK_HOST', 'localhost')
+    SPLUNK_HOST                         = os.getenv('SPLUNK_HOST', 'http://localhost')
     SPLUNK_PORT                         = int(os.getenv('SPLUNK_PORT', '8088'))
     SPLUNK_TOKEN                        = os.getenv('SPLUNK_TOKEN', 'aaaa-bbbb-cccc')
     SPLUNK_INDEX                        = os.getenv('SPLUNK_INDEX', 'dev_rsbc_dh')

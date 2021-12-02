@@ -1,6 +1,7 @@
 import python.common.middleware as middleware
 import python.common.actions as actions
 import python.common.rsi_email as rsi_email
+import python.common.splunk as splunk
 
 
 def process_incoming_form() -> dict:
@@ -38,6 +39,7 @@ def process_incoming_form() -> dict:
                 # if send is not successful, add back to hold queue
             ]},
             {"try": middleware.mark_disclosure_as_sent, "fail": []},
+            {"try": splunk.disclosure_sent, "fail": []},
             {"try": actions.add_hold_before_sending_disclosure, "fail": []},
             {"try": actions.add_to_hold_queue, "fail": []}
 
@@ -82,6 +84,7 @@ def process_incoming_form() -> dict:
                 # Consider sending a message to the applicant in the unlikely
                 # event that the schedule save operation is unsuccessful
             ]},
+            {"try": splunk.review_scheduled, "fail": []},
             {"try": rsi_email.applicant_schedule_confirmation, "fail": []},
             {"try": rsi_email.applicant_evidence_instructions, "fail": []},
             {"try": middleware.create_disclosure_event, "fail": []},
@@ -135,6 +138,7 @@ def process_incoming_form() -> dict:
                     {"try": actions.add_to_failed_queue, "fail": []},
                     {"try": rsi_email.admin_unable_to_save_to_vips, "fail": []}
                 ]},
+                {"try": splunk.application_accepted, "fail": []},
                 {"try": rsi_email.application_accepted, "fail": []},
                 {"try": middleware.is_applicant_ineligible_for_oral_review_but_requested_oral, "fail": [
                     # end of successful application process
@@ -161,6 +165,7 @@ def process_incoming_form() -> dict:
                 {"try": actions.add_to_failed_queue, "fail": []},
                 {"try": rsi_email.admin_unable_to_save_to_vips, "fail": []}
             ]},
+            {"try": splunk.application_accepted, "fail": []},
             {"try": rsi_email.application_accepted, "fail": []},
             {"try": middleware.is_applicant_ineligible_for_oral_review_but_requested_oral, "fail": [
                 # end of successful application process
@@ -179,5 +184,6 @@ def process_incoming_form() -> dict:
             {"try": middleware.get_application_details, "fail": []},
             {"try": middleware.valid_application_received_from_vips, "fail": []},
             {"try": rsi_email.applicant_evidence_received, "fail": []},
+            {"try": splunk.evidence_received, "fail": []},
         ]
     }

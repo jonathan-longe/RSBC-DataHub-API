@@ -263,6 +263,9 @@ def test_a_successful_applicant_gets_an_application_accepted_email(prohib, monke
                   json={},
                   status=200)
 
+    responses.add(responses.POST, "{}:{}/services/collector".format(
+        Config.SPLUNK_HOST, Config.SPLUNK_PORT), status=201)
+
     responses.add(responses.POST, '{}/realms/{}/protocol/openid-connect/token'.format(
         Config.COMM_SERV_AUTH_URL, Config.COMM_SERV_REALM), json={"access_token": "token"}, status=200)
 
@@ -281,7 +284,7 @@ def test_a_successful_applicant_gets_an_application_accepted_email(prohib, monke
                                   config=Config,
                                   writer=None)
 
-    email_payload = json.loads(responses.calls[3].request.body.decode())
+    email_payload = json.loads(responses.calls[4].request.body.decode())
     assert "me@lost.com" in email_payload['to']
     assert "Application Accepted - Driving Prohibition 21-999344 Review" == email_payload['subject']
     assert "Your application for a review of driving prohibition 21999344 has been accepted." in email_payload['body']
@@ -442,6 +445,9 @@ def test_an_unlicenced_applicant_has_no_licence_to_surrender_gets_accepted_email
                   json={},
                   status=200)
 
+    responses.add(responses.POST, "{}:{}/services/collector".format(
+        Config.SPLUNK_HOST, Config.SPLUNK_PORT), status=201)
+
     responses.add(responses.POST, '{}/realms/{}/protocol/openid-connect/token'.format(
         Config.COMM_SERV_AUTH_URL, Config.COMM_SERV_REALM), json={"access_token": "token"}, status=200)
 
@@ -455,7 +461,7 @@ def test_an_unlicenced_applicant_has_no_licence_to_surrender_gets_accepted_email
                                   config=Config,
                                   writer=None)
 
-    email_payload = json.loads(responses.calls[3].request.body.decode())
+    email_payload = json.loads(responses.calls[4].request.body.decode())
     assert "me@lost.com" in email_payload['to']
     assert "Application Accepted - Driving Prohibition 21-999344 Review" == email_payload['subject']
     assert "Your application for a review of driving prohibition 21999344 has been accepted." in email_payload['body']
@@ -477,6 +483,9 @@ def test_an_unlicenced_applicant_that_has_previously_applied_gets_application_ac
                   json={},
                   status=200)
 
+    responses.add(responses.POST, "{}:{}/services/collector".format(
+        Config.SPLUNK_HOST, Config.SPLUNK_PORT), status=201)
+
     responses.add(responses.POST, '{}/realms/{}/protocol/openid-connect/token'.format(
         Config.COMM_SERV_AUTH_URL, Config.COMM_SERV_REALM), json={"access_token": "token"}, status=200)
 
@@ -490,7 +499,7 @@ def test_an_unlicenced_applicant_that_has_previously_applied_gets_application_ac
                                   config=Config,
                                   writer=None)
 
-    email_payload = json.loads(responses.calls[3].request.body.decode())
+    email_payload = json.loads(responses.calls[4].request.body.decode())
     assert "me@lost.com" in email_payload['to']
     assert "Application Accepted - Driving Prohibition 21-999344 Review" == email_payload['subject']
 
@@ -534,6 +543,9 @@ def test_an_unlicenced_applicant_who_has_never_previously_applied_gets_applicati
                   json={},
                   status=200)
 
+    responses.add(responses.POST, "{}:{}/services/collector".format(
+        Config.SPLUNK_HOST, Config.SPLUNK_PORT), status=201)
+
     responses.add(responses.POST, '{}/realms/{}/protocol/openid-connect/token'.format(
         Config.COMM_SERV_AUTH_URL, Config.COMM_SERV_REALM), json={"access_token": "token"}, status=200)
 
@@ -548,7 +560,7 @@ def test_an_unlicenced_applicant_who_has_never_previously_applied_gets_applicati
                                   config=Config,
                                   writer=None)
 
-    email_payload = json.loads(responses.calls[3].request.body.decode())
+    email_payload = json.loads(responses.calls[4].request.body.decode())
     assert "me@lost.com" in email_payload['to']
     assert "Application Accepted - Driving Prohibition 21-999344 Review" == email_payload['subject']
     assert "Your application for a review of driving prohibition 21999344 has been accepted." in email_payload['body']
@@ -567,6 +579,9 @@ def test_an_unlicenced_successful_applicant_gets_an_application_accepted_email()
                   json={},
                   status=200)
 
+    responses.add(responses.POST, "{}:{}/services/collector".format(
+        Config.SPLUNK_HOST, Config.SPLUNK_PORT), status=201)
+
     responses.add(responses.POST, '{}/realms/{}/protocol/openid-connect/token'.format(
         Config.COMM_SERV_AUTH_URL, Config.COMM_SERV_REALM), json={"access_token": "token"}, status=200)
 
@@ -580,7 +595,7 @@ def test_an_unlicenced_successful_applicant_gets_an_application_accepted_email()
                                   config=Config,
                                   writer=None)
 
-    email_payload = json.loads(responses.calls[3].request.body.decode())
+    email_payload = json.loads(responses.calls[4].request.body.decode())
     assert "me@lost.com" in email_payload['to']
     assert "Application Accepted - Driving Prohibition 21-999344 Review" == email_payload['subject']
     assert "Your application for a review of driving prohibition 21999344 has been accepted." in email_payload['body']

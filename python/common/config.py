@@ -57,17 +57,6 @@ class Config:
             }
         },
         'handlers': {
-            'splunk': {
-                'level': 'INFO',
-                'class': 'splunk_handler.SplunkHandler',
-                'formatter': 'json',
-                'host': SPLUNK_HOST,
-                'port': SPLUNK_PORT,
-                'token': SPLUNK_TOKEN,
-                'index': SPLUNK_INDEX,
-                'sourcetype': 'json',
-                'verify': False
-            },
             'console': {
                 'level': LOG_LEVEL,
                 'class': 'logging.StreamHandler',

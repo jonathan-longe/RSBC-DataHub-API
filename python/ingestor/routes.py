@@ -3,15 +3,14 @@ from python.ingestor.config import Config
 from python.common.rabbitmq import RabbitMQ
 from python.common.message import encode_message
 import python.ingestor.business as business
-from flask import request, jsonify, Response, g
-from flask_api import FlaskAPI
+from flask import request, jsonify, Response, g, Flask
 import logging
 import logging.config
 from functools import wraps
 import python.common.rsi_email as rsi_email
 
 
-application = FlaskAPI(__name__)
+application = Flask(__name__)
 application.secret = Config.FLASK_SECRET_KEY
 logging.config.dictConfig(Config.LOGGING)
 logging.warning('*** flask initialized ***')

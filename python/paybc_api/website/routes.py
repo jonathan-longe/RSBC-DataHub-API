@@ -9,7 +9,7 @@ import logging.config
 
 logging.config.dictConfig(Config.LOGGING)
 logging.warning('*** Pay BC API initialized ***')
-bp = Blueprint(__name__, 'home')
+bp = Blueprint('paybc', __name__)
 
 
 @bp.route('/oauth/token', methods=['POST'])

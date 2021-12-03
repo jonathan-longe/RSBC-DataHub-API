@@ -31,8 +31,6 @@ parameters:
 - name: SPLUNK_HOST
 - name: SPLUNK_TOKEN
 - name: SPLUNK_INDEX
-- name: LOGGERS_IN_USE
-  value: 'console splunk'
 - name: LOG_LEVEL
   value: 'INFO'
 - name: FLASK_ENV
@@ -220,8 +218,6 @@ objects:
                 secretKeyRef:
                   name: ${NAME}-${PHASE}
                   key: splunk-index
-            - name: LOGGERS_IN_USE
-              value: ${LOGGERS_IN_USE}
             - name: LOG_LEVEL
               value: ${LOG_LEVEL}
             - name: ENVIRONMENT

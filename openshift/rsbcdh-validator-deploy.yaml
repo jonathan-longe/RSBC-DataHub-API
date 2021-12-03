@@ -15,8 +15,6 @@ parameters:
 - name: SPLUNK_HOST
 - name: SPLUNK_TOKEN
 - name: SPLUNK_INDEX
-- name: LOGGERS_IN_USE
-  value: 'console splunk'
 - name: LOG_LEVEL
   value: 'WARNING'
 - name: ENCRYPT_KEY
@@ -121,8 +119,6 @@ objects:
                 secretKeyRef:
                   name: ${NAME}-${PHASE}
                   key: splunk-index
-            - name: LOGGERS_IN_USE
-              value: ${LOGGERS_IN_USE}
             - name: FLASK_ENV
               value: ${FLASK_ENV}
             - name: PYTHONPATH

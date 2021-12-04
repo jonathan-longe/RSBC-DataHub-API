@@ -264,7 +264,7 @@ def test_a_successful_applicant_gets_an_application_accepted_email(prohib, monke
                   status=200)
 
     responses.add(responses.POST, "{}:{}/services/collector".format(
-        Config.SPLUNK_HOST, Config.SPLUNK_PORT), status=201)
+        Config.SPLUNK_HOST, Config.SPLUNK_PORT), status=200)
 
     responses.add(responses.POST, '{}/realms/{}/protocol/openid-connect/token'.format(
         Config.COMM_SERV_AUTH_URL, Config.COMM_SERV_REALM), json={"access_token": "token"}, status=200)
@@ -446,7 +446,7 @@ def test_an_unlicenced_applicant_has_no_licence_to_surrender_gets_accepted_email
                   status=200)
 
     responses.add(responses.POST, "{}:{}/services/collector".format(
-        Config.SPLUNK_HOST, Config.SPLUNK_PORT), status=201)
+        Config.SPLUNK_HOST, Config.SPLUNK_PORT), status=200)
 
     responses.add(responses.POST, '{}/realms/{}/protocol/openid-connect/token'.format(
         Config.COMM_SERV_AUTH_URL, Config.COMM_SERV_REALM), json={"access_token": "token"}, status=200)
@@ -484,7 +484,7 @@ def test_an_unlicenced_applicant_that_has_previously_applied_gets_application_ac
                   status=200)
 
     responses.add(responses.POST, "{}:{}/services/collector".format(
-        Config.SPLUNK_HOST, Config.SPLUNK_PORT), status=201)
+        Config.SPLUNK_HOST, Config.SPLUNK_PORT), status=200)
 
     responses.add(responses.POST, '{}/realms/{}/protocol/openid-connect/token'.format(
         Config.COMM_SERV_AUTH_URL, Config.COMM_SERV_REALM), json={"access_token": "token"}, status=200)
@@ -544,7 +544,7 @@ def test_an_unlicenced_applicant_who_has_never_previously_applied_gets_applicati
                   status=200)
 
     responses.add(responses.POST, "{}:{}/services/collector".format(
-        Config.SPLUNK_HOST, Config.SPLUNK_PORT), status=201)
+        Config.SPLUNK_HOST, Config.SPLUNK_PORT), status=200)
 
     responses.add(responses.POST, '{}/realms/{}/protocol/openid-connect/token'.format(
         Config.COMM_SERV_AUTH_URL, Config.COMM_SERV_REALM), json={"access_token": "token"}, status=200)
@@ -580,7 +580,7 @@ def test_an_unlicenced_successful_applicant_gets_an_application_accepted_email()
                   status=200)
 
     responses.add(responses.POST, "{}:{}/services/collector".format(
-        Config.SPLUNK_HOST, Config.SPLUNK_PORT), status=201)
+        Config.SPLUNK_HOST, Config.SPLUNK_PORT), status=200)
 
     responses.add(responses.POST, '{}/realms/{}/protocol/openid-connect/token'.format(
         Config.COMM_SERV_AUTH_URL, Config.COMM_SERV_REALM), json={"access_token": "token"}, status=200)

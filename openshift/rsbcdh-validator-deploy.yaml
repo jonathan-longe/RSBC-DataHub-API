@@ -14,7 +14,6 @@ parameters:
 - name: RABBITMQ_PASS
 - name: SPLUNK_HOST
 - name: SPLUNK_TOKEN
-- name: SPLUNK_INDEX
 - name: LOG_LEVEL
   value: 'WARNING'
 - name: ENCRYPT_KEY
@@ -114,11 +113,6 @@ objects:
                 secretKeyRef:
                   name: ${NAME}-${PHASE}
                   key: splunk-token
-            - name: SPLUNK_INDEX
-              valueFrom:
-                secretKeyRef:
-                  name: ${NAME}-${PHASE}
-                  key: splunk-index
             - name: FLASK_ENV
               value: ${FLASK_ENV}
             - name: PYTHONPATH

@@ -482,7 +482,7 @@ def test_receipt_endpoint_returns_success_and_sends_schedule_email(prohibition_t
                   json=vips_mock.payment_patch_payload(), status=200)
 
     responses.add(responses.POST, "{}:{}/services/collector".format(
-        Config.SPLUNK_HOST, Config.SPLUNK_PORT), status=201)
+        Config.SPLUNK_HOST, Config.SPLUNK_PORT), status=200)
 
     responses.add(responses.POST, '{}/realms/{}/protocol/openid-connect/token'.format(
         Config.COMM_SERV_AUTH_URL, Config.COMM_SERV_REALM), json={"access_token": "token"}, status=200)

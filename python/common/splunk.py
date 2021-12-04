@@ -50,19 +50,20 @@ def paybc_invoice_generated(**args) -> tuple:
 
 
 def _post_to_splunk(splunk_payload: dict, **args):
-    logging.warning(splunk_payload.get('event'))
+    logging.debug("inside _post_to_splunk(): " + splunk_payload.get('event'))
     config = args.get('config')
     prohibition_number = args.get('prohibition_number')
     splunk_payload['prohibition_number'] = prohibition_number
     endpoint = "{}:{}/services/collector".format(config.SPLUNK_HOST, config.SPLUNK_PORT)
     headers = {"Authorization": "Splunk " + config.SPLUNK_TOKEN}
+    logging.debug(endpoint)
+    logging.debug(str(headers))
     try:
-        response = requests.post(endpoint, headers=headers, json=splunk_payload)
+        response = requests.post(endpoint, headers=headers, json=splunk_payload, verify=False)
     except requests.ConnectionError as error:
-        logging.warning('no response from the Splunk API: {}'.format(error))
+        logging.warning('No response from the Splunk API: {}'.format(error))
         return
-
-    if response.status_code != 201:
+    if response.status_code != 200:
         logging.warning('response from Splunk was not successful: {}'.format(response.text))
     return
 

@@ -49,7 +49,7 @@ def test_an_applicant_can_schedule_an_oral_review(monkeypatch):
                   status=200)
 
     responses.add(responses.POST, "{}:{}/services/collector".format(
-        Config.SPLUNK_HOST, Config.SPLUNK_PORT), status=201)
+        Config.SPLUNK_HOST, Config.SPLUNK_PORT), status=200)
 
     responses.add(responses.POST, '{}/realms/{}/protocol/openid-connect/token'.format(
         Config.COMM_SERV_AUTH_URL, Config.COMM_SERV_REALM), json={"access_token": "token"}, status=200)
@@ -121,7 +121,7 @@ def test_an_applicant_can_schedule_a_written_review(monkeypatch):
                   status=201)
 
     responses.add(responses.POST, "{}:{}/services/collector".format(
-        Config.SPLUNK_HOST, Config.SPLUNK_PORT), status=201)
+        Config.SPLUNK_HOST, Config.SPLUNK_PORT), status=200)
 
     responses.add(responses.POST, '{}/realms/{}/protocol/openid-connect/token'.format(
         Config.COMM_SERV_AUTH_URL, Config.COMM_SERV_REALM), json={"access_token": "token"}, status=200)

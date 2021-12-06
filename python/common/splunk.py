@@ -8,72 +8,72 @@ import requests
 
 
 def application_accepted(**args) -> tuple:
-    splunk_payload = {"event": "application_accepted"}
-    _post_to_splunk(splunk_payload, **args)
+    splunk_event = {"event": "application_accepted"}
+    _post_to_splunk(splunk_event, **args)
     return True, args
 
 
 def disclosure_sent(**args) -> tuple:
-    splunk_payload = {"event": "disclosure_sent"}
-    _post_to_splunk(splunk_payload, **args)
+    splunk_event = {"event": "disclosure_sent"}
+    _post_to_splunk(splunk_event, **args)
     return True, args
 
 
 def review_scheduled(**args) -> tuple:
-    splunk_payload = {"event": "review_scheduled"}
-    _post_to_splunk(splunk_payload, **args)
+    splunk_event = {"event": "review_scheduled"}
+    _post_to_splunk(splunk_event, **args)
     return True, args
 
 
 def evidence_received(**args) -> tuple:
-    splunk_payload = {"event": "evidence_received"}
-    _post_to_splunk(splunk_payload, **args)
+    splunk_event = {"event": "evidence_received"}
+    _post_to_splunk(splunk_event, **args)
     return True, args
 
 
 def review_fee_paid(**args) -> tuple:
-    splunk_payload = {"event": "review_fee_paid"}
-    _post_to_splunk(splunk_payload, **args)
+    splunk_event = {"event": "review_fee_paid"}
+    _post_to_splunk(splunk_event, **args)
     return True, args
 
 
 def paybc_lookup(**args) -> tuple:
-    splunk_payload = {"event": "paybc_lookup"}
-    _post_to_splunk(splunk_payload, **args)
+    splunk_event = {"event": "paybc_lookup"}
+    _post_to_splunk(splunk_event, **args)
     return True, args
 
 
 def paybc_invoice_generated(**args) -> tuple:
-    splunk_payload = {"event": "paybc_invoice_generated"}
-    _post_to_splunk(splunk_payload, **args)
+    splunk_event = {"event": "paybc_invoice_generated"}
+    _post_to_splunk(splunk_event, **args)
     return True, args
 
 
 def icbc_get_driver(**args) -> tuple:
     username = args.get('username')
-    splunk_payload = {"event": "icbc_get_driver", "loginUserId": username}
-    _post_to_splunk(splunk_payload, **args)
+    splunk_event = {"event": "icbc_get_driver", "loginUserId": username}
+    _post_to_splunk(splunk_event, **args)
     return True, args
 
 
 def icbc_get_vehicle(**args) -> tuple:
     username = args.get('username')
-    splunk_payload = {"event": "icbc_get_vehicle", "loginUserId": username}
-    _post_to_splunk(splunk_payload, **args)
+    splunk_event = {"event": "icbc_get_vehicle", "loginUserId": username}
+    _post_to_splunk(splunk_event, **args)
     return True, args
 
 
-def _post_to_splunk(splunk_payload: dict, **args):
-    logging.debug("inside _post_to_splunk(): " + splunk_payload.get('event'))
+def _post_to_splunk(splunk_event: dict, **args):
+    logging.debug("inside _post_to_splunk(): " + splunk_event.get('message'))
     config = args.get('config')
-    prohibition_number = args.get('prohibition_number')
-    splunk_payload['prohibition_number'] = prohibition_number
+    splunk_data = _get_splunk_payload(args.get('prohibition_number'), splunk_event)
     endpoint = "{}:{}/services/collector".format(config.SPLUNK_HOST, config.SPLUNK_PORT)
     headers = {"Authorization": "Splunk " + config.SPLUNK_TOKEN}
     logging.debug(endpoint)
     logging.debug(str(headers))
+    logging.debug(splunk_event)
     try:
-        response = requests.post(endpoint, headers=headers, json=splunk_payload, verify=False)
+        response = requests.post(endpoint, headers=headers, json=splunk_data, verify=False)
     except requests.ConnectionError as error:
         logging.warning('No response from the Splunk API: {}'.format(error))
         return
@@ -82,6 +82,9 @@ def _post_to_splunk(splunk_payload: dict, **args):
     return
 
 
-
-
-
+def _get_splunk_payload(prohibition_number: str, splunk_event: dict) -> dict:
+    splunk_event['prohibition_number'] = prohibition_number
+    splunk_data = dict({})
+    splunk_data['event'] = splunk_event
+    splunk_data['source'] = "be78d6"
+    return splunk_data

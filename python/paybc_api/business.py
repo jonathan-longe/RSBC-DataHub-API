@@ -17,6 +17,7 @@ def search_for_invoice() -> list:
         {"try": middleware.determine_current_datetime, "fail": []},
         {"try": middleware.clean_prohibition_number, "fail": []},
         {"try": middleware.validate_prohibition_number, "fail": []},
+        {"try": splunk.paybc_lookup, "fail": []},
         {"try": middleware.get_vips_status, "fail": []},
         {"try": middleware.prohibition_exists_in_vips, "fail": []},
         {"try": middleware.user_submitted_last_name_matches_vips, "fail": []},
@@ -24,7 +25,6 @@ def search_for_invoice() -> list:
         {"try": middleware.application_not_paid, "fail": []},
         {"try": middleware.is_applicant_within_window_to_pay, "fail": []},
         {"try": api_responses.search_prohibition_success, "fail": []},
-        {"try": splunk.paybc_lookup, "fail": []},
     ]
 
 

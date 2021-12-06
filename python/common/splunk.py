@@ -64,9 +64,9 @@ def icbc_get_vehicle(**args) -> tuple:
 
 
 def _post_to_splunk(splunk_event: dict, **args):
-    logging.debug("inside _post_to_splunk(): " + splunk_event.get('message'))
+    logging.debug("inside _post_to_splunk()")
     config = args.get('config')
-    splunk_data = _get_splunk_payload(args.get('prohibition_number'), splunk_event)
+    splunk_data = _get_splunk_payload(args.get('prohibition_number'), splunk_event, config.OPENSHIFT_PLATE)
     endpoint = "{}:{}/services/collector".format(config.SPLUNK_HOST, config.SPLUNK_PORT)
     headers = {"Authorization": "Splunk " + config.SPLUNK_TOKEN}
     logging.debug(endpoint)
@@ -82,9 +82,9 @@ def _post_to_splunk(splunk_event: dict, **args):
     return
 
 
-def _get_splunk_payload(prohibition_number: str, splunk_event: dict) -> dict:
+def _get_splunk_payload(prohibition_number: str, splunk_event: dict, openshift_plate: str) -> dict:
     splunk_event['prohibition_number'] = prohibition_number
     splunk_data = dict({})
     splunk_data['event'] = splunk_event
-    splunk_data['source'] = "be78d6"
+    splunk_data['source'] = openshift_plate
     return splunk_data

@@ -91,19 +91,15 @@ export default {
     ...mapMutations(["setFormAsPrinted"]),
     ...mapActions(["saveFormAndGeneratePDF"]),
     async onSubmit (valid) {
+      this.display_spinner = true;
       console.log('inside onSubmit()', valid);
       if(valid) {
-        this.display_spinner = true;
         await this.saveFormAndGeneratePDF(this.getFormObject)
-            .then(() => {
-              this.display_spinner = false;
-            })
-            .catch(() => {
-              this.display_spinner = false;
-              this.rerender++;
-              this.isNotValid = true;
-            })
+      } else {
+        this.rerender++;
+        this.isNotValid = true;
       }
+      this.display_spinner = false;
     }
   }
 }

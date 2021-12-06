@@ -3,7 +3,7 @@
   <validation-provider :rules="rules" :name="id" v-slot="{ errors, required }">
     <label v-if="show_label" :for="id">
       Date of Birth
-      <span v-if="! required" class="text-danger"> (optional)</span>
+      <span v-if="required" class="text-danger"> *</span>
       <span class="text-muted" v-if="isValidDate"> ({{ yearsOld }} yrs)</span>
     </label>
     <div class="col-xs-10">

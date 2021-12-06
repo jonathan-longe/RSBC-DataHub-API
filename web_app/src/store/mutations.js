@@ -99,7 +99,8 @@ export const mutations = {
         Vue.set(state.forms[form_object.form_type][form_object.form_id].data, "city", address['city']);
         Vue.set(state.forms[form_object.form_type][form_object.form_id].data, "province", address['region']);
         Vue.set(state.forms[form_object.form_type][form_object.form_id].data, "postal", address['postalCode']);
-        Vue.set(state.forms[form_object.form_type][form_object.form_id].data, "dob", data['birthDate']);
+        const dob_string = data['birthDate'].split("-").join('')
+        Vue.set(state.forms[form_object.form_type][form_object.form_id].data, "dob", dob_string);
     },
 
     saveICBCVehicleToStore(state, data) {

@@ -2,7 +2,7 @@
 <div v-if="visible" class="form-group" :class="fg_class">
   <validation-provider :rules="rules" :name="id" v-slot="{ errors }">
     <label v-if="show_label" :for="id"><slot></slot>
-      <span v-if=" ! isShowOptional" class="text-muted"> (required)</span>
+      <span v-if=" ! isShowOptional" class="text-danger"> *</span>
     </label>
     <input type="text"
          class="form-control"

@@ -2,7 +2,7 @@
 <div v-if="visible" class="form-group" :class="fg_class">
   <validation-provider :rules="rules" :name="id" v-slot="{ errors, required }">
     <label :for="id"><slot></slot>
-      <span v-if="required" class="text-muted"> (required)</span>
+      <span v-if="required" class="text-danger"> *</span>
       <span class="text-muted" v-if="displayTimeAgoString"> ({{ timeAgoString }})</span>
       <span v-if="displayNotValidWarning" class="text-danger"> (date and/or time not valid)</span>
     </label>

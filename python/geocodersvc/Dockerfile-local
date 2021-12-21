@@ -4,6 +4,7 @@ RUN useradd --create-home appuser
 COPY geocodersvc /home/appuser/python/geocodersvc
 COPY common /home/appuser/python/common
 
+RUN pip install pip -U
 RUN pip install -r /home/appuser/python/geocodersvc/requirements.txt
 WORKDIR /home/appuser
 USER appuser
